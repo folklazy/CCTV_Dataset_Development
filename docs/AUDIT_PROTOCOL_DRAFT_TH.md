@@ -1,38 +1,71 @@
-# Protocol dataset audit — DRAFT
+# แผนสำรวจข้อมูลรอบถัดไป — DRAFT
 
-เนื้อหาหลักนำมาจาก protocol เดิม ขั้นตั้ง workspace รอบนี้ตรวจ config/path และข้อมูลสังเคราะห์เท่านั้น ประวัติ audit บริษัทเก็บภายนอก Git ทุก run ใหม่อยู่ใต้ work_root/runs และต้องไม่ทับ source/repository
+ฉบับทบทวน 22 ตุลาคม 2026: ใช้ [ผลตรวจฐานงาน](../reports/README.md) และ [ขอบเขต/DEC](BENCHMARK_REQUIREMENTS_DRAFT_TH.md) วางการสำรวจเพื่อค้นหาปัญหา ยังไม่เลือกภาพจริง ไม่เปิดตรวจภาพเพิ่ม ไม่กำหนด specification หรือคู่มือ annotation ฉบับใช้งาน
 
-## ลำดับการทำงานภายหลัง
+## 1. คำถามที่ต้องตอบและหลักฐานที่ต้องใช้
 
-1. อ่าน schema CSV/JSON/notes และ data dictionary จริง บันทึก encoding, row counts, ID uniqueness และ join keys ที่พิสูจน์ได้ ห้าม join ด้วย row order หรือ basename ที่กำกวม
-2. อ่าน snapshot แบบ read-only ตรวจ file stat ก่อน/หลังอ่าน พร้อม hash ของ bytes ที่ใช้ หากเปลี่ยนให้ retry ไม่เกิน 3 ครั้ง; ถ้ายังไม่นิ่งให้รายงาน unstable และไม่อ้าง snapshot เดียว ห้าม lock/หยุดแอป
-3. สร้าง run ใหม่ใต้ `work_root/runs/` และยืนยันว่า output ไม่อยู่ใต้ source root ไม่ตาม directory symlink โดยอัตโนมัติ ระบุสิ่งที่ข้ามและอ่านไม่ได้
-4. Inventory CPU แบบจำกัดภาระ เริ่ม 1 worker เป็น operational proposal; checkpoint เป็นช่วง บันทึก source ID และ audit ID แยกจาก content hash เก็บ path สัมพัทธ์ size SHA256 decode format dimensions และสถานะที่มีหลักฐาน
-5. สรุป records, existing files, readable images, unique byte hashes และ exact duplicate groups แยกกัน metadata hash ไม่ใช่ image hash; similarity ถ้าทำเป็น candidate near-duplicate เท่านั้น
-6. ตรวจ orphan rows/files, ambiguous joins, raw/normalized status, missing/unknown; ใช้ unreviewed เฉพาะเมื่อ schema รองรับ สรุป site/camera/time/status พร้อม denominator และ timezone ที่รู้จริง
-7. เทียบ baseline โดยเก็บประวัติ แยกการเปลี่ยนจากเวลา snapshot กับความต่างของนิยามประชากรและวิธีนับ ถ้าข้อมูลขาดให้ null ไม่แทนด้วย 0
-8. เลือก coverage sample และ edge-case sample หลังทราบ strata; บันทึก seed วิธีเลือก membership probabilities เมื่อมี และ inspected status ห้ามรวมสองกลุ่มเพื่อประมาณ prevalence โดยไม่มีวิธีรองรับ
-9. ดูภาพเต็ม/ต้นฉบับเมื่อผู้ใช้พร้อม บันทึก observation/measurement และ uncertainty จริงตาม K/X; ไม่อนุมาน IR จากขาวดำหรือคนจาก event category
-10. เชื่อม REQ → E/C → ภาพจริง → H → ผล pilot → DEC; ทำรายงานก่อนเริ่ม annotation/benchmark ขั้นใหญ่
+| คำถาม | metadata/หลักฐานต้นทางตอบได้เพียงใด | ต้องดูภาพในรอบที่อนุญาตภายหลังเพื่ออะไร |
+| --- | --- | --- |
+| ภาพมาจากไหนและครอบคลุมอะไร | ตรวจ snapshot/export, site×camera×date/time และ unknown; ต้องขอวิธีสร้าง event/ขอบเขตข้อมูลที่ไม่ได้ export | ตรวจความต่างสภาพภาพ ไม่ใช้ sample ยืนยันความเป็นตัวแทนของทุกเฟรมในระบบ |
+| ประวัติคัดเลือกเชื่อมกันอย่างไร | ขอ curation snapshot/notes/version แล้ว join ด้วย key ที่พิสูจน์ได้; ห้าม row-order join | ตรวจกรณีคลุมเครือภายหลัง โดยไม่แก้ raw status |
+| category ผูกกับใคร/เวลาอะไร | มีเพียง record label และ incident_timestamp; ต้องมี source dictionary/event ID ก่อนยืนยันความหมาย | การเห็นคนไม่พิสูจน์บทบาท และภาพเดียวอาจมีหลายคน; ไม่เดาอัตลักษณ์ |
+| คน/ส่วน/เสื้อผ้ามองเห็นได้เพียงใด | ไม่มี geometry/person count/modality fields ให้สรุปจาก metadata | สำรวจขนาดที่เห็น occlusion/truncation ส่วนที่แยกได้ และความกำกวม ownership |
+| สี/ความยาว/ลวดลายสมเหตุผลหรือไม่ | ไม่มีค่าคุณลักษณะอ้างอิง | ตรวจ observability/แสง/compression; ภาพขาวดำไม่พิสูจน์ว่าเป็น IR และเวลาไม่แทนสภาพแสง |
+| ภาพซ้ำหรือเป็นเหตุการณ์เดียวกันหรือไม่ | filename ไม่ซ้ำไม่พิสูจน์เนื้อหาไม่ซ้ำ; กล้อง+เวลาชี้ได้เพียง candidates | ตรวจ byte identity/ความคล้าย/บริบทต่อเนื่องตามแผนข้อ 4 ไม่สรุปบุคคลเดิมจากเวลาติดกัน |
 
-## หน่วยและแบบฟอร์ม
+## 2. ลำดับงานและจุดทบทวน
 
-ไฟล์ใน `templates/` เป็นโครงคอลัมน์ร่าง ไม่มีแถวตัวอย่างที่นับเป็นผลตรวจ ให้เพิ่ม data dictionary หลังเห็น schema จริง CSV headers ไม่ใช่ annotation ontology และไม่มี numeric class IDs
+1. **ก่อนเลือกตัวอย่าง:** ยืนยันลำดับความสำคัญของ task กับผู้ใช้และหาต้นทาง curation/dictionary หากยังขาด ให้จำกัด scope และระบุสถานะ unknown แทนการรอหรือเติมคำตอบเอง บันทึก source snapshot ID/hash ของ metadata, รายการ archive parts, audit ID, config/code revision ที่ใช้; ยังไม่แต่ง source-system version หรือประกาศ release
+2. **metadata-only:** ใช้ inventory/linkage/format comparison เดิมเมื่อ checksums ยังใช้ได้ ตรวจเพิ่มเฉพาะความไม่แน่นอน เช่น schema เปลี่ยน คีย์กำกวม หรือได้ curation export ใหม่ เก็บ raw/normalized แยก; ห้ามเปลี่ยน selected/rejected/flagged/pending หรือเขียนต้นทาง
+3. **เสนอ sampling frame ให้ตรวจทาน:** สรุป strata ที่มีจริงและช่องที่ยังไม่มี ไม่ทำ Cartesian product ทุก field จนงานบานปลาย จัด coverage กับ edge-case discovery แยก membership และเหตุผล; รอบปัจจุบันยังไม่สร้าง membership
+4. **เมื่ออนุญาตรอบสำรวจภาพ:** เปิดแบบจำกัดภาระครั้งละภาพ/กลุ่มสั้น ใช้ original เพื่อดูรายละเอียด เก็บ observation/uncertainty และ provenance ภายนอก โดยยังไม่ทำ pixel annotation/โมเดล หยุดพักทบทวนเมื่อครบงบแรกหรือพบประเด็นเปลี่ยน scope
+5. **สรุปเพื่อออกแบบ:** coverage ที่ทำจริง/ที่ขาด, ambiguity log, candidate alternatives และคำถามสำหรับ pilot; ขอการตัดสินก่อนใช้เป็น specification/pilot ไม่เลื่อนเป็น accepted อัตโนมัติ
 
-| Artifact ใน run จริง | หน่วย / กติกา |
+ทุกครั้งอ่าน source แบบ read-only ไม่ตาม symlink เพิ่ม scope เอง stat ก่อน–หลังและ hash bytes ที่ใช้อ้าง หาก source เปลี่ยนให้แยก snapshot/retry แบบจำกัด ไม่หยุดแอปหรือ lock ต้นทาง ใช้ run ใหม่ใต้ external work_root/runs และเก็บไฟล์เก่าไว้
+
+## 3. การเลือกตัวอย่างที่เสนอและขนาดงานเริ่มต้น
+
+**ข้อเสนอเพื่อประเมินภาระ ไม่ใช่จำนวนชุดประเมิน:** เริ่มรอบทำงานที่ประมาณ **32 ภาพไม่ซ้ำ** แบ่ง coverage ราว 24 และ edge-case discovery ราว 8; ถ้ากรณีเป้าหมายซ้อนกัน ให้ tag ทั้งสองเหตุผลโดยนับภาพจริงครั้งเดียว ตัวเลขนี้ยังไม่อนุมัติ และไม่ใช่ขนาดตัวอย่างเชิงสถิติหรือจำนวน annotation pilot
+
+เหตุผลคือ metadata มีหลายกลุ่มกล้องและช่วงเวลา มากกว่างบเปิดดูละเอียดครั้งเดียว จึงเริ่มขนาดที่ตรวจบริบทและบันทึกข้อสงสัยรายภาพได้ แล้วปรับจากเวลาทำจริง ยังไม่อ้างว่าครอบคลุมทุกกล้อง ทุกคู่ปัจจัย หรือพบ rare case ครบ
+
+- **Coverage:** กระจายกลุ่ม site/camera ที่ทราบ รวม unknown แยกกลุ่ม; หมุนกล้อง วัน และช่วงชั่วโมงที่มีจริง หลีกเลี่ยงให้กล้องที่มี records มากครองตัวอย่าง อาจใช้ช่วงชั่วโมง 6 ชั่วโมงเป็น proxy เริ่มต้น แต่ไม่เรียก day/night หรือ IR จนมีหลักฐานภาพ/ระบบ เลือกด้วย seed/กติกาที่บันทึกได้หลังยืนยัน frame; อย่าแทนกล้องที่ยังไม่ดูด้วยกล้องที่ดูแล้ว
+- **Edge-case discovery:** อาศัยประเด็นจาก visual report เดิมเป็นเบาะแส เช่นคนเล็ก/บัง/ชิดขอบ/สีตัดสินยาก และ candidate กล้อง/เวลาห่างสั้นที่ metadata ชี้ได้ ความยากต้องยืนยันด้วยภาพ ไม่จัดจาก category หรือเวลาล้วน หากหาเคสไม่ได้ให้บันทึก not found ไม่เติมสมมติฐาน
+- **เมื่อได้ curation linkage:** เพิ่ม coverage ของผลคัดแต่ละประเภทตามความหมายจริง ไม่แบ่ง strata ตาม pending เพื่อแทนผลคัดเก่า และไม่ต้องเปลี่ยน raw status เพื่อทำ sampling
+- **เงื่อนไขขยาย:** ถ้างบแรกไม่ครอบคลุมกลุ่มที่จำเป็น หรือพบ ambiguity/รูปแบบใหม่ที่เปลี่ยน candidate/คู่มือ ให้เสนอเพิ่มรอบละประมาณ 8 ภาพเฉพาะช่องว่าง พร้อมเหตุผลและเวลาคงเหลือ หากถึงราว 48 ภาพในรอบแรกแล้วยังมีปัญหาเชิงนิยาม/ที่มา ให้ทบทวนแผนกับผู้ใช้ก่อนขยายต่อ ไม่ใช้จำนวนนี้เป็นเกณฑ์คุณภาพหรือหลักประกัน saturation
+
+coverage และ discovery ไม่ใช่ probability sample ของประชากรทั้งหมด ไม่รวมสองกลุ่มเพื่อประมาณ prevalence เว้นแต่มี sampling design/weights รองรับ เก็บ strata ที่ยังไม่ดูและเหตุผลการข้ามทุกครั้ง
+
+## 4. ภาพซ้ำ ภาพต่อเนื่อง และการแยกชุดประเมิน
+
+- **Exact duplicate:** ในขั้นที่ได้รับอนุญาตให้อ่าน payload ให้เทียบ SHA256 ของ encoded image bytes; ZIP CRC/size ใช้คัด candidates เท่านั้น กรณี bytes ต่างแต่ภาพเหมือนให้บันทึกต่างชนิด ไม่ลบ/เปลี่ยนชื่อหรือคัดออกเอง
+- **Near duplicate:** เริ่มจาก candidates ที่มีบริบทกล้อง/เวลา หากจำเป็นค่อยเสนอกระบวนการ perceptual similarity พร้อม threshold sensitivity และ manual verification ห้ามติดตั้งเครื่องมือหรือใช้โมเดลจากแผนนี้เอง
+- **ภาพต่อเนื่อง:** ใช้ incident_timestamp พร้อม offset และ site+camera เป็น candidate neighborhood เท่านั้น ทดลองเปรียบเทียบช่วงห่าง เช่น 5/30/60 วินาทีเพื่อดูว่ากลุ่มเปลี่ยนอย่างไร ไม่เลือกเป็น cut-off จริงจากตัวเลขนี้ ช่วงห่างใกล้ไม่ยืนยัน event/person เดียว และช่วงห่างไกลไม่ยืนยันอิสระ; event IDs/ลำดับจากต้นทางมีน้ำหนักมากกว่าการเดาจากชื่อไฟล์
+- เก็บ `candidate_group`, `group_basis`, `verification_state`, membership และหลักฐานเป็นผลสำรวจแยกจาก curation ไม่สร้างกลุ่มบุคคลข้ามกล้องโดยอนุมานตัวตน
+- ชุดที่ใช้ค้นหาปัญหา/แก้คู่มือคือ **development/discovery** ต้องมีประวัติ exposure แยกจาก final evaluation ยังไม่เลือกสมาชิก final หรือบังคับ train/validation/test ภายหลังต้องจัดการ overlap ของภาพซ้ำ/กลุ่มที่ยืนยันแล้วก่อนตรึง membership; หากแยกไม่ได้ให้บอกข้อจำกัด ไม่อ้าง independence
+
+## 5. สิ่งที่จะบันทึกขณะสำรวจ
+
+ใช้ [visual sample manifest](../templates/visual_sample_manifest.csv), [case register](../templates/visual_case_register.csv) และ [เคส K/X](CASE_REGISTER_DRAFT_TH.md) เดิมเป็นฐาน ปรับเฉพาะเมื่อเริ่ม run จริง ไม่สร้าง annotation schema สุดท้ายจาก header ของ template
+
+| กลุ่มข้อมูล | สิ่งที่จะเก็บภายนอก Git |
 | --- | --- |
-| source_inventory.csv | หนึ่งแถวต่อไฟล์ต้นทาง; audit ID คงที่ใน run; metadata หลายแถวต่อไฟล์ใช้ join table แยก |
-| metadata_linkage.csv | หนึ่งแถวต่อ source record/match candidate; unmatched/ambiguous ระบุชัด |
-| metadata_audit.json | snapshot + นิยาม denominator + counts/join issues; ใช้ null เมื่อยังไม่วัด |
-| duplicate_groups.csv | หนึ่งแถวต่อสมาชิก exact SHA256 group; ไม่ลบ source |
-| visual_sample_manifest.csv | membership แยกกลุ่ม coverage/edge_case; ภาพเดียวอยู่สองกลุ่มได้ |
-| visual_case_register.csv | หนึ่งแถวต่อ case observation; ภาพหนึ่งมีหลายเคสได้; review status แยก evidence status |
-| contact sheets | local เท่านั้น; derived และใช้ย้อนกลับ original ได้ |
+| Provenance/linkage | run ID, source/metadata hash, row locator ภายใน snapshot, filename/member ID, match method/ambiguity; row locator ไม่ใช่ stable event ID |
+| Selection | coverage/discovery tags, strata, seed/กติกาเลือก, เหตุผลรวม/ข้าม, replacement และ duplicate/group candidates |
+| Observation | ผู้ดู/เวลา/วิธีดู/การแสดงภาพ, รายงานเดิมหรือเปิดใหม่, จำนวนคนโดยประมาณและความไม่แน่ใจ, overlap/truncation/scale/เสื้อผ้า/แสงที่สังเกตได้, K/X และเคสใหม่ |
+| Attribute questions | candidate ใดมีหลักฐานแยกได้, absent/not applicable/unobservable/unreviewed พร้อมเหตุผล; ยังไม่สร้าง class IDs/สีบังคับหรือบังคับกรอกคุณลักษณะที่ผู้ใช้ยังไม่ต้องการ |
+| Measurements เมื่อทำจริง | bbox height(px), bbox area/frame area และ visible-mask area/frame area ต้องแยกหน่วย; ไม่วัด mask area เมื่อไม่มี mask หรืออ้างขนาดคนจากขนาด frame อย่างเดียว |
+| Review/change | reviewer, uncertainty/conflicting readings, เวลาใช้จริง, สิ่งที่ต้องขอคำอธิบาย, DEC ที่เกี่ยวข้อง และผู้ตัดสิน; review ไม่เท่ากับ annotation agreement |
 
-measurement ที่จะใช้ต้องระบุ geometry: bbox height เป็น px; bbox area ratio = bbox area / frame area; visible mask area ratio = visible mask pixels / frame area เมื่อมี mask จริง ไม่แทนกัน ไม่คำนวณขนาดคนจาก frame dimensions อย่างเดียว
+ไม่เก็บข้อสันนิษฐานอัตลักษณ์หรือบทบาทรายคนจาก category เพียงอย่างเดียว Preview/contact sheet ถ้าจำเป็นในอนาคตต้อง local-only และย้อนกลับ original ได้
 
-## เรื่องที่ยังต้องตัดสิน
+## 6. ผลสำรวจจะใช้ตัดสินอะไร
 
-H-01 coarse/fine, H-02 anatomical side, H-03 type/length, H-04 color, H-05 pattern และ H-06 validity ยังเป็นแผนทดสอบจาก foundation ต้องได้ภาพ ผู้ทำจริง และกติกาก่อนวัด ยังไม่เลือก threshold หรือจำนวน pilot ล่วงหน้า กรณีมีผู้ทำคนเดียวให้รายงาน intra-annotator consistency ตามจริง
+| ผลที่ต้องได้ | การตัดสินที่จะรองรับภายหลัง |
+| --- | --- |
+| ข้อจำกัดจำนวนคน/scale/owner/ส่วนที่เห็นและตัวอย่างกำกวม | full-frame vs crop, coarse/fine/side/accessory candidates และ denominator ที่เหมาะกับ task |
+| observability ของสี/ความยาว/ลาย และภาระบันทึก | เก็บเป็นงานหลัก/ส่วนขยาย/เลื่อนออก; observed vs physical color; applicability/unknown ไม่กำหนด palette จาก paper โดยตรง |
+| ปัญหานิยามและการอ่านต่างกัน | เตรียม guideline pilot/ผู้ทำ/การตรวจอิสระและ adjudication; ยังไม่สรุป reliability หรือ QA threshold จาก exploration |
+| coverage, curation linkage และ duplicate/group uncertainty | ประชากรที่สรุปผลได้ เหตุผลเลือกชุดประเมิน และวิธีหลีกเลี่ยง leakage; ยังไม่กำหนด final quota/split หรือเกณฑ์คัดออก |
 
-ไม่เริ่ม full benchmark, training, model inference บน CCTV, annotation ทั้งชุด, split หรือ mapping ที่ตรึงถาวรจาก protocol ร่างนี้
+ไม่เริ่ม annotation, inference, training หรือ benchmark ตามแผนฉบับนี้ การจะเริ่ม pilot ต้องมีขอบเขต/ผู้ทำ/คู่มือร่างและวิธีเก็บผลที่ทบทวนแล้วตาม [REQ/DEC](BENCHMARK_REQUIREMENTS_DRAFT_TH.md)

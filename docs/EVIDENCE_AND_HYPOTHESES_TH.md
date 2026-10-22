@@ -1,6 +1,6 @@
 # ทะเบียนหลักฐานและสมมติฐาน — inherited DRAFT
 
-คงเนื้อหาหลักจาก foundation เดิม; source verification statements เป็นประวัติการทบทวนเดิม ไม่ได้ตรวจแหล่งภายนอกซ้ำในการตั้ง repository ต้นฉบับอยู่ใน private archive P1 หมายถึงเอกสารโครงการเดิมที่เก็บภายนอก Git ไม่มี local observations/pilot ใหม่ในเอกสารนี้
+คงเนื้อหาหลักจาก foundation เดิม P1 หมายถึงเอกสารโครงการเดิมที่เก็บภายนอก Git; รายการที่ตรวจซ้ำรอบนี้ระบุเฉพาะในตารางทบทวนห้าแหล่งด้านล่าง แหล่งอื่นยังเป็นประวัติเดิม ไม่มี visual observations หรือผล pilot ใหม่ในรอบนี้
 
 ### ขอบเขตการตรวจต้นฉบับสำหรับหน้าโครงการ — 22 ตุลาคม 2026
 
@@ -11,10 +11,26 @@
 | S03 | [Datasheets for Datasets](https://arxiv.org/abs/1803.09010), abstract | เสนอเอกสารบอก motivation, composition, collection process, recommended uses; ใช้จัดเหตุผลของ provenance/docs ไม่ใช่รับรอง annotation หรือกำหนด QA threshold |
 | S04 | [Instance-level Human Parsing via Part Grouping Network](https://arxiv.org/abs/1808.00157), abstract | แยก semantic part segmentation กับการจัด parts เข้า person instances; ใช้อธิบายหน่วยงาน ไม่ยืนยันความเหมาะสมของ taxonomy/pipeline กับ CCTV ชุดนี้ |
 
+### ทบทวนแบบเจาะจงเพื่อแผนสำรวจ — 22 ตุลาคม 2026
+
+อ่าน PDF ต้นฉบับห้าแหล่งต่อไปนี้ เลขหน้าเริ่มหน้าแรกของไฟล์เป็น 1 ลิงก์ตรึงรุ่นเพื่อให้ตรวจ locator ได้ สิ่งในคอลัมน์ปรับใช้เป็น **ข้อเสนอของโครงการ** ไม่ใช่ข้อกำหนดจาก paper ไม่มีงานใดรับรอง taxonomy, palette, QA หรือ ISO conformance ของ CCTV นี้
+
+| แหล่ง / locator | งานต้นฉบับระบุหรือทำจริง | ข้อเสนอปรับใช้กับ CCTV | สิ่งที่ยังต้องพิสูจน์/ข้อจำกัด |
+| --- | --- | --- | --- |
+| S04 [CIHP / PGN v1](https://arxiv.org/pdf/1808.00157v1), §3.1–3.2, PDF pp.6–7 | ให้ผู้ทำมืออาชีพ annotate และตรวจรอบสองแต่ละภาพ; เปลี่ยน Jumpsuit ที่พบน้อยเป็น Torso-skin; มีเกณฑ์คัดภาพและ random split ของงานนั้น | แยกการสร้างกับ review และบันทึกเหตุผล class candidates | ต้องดูความละเอียดที่ CCTV สังเกตได้/ผู้ทำจริง; ไม่ยกการคัดภาพคนเดียว/ไม่มีคน หรือ split ของ CIHP มาเป็นกฎท้องถิ่น |
+| S05 [MHP v2 / NAN v3](https://arxiv.org/pdf/1804.03287v3), §3.1–3.2, PDF pp.4–5 | นับคนและสร้าง indexed parsing mask รายคน; คนอื่นเป็น background ใน mask ของคนนั้น; ตรวจ annotations ทุกภาพและแก้ข้อผิดพลาด | แยก image/person/region identity และเก็บ ownership/review trail | ต้องตรวจ overlap/อุปกรณ์/ส่วนที่แยกได้; ไม่แปล per-person background เป็น scene background หรือบังคับคลาส/จำนวนผู้ตรวจตาม paper |
+| S11 [Cityscapes v2](https://arxiv.org/pdf/1604.01685v2), §2.1–2.2, PDF pp.2–3; §2.3 p.3 | ให้บริบทจาก video snippet; แยก fine/coarse annotations และ void; split ตามเมืองแทน random image split | เก็บบริบทภาพต่อเนื่องเท่าที่มีและทดสอบ grouping/leakage; รายงานสิ่งที่ ignore กับ coverage | เป็น street-scene dataset ไม่ใช่ human-part taxonomy; CCTV ต้องพิสูจน์ event/group เอง ยังไม่เลือก city/camera split หรือถือว่า void คือ background |
+| S03 [Datasheets for Datasets v8](https://arxiv.org/pdf/1803.09010v8), §3–3.1 p.4; §3.2 pp.5–6 | เสนอคำถาม motivation/composition เช่นหน่วยข้อมูล sampling frame ความสัมพันธ์/สิ่งที่ขาด; ยอมให้ไม่ทราบและบางคำถามไม่เกี่ยวข้อง | บันทึก source/curation versions, intended uses, unknown และเหตุผลการเลือกข้อมูลใน provenance/release plan | ต้องมีเอกสารต้นทางและผู้รับผิดชอบตอบ ไม่สร้างคำตอบจาก template หรือเรียกเอกสารครบว่า QA ผ่าน |
+| S07 [CCIHP v1](https://arxiv.org/pdf/2201.09594v1), §2, PDF p.2; ICIP 2021 | ปรับ semantic classes/instance masks จาก CIHP แยก size/color/pattern characteristics; มี Undetermined สำหรับ size ที่ถูกบัง/ตัดขอบ; human masks รวมอุปกรณ์บางอย่างที่ไม่มี semantic label | พิจารณา type แยก length/characteristics และ applicability/observability แยก owner scope | ต้องยืนยันว่า attributes จำเป็นและมองได้ใน CCTV; validity ราย attribute เป็นข้อเสนอ ไม่ใช่คำสั่งของ paper; ไม่คัดลอกสี/IDs หรืออนุมานสีวัตถุจริงจากภาพเดียว |
+
+เข้าถึง PDF ทั้งห้าแหล่งได้; Cityscapes official PDF มีการเรียกซ้ำที่ timeout จึงใช้ author preprint v2 ที่อ่านได้ ยังไม่ตรวจ supplements/release label order ของแหล่งเหล่านี้ สถิติ/คะแนนจาก benchmark ไม่ได้เป็นหลักฐาน local reliability และไม่ได้นำมาใช้กำหนดจำนวนภาพหรือ threshold รอบนี้
+
 ## 1. วิธีอ่านและขอบเขตการทบทวน
+
 เอกสารนี้เป็นการทบทวนแบบเจาะจงเพื่อตั้งข้อกำหนด ไม่ใช่ systematic review ที่อ้างว่าครอบคลุมงานทั่วโลก ใช้เอกสารจากผู้เขียนและองค์กรเจ้าของมาตรฐานเป็นฐาน ค้นและตรวจเพิ่มเติมเมื่อ 19 ต.ค. 2026
 
 แยกหลักฐานสามชั้น:
+
 - ข้อความต้นทาง: สิ่งที่ source ระบุจริง พร้อม section/page
 - เหตุผลประยุกต์: การตีความว่าข้อความนั้นเกี่ยวกับโจทย์เราอย่างไร
 - หลักฐานท้องถิ่น: ผลสำรวจ/pilot ของบริษัท ซึ่งยังไม่มีในรุ่นนี้
@@ -22,6 +38,7 @@
 การปรากฏใน paper ไม่เท่ากับการพิสูจน์ว่าเหมาะกับ CCTV บริษัท และมาตรฐานกระบวนการไม่ใช่การรับรอง taxonomy เฉพาะของโครงการ
 
 ## 2. ทะเบียนแหล่งอ้างอิง
+
 เลขหน้า PDF เริ่มนับหน้าแรกของไฟล์เป็น 1; หากอ้างหน้า journal จะระบุแยก
 
 | ID | แหล่งต้นฉบับและตำแหน่ง | สิ่งที่ตรวจได้และข้อจำกัดการเข้าถึง |
@@ -36,8 +53,10 @@
 | S08 | Li et al., A Richly Annotated Pedestrian Dataset for Person Retrieval in Real Surveillance Scenarios, IEEE TIP 2019; §III-A/B, PDF pp.4–5 | ตรวจ annotation รายภาพ การบัง และ coarse body regions; งาน attribute/retrieval ไม่ใช่ dense parsing GT |
 | S09 | Specker et al., UPAR: Unified Pedestrian Attribute Recognition and Person Retrieval, WACV 2023; arXiv v1 §3.2–3.3, PDF pp.4–5 | ตรวจการ harmonize attributes และกติกาสี; ยังไม่ได้ตรวจ supplement/release label order |
 | S10 | ISO/CIE 11664-4:2019; CIE public scope | มาตรฐานพิกัด CIELAB และ color difference; ไม่ใช่ชื่อสีเสื้อผ้าสำหรับ CCTV |
+| S11 | Cordts et al., The Cityscapes Dataset for Semantic Urban Scene Understanding, CVPR 2016; v2 §2.1–2.3, PDF pp.2–3 | ตรวจบริบท/annotation/grouped split รอบ foundation review; ไม่ใช่ human-part taxonomy |
 
 ลิงก์ต้นฉบับ:
+
 - S01: https://www.iso.org/standard/81093.html
 - S02: https://www.iso.org/standard/81860.html
 - S03: https://arxiv.org/abs/1803.09010
@@ -48,8 +67,10 @@
 - S08: https://zhangzhang80.github.io/RAP.pdf ; DOI 10.1109/TIP.2018.2878349
 - S09: https://arxiv.org/pdf/2209.02522
 - S10: https://cie.co.at/publications/colorimetry-part-4-cie-1976-lab-colour-space-1
+- S11: https://arxiv.org/pdf/1604.01685v2
 
 ## 3. หลักฐานที่นำมาใช้ได้และสิ่งที่ยังสรุปไม่ได้
+
 | Evidence ID | ข้อค้นพบในต้นทาง | ผลต่อโจทย์เรา (ข้อเสนอ) | ขอบเขตข้ออ้าง |
 | --- | --- | --- | --- |
 | E01 | S01 จัดกรอบกระบวนการคุณภาพ; S02 จัดกรอบการวัด | บันทึกกระบวนการและหลักฐาน QA ตั้งแต่ต้น | ยังอ้าง ISO compliance/certification ไม่ได้ |
@@ -66,6 +87,7 @@
 จำนวนคลาสในตารางนับตามนิยามของแต่ละ paper; ห้ามเปรียบเทียบตัวเลขโดยไม่ตรวจว่ารวม background หรือไม่
 
 ## 4. แผนผังเหตุผลของ candidate
+
 รายการนี้เป็น “องค์ประกอบที่ควรพิจารณา” ไม่ใช่ class list ที่อนุมัติแล้ว ทุกแถวต้องเติมภาพจริงและผล pilot ก่อนตรึง
 
 | Candidate | เหตุผลต่อการประเมิน | หลักฐานตั้งต้น | ทางเลือกและข้อเสี่ยง | การตรวจท้องถิ่น |
@@ -82,32 +104,41 @@
 | C10 Occlusion / truncation / scale | แบ่งวิเคราะห์ความยาก | E08 และ P1 | เป็น metadata ไม่จำเป็นต้องเป็น output class | K02/K03; วัด scale ซ้ำด้วยสูตรเดียว |
 | C11 Background / ignore / unannotated | กำหนดโดเมนคะแนนอย่างตรวจสอบได้ | ข้อกำหนดทางวิศวกรรมของโครงการ | ความหมายไม่เหมือนกัน; ยังไม่เลือก numeric code | ตรวจ round-trip และ denominator |
 
-ไม่มี candidate บทบาทพนักงาน/ผู้รับเหมาเป็น parsing label ในร่างนี้: P1 อธิบายว่า Category_EN อยู่ระดับเหตุการณ์ จึงยังไม่มีหลักฐานผูกกับทุกคนหรือกับพิกเซลเสื้อผ้า
+ไม่มี candidate บทบาทคนเป็น parsing label ที่อนุมัติแล้ว: P1 เดิมกล่าวถึง Category_EN ในบริบทเหตุการณ์ แต่ field ที่ตรวจได้ใน export ปัจจุบันคือ category ระดับ record ยังขาด source dictionary/event-person binding จึงยืนยัน granularity ของระบบต้นทางไม่ได้ และไม่ถ่ายทอดให้ทุกคนหรือทุกพิกเซลเสื้อผ้า
 
 ## 5. สมมติฐานที่จะทดสอบใน pilot
+
 สมมติฐานด้านล่างเสนอโดยโครงการ แหล่งอ้างอิงให้เหตุผลตั้งต้น ไม่ใช่หลักฐานยืนยันผลลัพธ์ของบริษัท เกณฑ์ผ่านเชิงตัวเลขต้องกำหนดก่อน pilot scoring ตามงาน/ทรัพยากรจริง ไม่สร้าง threshold แล้วอ้างว่าเป็นค่ามาตรฐานสากล
 
 ### H-01 ความละเอียดของคลาส
+
 คาดว่า ontology แบบ coarse จะมีความสม่ำเสมอสูงกว่า fine-grained ในคนขนาดเล็ก แต่ fine-grained อาจเพิ่มข้อมูลที่โจทย์ต้องใช้
+
 - เปรียบเทียบ: coarse/fine candidates บนคนและภาพชุดเดียวกัน ครอบคลุม scale/occlusion
 - วัด: confusion รายคลาส, agreement ของ label/geometry, unknown rate, เวลา และข้อมูลที่สูญเสียเมื่อรวม
 - ควบคุม: คู่มือ/การฝึกผู้ทำและวิธีดูภาพ; หากทำซ้ำให้สลับลำดับหรือเว้นช่วงและบันทึก carry-over
 - ผลต่อการตัดสิน: แก้นิยามก่อนพิจารณารวม; เก็บ fine class เฉพาะเมื่อความจำเป็นและ reliability รองรับ ไม่อาศัยคะแนนโมเดล final
 
 ### H-02 ซ้ายและขวา
+
 คาดว่ากติกาด้านของบุคคลพร้อมตัวอย่าง front/back จะลด side swaps เมื่อเทียบกับคำอธิบายสั้นที่ไม่มีตัวอย่าง
+
 - วัด: side confusion แยก front/back/profile/occluded และสัดส่วนตัดสินด้านไม่ได้
 - ถ้ายังไม่น่าเชื่อถือ: พิจารณา parent class ที่ไม่แยกข้าง หรือเก็บ side validity แยก โดยระบุข้อมูลที่เสีย
 - ไม่ใช้ตำแหน่งซ้าย/ขวาของภาพเป็นเฉลยด้านกายวิภาค
 
 ### H-03 ชนิดและความยาวแยกกัน
+
 คาดว่าการแยกสอง field จะเก็บชนิดที่เห็นได้ในกรณีปลายเสื้อผ้าถูกบัง โดยไม่บังคับเดาความยาว
+
 - เปรียบเทียบ: compound label กับ type + length + validity
 - วัด: จำนวนคำตอบชนิดที่ใช้ได้, agreement, invalid combinations และเวลา
 - ผลต่อการตัดสิน: หากนิยามกำกวมหรือเกิด combinations ที่ไม่มีความหมาย ให้แก้ applicability matrix ก่อนใช้
 
 ### H-04 ชุดสีและคู่มือ
+
 คาดว่าชุดสีที่มีตัวอย่าง boundary จากกล้องจริงและกติกา unknown จะลดความสับสน โดยยังรักษา coverage ที่มีประโยชน์
+
 - เปรียบเทียบ: ชุดสี candidate และคู่มือที่มี/ไม่มี boundary examples
 - วัด: confusion คู่สี, agreement, coverage, unknown แยก RGB/low-light/grayscale
 - เก็บ: target คือ observed color หรือ physical color; เงื่อนไขจอและการปรับภาพ
@@ -115,19 +146,24 @@
 - หาก target เป็นสีวัตถุจริง ต้องมี reference acquisition/calibration เพิ่ม ไม่ใช้การเดาจาก JPEG เป็น gold standard
 
 ### H-05 ลวดลาย
+
 คาดว่าความน่าเชื่อถือของ pattern ลดลงตามขนาด region และ compression
+
 - วัด: agreement ตามขนาด region, ความสับสน solid/pattern และ unknown
 - ทดลองกับภาพจริงที่ขนาดต่างกัน; การย่อภาพจำลองต้องรายงานแยกจากภาพกล้องจริง
 - ผลต่อการตัดสิน: เก็บเป็นส่วนขยายหรือกำหนด applicability ตามหลักฐาน แทนการบังคับให้ทุก region มีลาย
 
 ### H-06 การเก็บ validity รายคุณลักษณะ
+
 คาดว่าจะรักษาข้อมูลที่ยังใช้ได้มากกว่าการคัดทั้งภาพ เมื่อบางคุณลักษณะมองไม่ชัด
+
 - เปรียบเทียบ: whole-image rejection กับ per-task/per-attribute validity
 - วัด: coverage ของแต่ละงาน, disagreement เรื่อง validity และการกระจายภาพที่ถูกยกเว้น
 - ผลต่อการตัดสิน: ใช้ validity ได้เมื่อกติกาชัดและไม่เอื้อโมเดลรายตัว; รายงาน denominator เสมอ
 - unknown ที่มากขึ้นอาจเพิ่ม agreement ลวง จึงต้องดู coverage ควบคู่
 
 ## 6. รูปแบบบันทึกการตัดสินรายคลาส
+
 ใช้ฟอร์มต่อไปนี้กับทุกคลาสที่เสนอจริง ไม่ต้องแต่งสมมติฐานใหม่ให้ทุก label หากใช้สมมติฐานร่วมกันได้
 
 | Field | เนื้อหาที่ต้องบันทึก |
@@ -149,6 +185,7 @@
 ตอนนี้ยังไม่มีผล pilot จึงจบที่ข้อเสนอ ไม่เติม accepted หรือค่าความสอดคล้องสมมติ
 
 ## 7. ช่องว่างหลักฐานที่ต้องปิด
+
 1. ตรวจคู่มือ/release จริงก่อนคัดลอกชื่อ class, numeric ID หรือ color palette; paper กับ release อาจต่างรุ่น
 2. ตรวจภาพบริษัทและ mapping ไป metadata ก่อนอ้าง coverage/observability
 3. ตรวจข้อกำหนดมาตรฐานฉบับเต็มหากต้องการกล่าวอ้าง conformance; ร่างนี้ใช้เพียง public scope
@@ -157,9 +194,11 @@
 6. ตรวจ label definitions ของโมเดลที่ผ่านการคัดเลือกในขั้น mapping ภายหลัง โดยไม่ใช้ model score กำหนด ontology
 
 ## 8. เกณฑ์เลือกแหล่งเพิ่มเติม
+
 เพิ่มงานเมื่อช่วยปิดคำถามที่ยังค้าง เช่น กติกา amodal, ภาพ thermal/IR, benchmark clothing color หรือ annotation reliability โดยบันทึก query วันค้น source ที่ตรวจ และเหตุผลรับ/ไม่รับ
 ไม่นำ metric SOTA, citation count หรือจำนวนคลาสมาเป็นหลักฐานเพียงอย่างเดียวว่า taxonomy ดีที่สุด
 
 เอกสารที่เชื่อมกัน:
+
 - BENCHMARK_REQUIREMENTS_DRAFT_TH.md — REQ/DEC
 - CASE_REGISTER_DRAFT_TH.md — K cases และข้อจำกัดข้อมูล

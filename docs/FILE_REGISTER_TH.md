@@ -23,11 +23,13 @@
 | docs/SCOPE_AND_OWNERSHIP_TH.md | คู่มือตั้ง workspace/local config, ใช้สคริปต์ และแยก source/work/repository |
 | CCTV_Dataset_Development.code-workspace | VS Code เปิด checkout นี้หนึ่ง folder; ไม่มี personal/system settings |
 | requirements.txt | standard library; ไม่มี package install ใน setup |
-| reports/README.md | จุดอ้างอิง external setup report และ private historical reports |
+| reports/README.md | รายงานฐานงาน/หลักฐานห้าระดับและช่องว่าง; ชี้ external setup report/ผลตรวจปัจจุบัน/รายงานเดิมโดยไม่เผยแพร่ raw evidence |
 
 แบบฟอร์มสำหรับ source version, class/attribute rationale, annotation guide, QA และ release manifest ใช้ใน templates/ ตามสถานะ DRAFT ไม่เป็น annotation จริงหรือ class policy ที่อนุมัติแล้ว
 
 `templates/release_manifest.example.json` มีช่อง source version, annotation revision, ontology/guideline/QA versions, code repository/commit และ references/hashes ที่ต้องใช้ก่อนออกรุ่น ช่องยังเป็น `null` และ runner ปัจจุบันไม่ได้เติมให้อัตโนมัติ การเพิ่มช่องในแบบฟอร์มเป็นการเตรียม traceability ไม่ใช่การสร้างหรืออนุมัติ dataset release
+
+รอบ foundation review ใช้ไฟล์เดิม: เพิ่มตารางขอบเขต/DEC ในข้อกำหนด ปรับ protocol เป็นแผนสำรวจร่าง เพิ่มการตรวจแหล่งต้นฉบับในทะเบียนหลักฐาน และปรับ README/index/dictionary/decision log ให้สถานะตรงกัน ไม่สร้างเอกสารเปล่าหรือ annotation specification หลายชุด สำเนาก่อนแก้และหลักฐานตรวจ metadata จริงอยู่ใน external provenance ไม่แก้ archive ประวัติ
 
 ## Mapping และ checksum
 
