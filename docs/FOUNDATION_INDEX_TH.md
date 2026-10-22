@@ -2,6 +2,8 @@
 
 เนื้อหากระบวนการ/ร่างจาก handoff เดิมนำมาใช้ต่อ โดยแยกข้อมูลเฉพาะบริษัทกับ historical reports ออกไปยัง private legacy archive ฉบับใน repository ที่ปรับแล้วมี migration mapping และ SHA256 ของฉบับก่อนแก้เก็บภายนอก Git การคัดข้อความไม่ใช่การอนุมัติ taxonomy หรือการตรวจ paper/มาตรฐานซ้ำในรอบย้ายงาน
 
+เริ่มจาก [หน้าโครงการ](../README.md) เพื่ออ่านโจทย์ สถานะและกระบวนการ แล้วอ่านข้อกำหนด → หลักฐาน/สมมติฐาน → ทะเบียนเคส → protocol ตามงานที่จะทำ การตั้งค่าเครื่องและคำสั่งอยู่ใน [วิธีใช้งาน](SCOPE_AND_OWNERSHIP_TH.md) ส่วน [ดัชนีหลักฐาน](../reports/README.md) อธิบายว่าข้อความใดยืนยันจากไฟล์ปัจจุบันหรือมีเพียงรายงานประวัติ
+
 | เอกสาร | ใช้เพื่อ | สถานะ |
 | --- | --- | --- |
 | [AGENTS.md](../AGENTS.md) | กฎงาน repository อิสระ | ปัจจุบัน |
@@ -11,5 +13,6 @@
 | [Protocol](AUDIT_PROTOCOL_DRAFT_TH.md) | snapshot, linkage, inventory, sampling, QA | draft |
 | [Data dictionary](DATA_DICTIONARY_TH.md) | ความหมาย fields และข้อจำกัด record/person | schema-only |
 | [Decision log](DECISION_LOG_TH.md) | การเปลี่ยนแปลงตั้งแต่แยก repository | append-only |
+| [Release manifest template](../templates/release_manifest.example.json) | source/annotation/guideline/code references ที่จะผูกต่อรุ่น | template-only; ยังไม่มีค่ารุ่นจริง |
 
 Handoff เต็ม รายงานเก่า รายละเอียดบริษัท และภาพตัวอย่างเดิมอยู่ใน work_root/legacy ตาม local config ไม่ใช่ dependency ที่ต้อง commit หรือ fetch เพื่อรันทดสอบสังเคราะห์

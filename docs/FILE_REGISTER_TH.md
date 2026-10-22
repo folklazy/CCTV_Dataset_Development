@@ -18,12 +18,16 @@
 | docs/AUDIT_PROTOCOL_DRAFT_TH.md, DATA_DICTIONARY_TH.md | ปรับเอกสารเดิมเป็น protocol/schema ที่ไม่มีสถิติจริง |
 | docs/FOUNDATION_INDEX_TH.md, SCOPE_AND_OWNERSHIP_TH.md, DECISION_LOG_TH.md | แก้ตำแหน่งอ้างอิงและขอบเขต repository ใหม่; คงประวัติเต็มไว้ข้างนอก |
 | config/audit.example.json | placeholder paths เท่านั้น; config/local.json จริง ignored |
-| README.md, AGENTS.md, .gitignore | คำสั่งเริ่ม กฎเฉพาะงาน และขอบเขต Git |
+| README.md | หน้าแนะนำงานวิจัย วัตถุประสงค์ สถานะ วิธีพัฒนา หลักการ reference annotation และข้อจำกัด |
+| AGENTS.md, .gitignore | กฎเฉพาะงานและขอบเขตข้อมูลที่เก็บใน Git |
+| docs/SCOPE_AND_OWNERSHIP_TH.md | คู่มือตั้ง workspace/local config, ใช้สคริปต์ และแยก source/work/repository |
 | CCTV_Dataset_Development.code-workspace | VS Code เปิด checkout นี้หนึ่ง folder; ไม่มี personal/system settings |
 | requirements.txt | standard library; ไม่มี package install ใน setup |
 | reports/README.md | จุดอ้างอิง external setup report และ private historical reports |
 
 แบบฟอร์มสำหรับ source version, class/attribute rationale, annotation guide, QA และ release manifest ใช้ใน templates/ ตามสถานะ DRAFT ไม่เป็น annotation จริงหรือ class policy ที่อนุมัติแล้ว
+
+`templates/release_manifest.example.json` มีช่อง source version, annotation revision, ontology/guideline/QA versions, code repository/commit และ references/hashes ที่ต้องใช้ก่อนออกรุ่น ช่องยังเป็น `null` และ runner ปัจจุบันไม่ได้เติมให้อัตโนมัติ การเพิ่มช่องในแบบฟอร์มเป็นการเตรียม traceability ไม่ใช่การสร้างหรืออนุมัติ dataset release
 
 ## Mapping และ checksum
 

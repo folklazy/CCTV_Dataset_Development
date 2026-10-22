@@ -2,6 +2,15 @@
 
 คงเนื้อหาหลักจาก foundation เดิม; source verification statements เป็นประวัติการทบทวนเดิม ไม่ได้ตรวจแหล่งภายนอกซ้ำในการตั้ง repository ต้นฉบับอยู่ใน private archive P1 หมายถึงเอกสารโครงการเดิมที่เก็บภายนอก Git ไม่มี local observations/pilot ใหม่ในเอกสารนี้
 
+### ขอบเขตการตรวจต้นฉบับสำหรับหน้าโครงการ — 22 ตุลาคม 2026
+
+ตรวจบทคัดย่อจากแหล่งผู้เขียนบน arXiv ของสองงานต่อไปนี้เพื่อรองรับคำอธิบายใน README รอบนี้ ข้อเสนอด้าน ontology/QA ของโครงการยังต้องมีหลักฐานท้องถิ่น และการตรวจบทคัดย่อนี้ไม่อัปเกรดข้ออ้างส่วนอื่นทั้งเอกสารเป็นการตรวจซ้ำแล้ว
+
+| Source | ต้นฉบับและ locator | สิ่งที่ใช้ในหน้าโครงการ / ขอบเขต |
+| --- | --- | --- |
+| S03 | [Datasheets for Datasets](https://arxiv.org/abs/1803.09010), abstract | เสนอเอกสารบอก motivation, composition, collection process, recommended uses; ใช้จัดเหตุผลของ provenance/docs ไม่ใช่รับรอง annotation หรือกำหนด QA threshold |
+| S04 | [Instance-level Human Parsing via Part Grouping Network](https://arxiv.org/abs/1808.00157), abstract | แยก semantic part segmentation กับการจัด parts เข้า person instances; ใช้อธิบายหน่วยงาน ไม่ยืนยันความเหมาะสมของ taxonomy/pipeline กับ CCTV ชุดนี้ |
+
 ## 1. วิธีอ่านและขอบเขตการทบทวน
 เอกสารนี้เป็นการทบทวนแบบเจาะจงเพื่อตั้งข้อกำหนด ไม่ใช่ systematic review ที่อ้างว่าครอบคลุมงานทั่วโลก ใช้เอกสารจากผู้เขียนและองค์กรเจ้าของมาตรฐานเป็นฐาน ค้นและตรวจเพิ่มเติมเมื่อ 19 ต.ค. 2026
 
