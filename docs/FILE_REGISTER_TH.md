@@ -1,0 +1,38 @@
+# ทะเบียนไฟล์และการย้าย
+
+ทะเบียนเดิมฉบับเต็มอยู่ใน private legacy archive พร้อม reports/runs/notes เดิม Repository นี้เก็บเฉพาะ source และเอกสารกระบวนการ ไม่มี real images/metadata/annotations
+
+| รายการใหม่ | ที่มา / การจัดการ |
+| --- | --- |
+| scripts/audit_package.py | คัดลอก reader เดิม; ปรับ root/config/output ภายนอกและ metadata filenames จาก config |
+| scripts/prepare_handoff.py | ปรับ document provenance ให้จำกัด repository นี้และออก work_root |
+| scripts/workspace_paths.py | validator ใหม่: absolute local paths, source/work/repository disjoint และ read-only scope |
+| tests/test_split_archive.py | tests เดิมที่ปรับ import path และใช้ timestamp สมมติ |
+| tests/test_workspace_setup.py | synthetic CLI tests, output isolation, readonly source, config rejection และ independent working directory |
+| templates/source_inventory.csv, metadata_linkage.csv, duplicate_groups.csv | แบบฟอร์มเดิม header-only สำหรับหน่วยที่ต่างกัน |
+| templates/visual_sample_manifest.csv, visual_case_register.csv | แบบฟอร์มเดิม ไม่มี sample/case จริง |
+| templates/metadata_audit.example.json | แบบฟอร์มเดิมปรับสถานะเป็น template-only ไม่มีผล audit |
+| docs/BENCHMARK_REQUIREMENTS_DRAFT_TH.md | ส่วนกระบวนการ/REQ/DEC จาก foundation เดิม ตัด company baseline ออก |
+| docs/EVIDENCE_AND_HYPOTHESES_TH.md | เนื้อหา sources/candidates/hypotheses จาก foundation เดิม ไม่ยืนยันผลใหม่ |
+| docs/CASE_REGISTER_DRAFT_TH.md | case/test forms จาก foundation เดิม ตัด historical company arithmetic ออก |
+| docs/AUDIT_PROTOCOL_DRAFT_TH.md, DATA_DICTIONARY_TH.md | ปรับเอกสารเดิมเป็น protocol/schema ที่ไม่มีสถิติจริง |
+| docs/FOUNDATION_INDEX_TH.md, SCOPE_AND_OWNERSHIP_TH.md, DECISION_LOG_TH.md | แก้ตำแหน่งอ้างอิงและขอบเขต repository ใหม่; คงประวัติเต็มไว้ข้างนอก |
+| config/audit.example.json | placeholder paths เท่านั้น; config/local.json จริง ignored |
+| README.md, AGENTS.md, .gitignore | คำสั่งเริ่ม กฎเฉพาะงาน และขอบเขต Git |
+| CCTV_Dataset_Development.code-workspace | VS Code เปิด checkout นี้หนึ่ง folder; ไม่มี personal/system settings |
+| requirements.txt | standard library; ไม่มี package install ใน setup |
+| reports/README.md | จุดอ้างอิง external setup report และ private historical reports |
+
+แบบฟอร์มสำหรับ source version, class/attribute rationale, annotation guide, QA และ release manifest ใช้ใน templates/ ตามสถานะ DRAFT ไม่เป็น annotation จริงหรือ class policy ที่อนุมัติแล้ว
+
+## Mapping และ checksum
+
+`work_root/provenance/migration_copy_manifest.json` บันทึกทุก old path→copy path, size, SHA256 และผล copy verification ก่อนปรับ code/doc สำเนาเดิมทั้งหมดคง byte-identical ภายใต้ legacy/ ส่วน versionable migration index บันทึกการปรับโดยไม่แนบ raw records หรือ filenames รายภาพ
+
+เอกสารเฉพาะบริษัทและ preview evidence ไม่ถูกคัดลอกเข้า Git ต้นทางภาพ/metadata ยังคงที่เดิม ทุก source-package stat และ hash ของ metadata/document ขนาดเล็กบันทึกก่อน/หลัง setup โดยไม่มี image decode ใหม่
+
+## สำรองและกู้คืน
+
+เก็บ Git bundle ภายนอกที่ work_root/backups และตรวจด้วย git bundle verify ก่อนใช้ กู้ checkout ใหม่ด้วย git clone <bundle-path> <new-empty-directory> แล้วคัดลอก config/local.json จาก private backup ปรับ absolute paths ให้ตรงเครื่อง ใช้ bundle กู้ source/docs ได้แต่ไม่มี dataset หรือ annotations
+
+สำรอง work_root และ source dataset แยกด้วยวิธีของผู้ดูแลข้อมูล การตั้ง workspace นี้สำรอง legacy evidence/local config แล้ว แต่ไม่ได้สำรองภาพต้นทางทั้งชุด ห้ามใช้ git reset หรือการลบต้นฉบับเพื่อกู้โดยไม่มีอนุมัติ

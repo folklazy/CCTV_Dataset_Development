@@ -1,0 +1,17 @@
+{
+  "artifact_type": "template_only_not_a_release",
+  "release_id": null,
+  "source_version": null,
+  "ontology_version": null,
+  "guideline_version": null,
+  "qa_policy_version": null,
+  "decision_log_ref": null,
+  "membership_manifest_ref": null,
+  "membership_sha256": null,
+  "annotation_manifest_ref": null,
+  "qa_evidence_ref": null,
+  "license_access_scope_ref": null,
+  "approved_by": null,
+  "created_at_utc": null,
+  "supersedes": null
+}

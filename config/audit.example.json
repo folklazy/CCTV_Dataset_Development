@@ -1,0 +1,13 @@
+{
+  "schema_version": "independent-workspace-v1",
+  "phase": "workspace_setup_only",
+  "dataset_root": "/absolute/path/to/source-package",
+  "work_root": "/absolute/path/to/external-work",
+  "metadata_csv": "/absolute/path/to/source-package/metadata.csv",
+  "metadata_json": "/absolute/path/to/source-package/metadata.json",
+  "metadata_xlsx": "/absolute/path/to/source-package/metadata.xlsx",
+  "source_read_only": true,
+  "inspect_images": false,
+  "run_models": false,
+  "status_mapping": null
+}

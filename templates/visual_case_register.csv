@@ -1,0 +1,1 @@
+case_record_id,audit_id,source_record_id,person_instance_id,case_tag,evidence_status,observation,uncertainty,measurement_name,measurement_value,measurement_unit,denominator,geometry_reference,modality_evidence,guideline_question,candidate_ids,hypothesis_ids,decision_id,review_status,reviewer,reviewed_at_utc,guideline_version

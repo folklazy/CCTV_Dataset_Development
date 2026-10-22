@@ -1,0 +1,19 @@
+{
+  "folders": [
+    {
+      "name": "CCTV Dataset Development",
+      "path": "."
+    }
+  ],
+  "settings": {
+    "files.exclude": {
+      "**/__pycache__": true
+    },
+    "python.testing.unittestEnabled": true,
+    "python.testing.unittestArgs": [
+      "-s",
+      "tests",
+      "-v"
+    ]
+  }
+}

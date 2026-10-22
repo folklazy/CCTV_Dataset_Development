@@ -1,0 +1,25 @@
+{
+  "artifact_type": "template_only_not_audit_result",
+  "status": "TEMPLATE_NOT_EXECUTED",
+  "snapshot_started_at_utc": null,
+  "snapshot_completed_at_utc": null,
+  "snapshot_stable": null,
+  "population_definition": null,
+  "source_timezone": null,
+  "join_keys": null,
+  "counts": {
+    "metadata_records": null,
+    "existing_image_files": null,
+    "readable_images": null,
+    "unique_image_byte_hashes": null,
+    "exact_duplicate_groups": null,
+    "orphan_records": null,
+    "orphan_files": null,
+    "ambiguous_records": null,
+    "curation_status_counts": null
+  },
+  "stratified_counts_with_denominators": null,
+  "baseline_comparison": null,
+  "visual_audit_status": "NOT_A_RESULT",
+  "issues": null
+}

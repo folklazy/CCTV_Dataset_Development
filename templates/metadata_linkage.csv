@@ -1,0 +1,1 @@
+source_record_id,source_table,source_row_locator,join_key_name,join_key_value,audit_id,match_status,raw_status,normalized_status,site,camera,capture_time_raw,source_timezone,issue_code
