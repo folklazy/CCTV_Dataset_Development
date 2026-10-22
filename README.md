@@ -32,4 +32,4 @@ Ontology, class IDs, display colors, attribute sets, QA thresholds, splits แ�
 
 รักษาสถานะคัดภาพและ raw notes ตามต้นฉบับ `pending` ใน export ปัจจุบันไม่ยืนยันว่าผล selected/rejected/flagged เดิมถูกยกเลิก `category` ที่ผูกกับ record ยังไม่เป็นบทบาทรายคนหรือ parsing GT โดยอัตโนมัติ
 
-สำรอง repository ด้วย Git bundle และสำรอง local config/external work แยกกันตาม [ทะเบียนไฟล์และการกู้คืน](docs/FILE_REGISTER_TH.md) ยังไม่มี GitHub remote หรือ push
+สำรอง repository ด้วย Git bundle และสำรอง local config/external work แยกกันตาม [ทะเบียนไฟล์และการกู้คืน](docs/FILE_REGISTER_TH.md) ตั้ง `origin` ไปยัง [folklazy/CCTV_Dataset_Development](https://github.com/folklazy/CCTV_Dataset_Development) แบบ public ตามที่ผู้ใช้ระบุแล้ว การ push ต้องยืนยันตัวตน GitHub; ดูผลการเชื่อมล่าสุดในรายงาน local ที่ work_root
