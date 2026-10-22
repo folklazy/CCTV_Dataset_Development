@@ -2,18 +2,22 @@
 
 คัดต่อจาก foundation เดิมเฉพาะกระบวนการและข้อเสนอ ตัด baseline บริษัทออก ต้นฉบับ/วันที่/locator คงอยู่ใน private archive ยังไม่ตรึงทุก REQ/DEC หรือ class list
 
-## 1. สิ่งที่ยืนยันกับสิ่งที่ยังเสนอ — 22 ตุลาคม 2026
+## 1. Research Objectives & Constraints — USER CONFIRMED หลัง foundation review
 
-ยืนยันได้จากคำสั่งผู้ใช้ว่าเป็นงาน **สร้าง CCTV Human Parsing Evaluation Dataset** แยกจากงานทดลองโมเดล และรอบนี้ให้ตรวจฐานงาน/เตรียมแผนเท่านั้น [รายงานสถานะ](../reports/README.md) แยกสิ่งตรวจได้จากไฟล์กับรายงานเก่า การคัดต่อเอกสารไม่ได้แปลว่าอนุมัติ REQ-01–20/DEC แล้ว
+ปรับตามคำสั่งผู้ใช้ล่าสุดที่ได้รับ **หลัง commit eafe703** เมื่อ 22 ตุลาคม 2026; ไม่ใช่คำตอบที่มีอยู่ใน foundation review เดิม รอบนี้เตรียมแผน/รายการเสนอเท่านั้น ไม่เปิดภาพหรือเริ่ม annotation ประวัติ OPEN รอบก่อนยังอยู่ใน Git, รายงานเดิมและ decision log
 
-| ประเด็น | หลักฐานในร่างเดิม | สถานะที่ใช้งานรอบนี้ |
+| เป้าหมาย/ข้อจำกัด | สถานะล่าสุด | ส่วนวิธีการที่ยังไม่ตรึง |
 | --- | --- | --- |
-| ภาพเต็ม vs person crop | REQ-06/07 เสนอ pipeline หลักเมื่อเป้าหมายภาพเต็ม และ crop เป็น diagnostic | **ยังไม่ตัดสิน** ต้องทราบคำถามประเมินหลักก่อนกำหนด denominator/crop policy |
-| person instance และ body/clothing regions | REQ-02/03 เป็นแกนที่ร่างเดิมเสนอสำหรับ Human Parsing | เป็นโจทย์ที่ต้องพิจารณา แต่หน่วย/ownership/visible vs amodal/คลาสละเอียด **ยังไม่อนุมัติ** |
-| สี/ความยาว/ลวดลาย | REQ-04, H-03–06 | **ตัวเลือก** ต้องยืนยันความจำเป็นก่อนลงทุนสำรวจเฉพาะหรือ annotation |
-| parser แยก detector vs ทั้งระบบ | REQ-06/07/19 | **ยังไม่ตัดสิน** ผล parser เมื่อได้ GT crop ใช้แทนผลทั้งระบบไม่ได้ |
-| ใช้ออกแบบวิธี/พัฒนา/ประเมินสุดท้าย | REQ-16 เสนอแยก development/discovery จาก final | งานรอบถัดไปเป็น **exploration เพื่อออกแบบ** ยังไม่เลือก final; บทบาท training/validation และความจำเป็นของ split ต้องมีเหตุผลก่อน |
-| สี/เกณฑ์คุณภาพ/จำนวน/สิทธิ์ | REQ-12–14/18–19 และ release template | **ยังไม่ตรึง** ไม่มีหลักฐานรองรับการประกาศมาตรฐานบังคับหรือสิทธิ์ dataset |
+| End-to-End จากภาพเต็มเป็นผลหลัก | **USER CONFIRMED** | architecture, eligible-person policy, metrics/matching/denominator ยัง PROPOSED |
+| Oracle เป็นผลวิเคราะห์แยก | **USER CONFIRMED** | รูปแบบข้อมูลอ้างอิงที่ป้อน เช่น crop/box/mask และการแปลงพิกัดยัง PROPOSED; ไม่รวม Oracle เป็นคะแนน End-to-End |
+| ขั้นต่ำ person instance/mask + upper/lower/footwear masks พร้อมเจ้าของถูกต้อง | **USER CONFIRMED** | เป้าหมายความสามารถ ไม่ใช่ numeric class IDs, taxonomy ละเอียด/visible-amodal/อุปกรณ์ หรือวิธีสร้าง mask ที่อนุมัติแล้ว |
+| ระบบสุดท้ายรองรับสีบน–ล่างเมื่อภาพเอื้ออำนวย | **USER CONFIRMED** | ต้องสำรวจ readability/uncertainty; palette, multi-color/unknown policy และเกณฑ์ภาพเอื้ออำนวยยัง PROPOSED |
+| structured output และคำบรรยาย | **USER CONFIRMED** | schema/หน่วย/ข้อความและวิธีประเมินยัง PROPOSED; ไม่แต่งสีหรือรายละเอียดที่มองไม่ได้ |
+| attributes เพิ่ม เช่นความยาว/ลวดลาย | **ไม่ mandatory** | สำรวจเป็นข้อสังเกตเสริมได้ แต่ไม่ขยายงานบังคับโดยปริยาย |
+| จำนวนภาพสุดท้าย กำหนดส่ง กำลังคน เวลาที่มี | **OPEN** | ข้อเสนอเริ่ม 24+8 ไม่ตอบคำถามทรัพยากรหรือผูกมัด final quota |
+| taxonomy, annotation method, metrics, QA thresholds | **PROPOSED** | ต้องมีหลักฐาน exploration/pilot และการตัดสินภายหลัง ไม่ถือเป้าหมายผลลัพธ์เป็นการอนุมัติวิธีทั้งหมด |
+
+บทบาทข้อมูลในรอบนี้คือ discovery/development เพื่อออกแบบ protocol ไม่มี Final Test membership หรือข้อบังคับ train/validation/test ใหม่ ดู [แผนและ proposed manifest](AUDIT_PROTOCOL_DRAFT_TH.md)
 
 ## 3. ประชากรเป้าหมายและขอบเขตข้อสรุป
 
@@ -35,12 +39,13 @@ REQ-01 (PROPOSED): แยกสามประชากรให้ชัด
 
 | ID | งาน | หน่วยและคำตอบอ้างอิงที่ต้องมี | สถานะ |
 | --- | --- | --- | --- |
-| REQ-02 | แยกคนและผูกส่วนต่าง ๆ เข้ากับเจ้าของ | person instance ภายในภาพ และพื้นที่ที่มองเห็น | เสนอเป็นโครงสร้างหลัก; ขอบเขตอุปกรณ์ยัง OPEN |
-| REQ-03 | จำแนกส่วนร่างกาย/เสื้อผ้า | พิกเซลหรือ region ที่มี class และ person owner | เป็นเป้าหมายหลัก; รายชื่อคลาสยัง OPEN |
-| REQ-04 | บรรยายสี ความยาว ลวดลาย | attribute ของ region/person ที่นิยามไว้ | ส่วนขยายที่ต้องมีโจทย์และ pilot รองรับ |
-| REQ-05 | อธิบายความยากของภาพ | ขนาดคน การบดบัง การหลุดขอบ แสง/ชนิดภาพ | เสนอเป็นข้อมูลวิเคราะห์ ไม่จำเป็นต้องเป็น output ของโมเดล |
-| REQ-06 | ทดสอบผลทั้ง pipeline | ภาพเต็มและ GT ของคนที่เข้าเกณฑ์ทั้งหมด | เสนอเป็นผลหลักเมื่อเป้าหมายคือใช้งานภาพเต็ม |
-| REQ-07 | วิเคราะห์ parser เมื่อได้ crop ถูกต้อง | GT crop และการคืนพิกัดสู่ภาพ | ผลวินิจฉัยเพิ่มเติม ต้องแยกจาก end-to-end |
+| REQ-02 | person instance/mask และ ownership ของแต่ละ region | คนภายในภาพและการผูก region กลับเจ้าของ | USER CONFIRMED เป้าหมายขั้นต่ำ; geometry/อุปกรณ์/eligible scope ยัง PROPOSED |
+| REQ-03 | upper/lower/footwear masks | region masks ที่ผูก person owner ถูกต้อง | USER CONFIRMED เป้าหมายขั้นต่ำ; taxonomy/ชิ้นเดียว/ชั้นเสื้อผ้ายัง PROPOSED |
+| REQ-04 | สีบน–ล่างเมื่อภาพเอื้ออำนวย | สีและความไม่แน่ใจของ region ที่เกี่ยวข้อง | USER CONFIRMED สำหรับระบบสุดท้าย; palette/validity ยัง PROPOSED; ความยาว/ลายไม่ mandatory |
+| REQ-05 | อธิบายความยากของภาพ | ขนาดคน การบดบัง การหลุดขอบ แสง/ชนิดภาพ | PROPOSED ข้อมูลวิเคราะห์ ไม่ใช่ output โมเดลบังคับ |
+| REQ-06 | End-to-End จากภาพเต็ม | คนและ regions ตามขอบเขตที่ยังต้องกำหนด | USER CONFIRMED เป็นผลหลัก; metrics/eligible denominator ยัง PROPOSED |
+| REQ-07 | Oracle analysis | ป้อนข้อมูลอ้างอิงเพื่อแยกผลของ parser ตาม protocol ที่จะออกแบบ | USER CONFIRMED แยกจากผลหลัก; crop/box/mask/input policy ยัง PROPOSED |
+| REQ-21 | structured output และคำบรรยาย | สื่อ person/regions/สีและข้อจำกัดที่มีหลักฐาน | USER CONFIRMED ความสามารถระบบสุดท้าย; schema/description policy/ตัวชี้วัดยัง PROPOSED |
 
 ไม่ผูก annotation กับการตรวจพบของโมเดลใด คนที่โมเดลพลาดยังต้องอยู่ใน denominator ของงานที่เข้าเกณฑ์ การทดสอบ attribute ใช้เฉพาะโมเดลที่รองรับ output นั้น และไม่รวมเป็นคะแนน Human Parsing เดียวโดยอัตโนมัติ
 
@@ -101,7 +106,7 @@ REQ-17 (PROPOSED): ตรวจรูปแบบไฟล์และควา�
 
 REQ-18 (PROPOSED): เก็บ annotation อิสระก่อน adjudication สำหรับชุดตรวจความสอดคล้อง รายงาน agreement ตามคลาสและสภาพภาพ พร้อม confusion, unknown rate, coverage และภาระเวลา เลือกตัววัดให้ตรงชนิดข้อมูล ไม่ใช้คะแนนเดียวกลบปัญหาทั้งหมด หากมีผู้ทำคนเดียวให้เรียกการตรวจซ้ำว่า intra-annotator consistency
 
-REQ-19 (OPEN): กำหนด metrics, matching, ignore policy, background inclusion, macro/micro averaging และ empty-image handling ก่อน final scoring
+REQ-19 (PROPOSED): กำหนด metrics, matching, ignore policy, background inclusion, macro/micro averaging และ empty-image handling ก่อน final scoring
 
 - semantic parsing: พิจารณา IoU รายคลาสและ mIoU พร้อมระบุวิธีรวม
 - instance parsing: พิจารณา matching ระดับคนและคุณภาพ parts
@@ -111,29 +116,26 @@ REQ-19 (OPEN): กำหนด metrics, matching, ignore policy, background incl
 
 REQ-20 (PROPOSED): annotation หลักสะท้อนงานและสิ่งที่เห็น ส่วน evaluation mapping เป็นอีกชั้นหนึ่ง ไม่แปลง coarse output ให้กลายเป็น finer label โดยไม่มีข้อมูล และไม่ตั้ง ignore domain ต่างกันรายโมเดลเพื่อให้คะแนนเทียบกันดูดีขึ้น
 
-## 9. ประเด็นที่ต้องตัดสินและสิ่งที่ต้องรู้ก่อน
+## 9. Decision status และสิ่งที่ยังต้องรู้
 
-ทุกแถว **OPEN** ข้อเสนอไม่ใช่คำอนุมัติ ผู้ใช้ตัดสินเป้าหมาย/ทรัพยากร ส่วนข้อเท็จจริงจาก metadata/ภาพให้สำรวจก่อน ไม่ถามผู้ใช้เดาข้อเท็จจริงแทนข้อมูล
+สถานะเปลี่ยนตามคำตอบใหม่หลัง eafe703 เท่านั้น ไม่ถามซ้ำว่า End-to-End/Oracle หรือสีอยู่ในขอบเขตหรือไม่
 
-| ID | เรื่อง / ข้อเสนอที่ยังไม่เลือก | ต้องรู้หรือมีหลักฐานใด | ต้องตัดสินเมื่อใด / ผลต่อขั้นถัดไป |
+| ID | สถานะล่าสุด | สิ่งยืนยันแล้ว / สิ่งที่ยังต้องรู้ | ผลต่อขั้นถัดไป |
 | --- | --- | --- | --- |
-| DEC-01 | ประชากรเป้าหมายและ snapshot | วิธีสร้าง event/export, curation รุ่นเดิม+join key, ขอบเขตสิทธิ์; อาจใช้ accessible export โดยจำกัดข้อสรุป | ก่อนกำหนด sampling frame/final population; ยังสำรวจข้อจำกัด metadata ได้เมื่อระบุขอบเขต |
-| DEC-02 | parsing อย่างเดียวหรือมี attributes | ผู้ใช้ระบุ output ที่จำเป็น; ภาพยืนยัน observability ภายหลัง | ก่อนวางภาระสำรวจสี/ลายละเอียดและ pilot |
-| DEC-03 | owner/ส่วน/อุปกรณ์/visible support | เคส overlap/truncation และความต้องการ output | หลัง exploration ก่อนคู่มือ pilot; ยังไม่ถอด taxonomy จาก benchmark |
-| DEC-04 | เป้าหมายสี/ชุดสี/unknown | ความต้องการ observed vs physical color, เคสแสงและการตรวจซ้ำ | หลัง exploration ก่อน color pilot; ไม่เลือกรายชื่อสีตอนนี้ |
-| DEC-05 | ไม่มีคน/ยากมาก/ผลคัดเดิม | curation notes ที่เชื่อมได้ + ภาพและ task denominator | ก่อน inclusion/exclusion; ไม่ตัด rejected/pending เอง |
-| DEC-06 | ผู้สำรวจ/ผู้ตรวจ/งบเวลาและขนาดงาน | ผู้ใช้บอกทรัพยากร; exploration เก็บเวลาจริง; แผนเริ่มประมาณ 32 ภาพเป็นข้อเสนอ | ก่อนเปิดสำรวจรอบหน้า; จำนวนผู้ annotate/ขนาด pilot ตัดสินอีกครั้งภายหลัง |
-| DEC-07 | coarse/fine/side และ validity | ambiguity/observability จาก exploration แล้วทดสอบ H-01–06 ด้วย pilot ที่เหมาะสม | ก่อนตรึง class/guideline; exploration ไม่ให้ผล agreement แทน pilot |
-| DEC-08 | ผลหลัก full-frame pipeline / parser-only crop / สำรวจทั้งคู่ก่อน | จุดประสงค์ผู้ใช้, output ที่จะใช้, ที่มาของ crop และขอบเขตคนที่เข้าเกณฑ์ | กำหนดลำดับความสำคัญก่อน sampling design; ยังไม่จำเป็นต้องตรึง metrics ตอนนี้ |
-| DEC-09 | discovery/development กับ final และ leakage | event/group IDs, duplicate candidates ที่ยืนยันแล้ว, ประวัติ exposure/การใช้โมเดล | ก่อนเลือก final; ไม่บังคับ train/validation/test หรือสัดส่วนโดยไม่มีโจทย์ |
+| DEC-01 | OPEN | source population/snapshot/curation linkage/สิทธิ์ยังขาดหลักฐาน | เตรียม sampling proposal ภายใน export ที่เข้าถึงได้พร้อมข้อจำกัด ไม่ประกาศประชากรทั้งระบบ |
+| DEC-02 | USER CONFIRMED เป้าหมาย | parsing masks ขั้นต่ำ + สีบน–ล่างแบบมีเงื่อนไข + structured output/คำบรรยาย; attributes อื่นไม่ mandatory | ออกแบบ exploration ให้ตอบ requirement นี้ ไม่ถามขอบเขตซ้ำ |
+| DEC-03 | PROPOSED วิธี/นิยาม | ต้องผูก owner ถูกต้อง; ขอบเขต person mask/อุปกรณ์/ชิ้นเดียว/เสื้อคลุมยังต้องดูภาพ | บันทึก ambiguity ก่อน taxonomy/guideline pilot |
+| DEC-04 | PROPOSED นโยบายสี | ความสามารถสีบน–ล่างยืนยันแล้ว; observed/physical target, palette, unknown/multi-color ยังไม่ตรึง | สำรวจ readability/reason แยกจากการเดาค่าสี |
+| DEC-05 | OPEN | ไม่มีคน/ยากมาก/ผลคัดเดิมและ notes ต้องมี linkage/ภาพรองรับ | ไม่ตัดภาพจาก pending/rejected เอง |
+| DEC-06 | OPEN | จำนวนภาพสุดท้าย กำหนดส่ง ผู้สำรวจ/ผู้ทบทวน กำลังคนและเวลา | 32 เป็นงบทดลองที่เสนอ ไม่ใช่โควตาหรือประมาณแรงงานทำ masks |
+| DEC-07 | PROPOSED | taxonomy/coarse-fine/side, annotation method, metrics/QA | exploration ช่วยตั้งสมมติฐาน ไม่ให้ agreement/เกณฑ์คุณภาพโดยอัตโนมัติ |
+| DEC-08 | USER CONFIRMED บทบาทผล | End-to-End หลัก; Oracle วิเคราะห์แยก | exact Oracle input/crop transform/metrics ยัง PROPOSED |
+| DEC-09 | PROPOSED | แยก discovery/protocol exposure จาก final และเก็บ duplicate/group uncertainty | รอบนี้ไม่กำหนด Final Test หรือ splits |
 
-### คำถามถึงผู้ใช้ที่ไฟล์ยังตอบไม่ได้
+### ช่องว่างที่ยังหาไม่ได้จากไฟล์
 
-1. ให้ความสำคัญกับ parser จาก person crop, ผลทั้งระบบจากภาพเต็ม หรือสำรวจทั้งสองแนวทางก่อนตัดสิน? สี/ความยาว/ลวดลายเป็นผลที่จำเป็นหรือเป็นตัวเลือก?
-2. มี path ของ original curation export/notes และ source dictionary ที่นิยาม category, incident_timestamp, event ID หรือวิธีสร้างแพ็กเกจหรือไม่? ถ้ายังไม่มี จะบันทึก missing และจำกัดการตีความต่อไป ไม่ใช้ pending แทนผลเก่า
-3. รอบสำรวจภาพถัดไปใครเป็นผู้ดู/ทบทวน มีเวลาโดยประมาณเท่าใด และขอบเขตการเข้าถึงภาพสำหรับผู้ร่วมตรวจเป็นอย่างไร? ต้องรู้ก่อนเปิดงานรอบหน้า ยังไม่ต้องตกลงจำนวน annotator หรือจำนวนภาพสุดท้าย
-
-คำถามเหล่านี้ไม่หยุดการจัดแผน/ตรวจเอกสารรอบนี้ คำตอบที่ยังไม่มีคง OPEN ไม่ถือความเงียบเป็นการอนุมัติ
+- หากมี original curation export/notes/source dictionary ให้ระบุ path ภายหลัง; ขณะยังไม่พบให้คง missing ไม่หยุดเตรียม manifest และไม่เอา pending ทับผลเดิม
+- ผู้รับผิดชอบสำรวจและทบทวน กำหนดส่ง กำลังคน เวลา และจำนวนภาพสุดท้ายยัง OPEN ต้องทราบก่อนจัดคิวทำภาพจริง ไม่ต้องตัดสิน taxonomy/QA ขั้นสุดท้ายตอนนี้
 
 ## 10. เกณฑ์จบช่วง foundation
 

@@ -34,43 +34,35 @@
 รายการนี้ไม่ใช่การยืนยันว่าบริษัทมีทุกกรณี และไม่ใช้ความถี่จากชุดค้นเคสเป็น prevalence
 
 
-## 6. วิธีเลือกภาพสำหรับสำรวจ
+## 6. วิธีเลือกรายการเสนอสำหรับสำรวจ — ปรับหลัง eafe703
 
-แยกสองกิจกรรม:
+ตาม [protocol 24+8](AUDIT_PROTOCOL_DRAFT_TH.md): reuse ประวัติเดิม 12 records แล้วเติม coverage ใหม่ 12 จาก raw site-camera pairs ที่ยังขาด และ discovery ใหม่ 8 จากบริบทของ anchors ตามกติกา/seed ที่บันทึกใน private manifest ไม่ใช้ category เป็น event/person label และไม่ใช้เวลาเป็นหลักฐานสภาพภาพ
 
-1. Coverage exploration รอบถัดไป: กระจายกลุ่มที่ทราบเพื่อค้นช่องว่างตาม [แผนสำรวจร่าง](AUDIT_PROTOCOL_DRAFT_TH.md) ยังไม่ใช้ประมาณ prevalence; หากภายหลังต้องการประมาณประชากร ต้องออกแบบ probability sampling/weights ต่างหาก
-2. Edge-case discovery: เจาะจง flagged/notes และกรณี X เพื่อค้นปัญหาคู่มือ ไม่ใช้ประมาณสัดส่วนภาพทั้งชุด
+ตอนนี้มี proposed membership/seed แล้ว แต่ยังไม่เปิดภาพหรือสุ่ม final test; metadata-only deterministic tie-break ไม่ใช่ probability sample ไม่มี prevalence estimate สถานะของเคสเดิมด้านบนยัง REPORTED และ X ยัง HYPOTHETICAL จนมีการเปิดดู/บันทึกตามขอบเขตที่ได้รับอนุญาต
 
-ขั้นตอนที่เสนอ:
+ไม่เปลี่ยน raw curation/status/notes ตาม proposal หากรอบหน้าพบเคสไม่ตรงสมมติฐานให้บันทึก found/not found/uncertain พร้อมเหตุผลการเพิ่ม/แทนรายการใน revision ใหม่ คงประวัติรายการเดิม ไม่แปลง pending เป็น unreviewed หรือโยก discovery ไป final โดยเงียบ ๆ
 
-- ตรวจ manifest และ unique image IDs ก่อน; เก็บรายการที่โหลดไม่ได้/อ่านไม่ได้แยก
-- แบ่งตาม site, camera, time block และ curation status ที่มีจริง ไม่สร้าง strata จากค่าที่เดา
-- เลือกภาพภายใน strata ด้วย seed ที่บันทึกไว้ และเก็บกลุ่มภาพต่อเนื่องเพื่อไม่แบ่งข้าม pilot/final
-- บันทึกภาพจาก selected, rejected, flagged และ not-yet-reviewed หากมี; เหตุผลเดิมไม่หาย
-- สำรวจสภาพแสง/scale/occlusion จากภาพเป็นข้อมูลใหม่ เพราะบางค่าไม่มี metadata
-- เพิ่มตัวอย่างใน strata หรือคู่คลาสที่ยังไม่ครอบคลุม แล้วรายงานขั้นตอนเพิ่ม
-- กำหนดขนาด audit หลังรู้จำนวน strata และทรัพยากร; ไม่อ้างจำนวนเริ่มต้นใดเป็นมาตรฐานโลก
+## 7. แบบบันทึก exploration ตาม requirements ล่าสุด — PROPOSED
 
-ยังไม่มี seed หรือภาพที่ถูกสุ่มจริงในรุ่นนี้
+ใช้กับ proposed manifest ภายในที่จัดเตรียมหลัง eafe703; เป็นรายการคำถาม ไม่ใช่ ground truth/taxonomy/annotation schema สุดท้าย หนึ่งแถวเริ่มจากภาพเต็ม หากต้องแยกคนหรือคำถาม region ภายหลัง ให้เพิ่มแถวโดยคง exploration_id และใช้ candidate locator ชั่วคราว ไม่ถือว่าเป็น person GT ID หรืออัตลักษณ์ข้ามภาพ
 
-
-## 7. แบบฟอร์มตรวจภาพหนึ่งรายการ
-
-| กลุ่ม field | ข้อมูล |
+| กลุ่ม / fields ในแบบบันทึกภายใน | สิ่งที่ต้องบันทึกเมื่อเปิดรอบที่ได้รับอนุญาต |
 | --- | --- |
-| Provenance | audit_id, image_id, source filename/hash, source event ID, camera/site/time, timezone ถ้ารู้ |
-| File | width/height, decode status, original/derived, overlay present, transformation history |
-| Curation | raw status/notes ตามต้นทาง (รวม pending หากมี); mapping แยกเมื่อมีนิยาม ห้ามแปลง pending เป็น unreviewed เอง; reason for audit inclusion |
-| Person | instance ID ภายในภาพ, eligible status/reason, bbox ตามนิยามที่เลือก, visible region |
-| Measurements | bbox height px, bbox area ratio, mask area ratio เฉพาะเมื่อมี mask; ระบุ null เมื่อยังไม่วัด |
-| Conditions | visible lighting, modality evidence, occlusion, truncation, blur และ confidence/reason |
-| Task validity | part/type/color/length/pattern: applicable? observable? annotated? พร้อมเหตุผล |
-| Cases | K/X tags, source of claim (reported/observed/measured), question for adjudication |
-| Review | annotator, reviewer, date, guideline version, independent result, consensus decision |
-| Trace | candidate IDs / hypothesis IDs / decision IDs ที่เกี่ยวข้อง |
+| `exploration_id`, `proposed_order`, `observation_unit`, `candidate_person_locator_not_GT_ID` | ผูก proposal และหน่วยคำถาม; ยังไม่สร้าง mask/person annotation |
+| `historical_sample_alias`, `historical_observation_reported_only`, `current_visual_review_state` | แยกผลรายงานเก่าจากการเปิดดูใหม่; ทุกภาพยัง NOT_STARTED สำหรับ checklist ล่าสุด |
+| `person_separation_observability`, `region_owner_observability`, `person_mask_boundary_observability` | แยกบุคคลได้หรือไม่ region เป็นของใครและไม่แน่ใจที่ใด; ปัญหาขอบ person/อุปกรณ์ ไม่ผูกกับ detector prediction |
+| `upper_visibility_notes`, `lower_visibility_notes`, `footwear_visibility_notes` | ส่วนใดเห็น/ไม่เห็น/ถูกบัง/หลุดขอบและหลักฐาน; ไม่ใช้ not visible แทน absent หรือเดา footwear ที่อยู่นอกภาพ |
+| `one_piece_or_upper_lower_ambiguity`, `outer_layer_overlap_notes`, `accessory_person_mask_scope_question` | ชิ้นเดียว เสื้อคลุมซ้อน รอยต่อบน–ล่าง สิ่งถือ/สวมและ ownership; บันทึกทางเลือก ไม่กำหนด numeric classes |
+| `upper_color_readability`, `lower_color_readability`, `color_uncertainty_reason` | อ่านสีบน–ล่างได้เพียงใด/อะไรทำให้ลังเล; ไม่บังคับชื่อสี/palette หรือเดาสีจริงจาก grayscale |
+| `scale_evidence`, `occlusion_evidence`, `frame_boundary_evidence` | สิ่งเห็นเกี่ยวกับขนาด/บัง/ตัดขอบ แยกการวัดจริงจากความรู้สึก; ไม่สรุปขนาดคนจาก frame dimensions |
+| `lighting_observation`, `modality_evidence_and_source` | แสงที่เห็นและที่มาหลักฐาน modality; grayscale appearance ไม่พิสูจน์ IR และ record-clock ไม่พิสูจน์กลางคืน |
+| `observed_from_image`, `inference_hypothesis`, `needs_human_review` | แยก observation จริง สมมติฐาน และประเด็นให้มนุษย์ทบทวน ถ้ายังไม่เปิดภาพให้ว่าง ไม่เติมจาก metadata |
+| `structured_output_support_question`, `description_support_question` | สิ่งที่ข้อมูลรองรับให้สื่อได้/ต้องละเว้น/แสดง uncertainty; ยังไม่สร้าง structured GT หรือคำบรรยายอ้างอิง |
+| `explorer_id`, `exploration_started_at`, `exploration_finished_at`, `visual_exploration_seconds`, `recording_seconds` | ผู้สำรวจและเวลาเปิดดู/เวลาเขียนบันทึกจริง แยกกัน; ไม่ประมาณไว้จากจำนวนภาพ |
+| `reviewer_id`, `review_state`, `independent_review_state` | ผู้ทบทวนกับผู้สำรวจคนละบทบาท ถึงยังไม่ทราบคนจริงก็เก็บ UNASSIGNED/NOT_PERFORMED; ไม่อ้าง independent review จนทำตามวิธีที่กำหนด |
+| `annotation_time_seconds_not_collected`, `case_tags_proposed`, `decision_refs` | เวลา annotation ยังว่าง/ไม่เก็บ และห้ามใช้ exploration time ประมาณแรงงาน masks; K/X tags และ DEC เชื่อมข้อสงสัย |
 
-ฟอร์มนี้เป็นร่างรายการข้อมูลสำหรับการสำรวจที่แก้ได้ ไม่ใช่ specification ที่อนุมัติแล้ว และยังไม่มีแถวข้อมูลจริง ตัวเลข confidence ไม่ใช่ calibrated probability โดยอัตโนมัติ
-
+เวลาและ observation ใหม่ยังว่างในทุกแถว แบบฟอร์มอาจใช้ free text/สถานะ unknown-not-reviewed ที่เสนอ ก่อนกำหนด controlled vocabulary ใน pilot ไม่มี confidence ที่อ้าง calibrated probability และไม่ถ่ายทอด category เป็นบทบาทคน
 
 ## 8. กติกาการดูภาพสำหรับ audit
 

@@ -34,6 +34,9 @@ cp -n config/audit.example.json config/local.json
 | `metadata_csv`, `metadata_json`, `metadata_xlsx` | ไฟล์ export ทั้งสามรูปแบบที่ต่างกันและอยู่ใต้ dataset_root โดยตรง |
 | `work_root` | โฟลเดอร์งานภายนอก Git ที่สร้างไว้แล้ว และไม่ทับซ้อน source/repository |
 | `source_read_only`, `inspect_images`, `run_models` | คงค่า `true`, `false`, `false` สำหรับเครื่องมือปัจจุบัน |
+| `phase` | local config ปัจจุบันใช้ `exploration_manifest_preparation_only`; เป็นคำอธิบายงาน ไม่ใช่ permission gate และไม่เปิดสิทธิ์ภาพ/annotation/inference |
+
+ตรวจ current scripts แล้ว phase ไม่ถูกใช้ควบคุมการเข้าถึง: validator ตรวจ safety flags และพื้นที่ ส่วน audit output มี phase ของตัวเอง เปลี่ยนเพียง phase ใน ignored local config หลังสำรอง และตรวจ --check-config ผ่าน ทดสอบว่า inspect_images/run_models=true ยังถูกปฏิเสธ ไม่แก้ source code เพื่อขยาย capability; config example ยังคง label setup สำหรับการตั้งเครื่องครั้งแรก
 
 Validator ใช้ path ที่ resolve แล้วและปฏิเสธ source/work/repository ที่ทับซ้อนกัน การเปิด source แบบอ่านอย่างเดียวเป็นพฤติกรรมของเครื่องมือ ไม่ได้เปลี่ยน permissions หรือ mount ต้นทางให้เป็น read-only ระดับระบบ Local config เป็นข้อมูลเฉพาะเครื่องที่ ignored ห้าม commit แม้จะเป็น repository public
 

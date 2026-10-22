@@ -2,9 +2,9 @@
 
 โครงการวิจัยเพื่อพัฒนาชุดภาพ CCTV พร้อมคำตอบอ้างอิงสำหรับประเมิน **Human Parsing ระดับบุคคล** โดยเชื่อมส่วนร่างกายและเสื้อผ้าที่มองเห็นกับเจ้าของในภาพ และบันทึกที่มาข้อมูล กติกา annotation การตรวจทาน และรุ่นของชุดประเมินให้ตรวจย้อนกลับได้
 
-**สถานะ ณ 22 ตุลาคม 2026: ตรวจฐานงานและหลักฐานแล้ว มีแผนสำรวจข้อมูลฉบับร่าง ยังไม่เริ่มสำรวจภาพรอบใหม่หรือ annotation pilot** ยังไม่มีชุด annotation หรือ dataset release ที่ยืนยันในพื้นที่งานที่ตรวจ และยังไม่มีผลตรวจคุณภาพ annotation รายงานนี้ไม่ประกาศผลประเมินโมเดล
+**สถานะ ณ 22 ตุลาคม 2026: เตรียม proposed exploration manifest และแบบบันทึกภายในแล้วตามข้อกำหนดล่าสุด ยังไม่เปิดภาพรอบใหม่หรือเริ่ม annotation pilot** ยังไม่มีชุด annotation หรือ dataset release ที่ยืนยันในพื้นที่งานที่ตรวจ และยังไม่มีผลตรวจคุณภาพ annotation รายงานนี้ไม่ประกาศผลประเมินโมเดล
 
-รอบปัจจุบันยืนยันเฉพาะฐานงานและข้อจำกัดตาม [รายงานสถานะห้าระดับ](reports/README.md) เริ่มอ่าน [ประเด็นตัดสินใจ/คำถาม](docs/BENCHMARK_REQUIREMENTS_DRAFT_TH.md) → [แผนสำรวจร่าง](docs/AUDIT_PROTOCOL_DRAFT_TH.md) → [การตรวจแหล่งต้นฉบับห้างาน](docs/EVIDENCE_AND_HYPOTHESES_TH.md) รายละเอียดในร่างเดิมยังแก้ไขได้ ไม่ถือว่าผู้ใช้อนุมัติทั้งหมด
+ฐานงานเดิมและการเปลี่ยนแปลงหลังได้รับข้อกำหนดใหม่แยกตามเวลาใน [รายงานสถานะ](reports/README.md) เริ่มอ่าน [ประเด็นตัดสินใจ/คำถาม](docs/BENCHMARK_REQUIREMENTS_DRAFT_TH.md) → [แผนสำรวจร่าง](docs/AUDIT_PROTOCOL_DRAFT_TH.md) → [การตรวจแหล่งต้นฉบับห้างาน](docs/EVIDENCE_AND_HYPOTHESES_TH.md) รายละเอียดในร่างเดิมยังแก้ไขได้ ไม่ถือว่าผู้ใช้อนุมัติทั้งหมด
 
 ## ที่มาและวัตถุประสงค์
 
@@ -21,7 +21,9 @@
 
 ## ขอบเขตและคำถามการออกแบบ
 
-หน่วยที่เสนอคือภาพเต็ม → person instance ภายในภาพ → semantic region ที่มีเจ้าของ ส่วนสี ความยาว และลวดลายเป็น attributes ที่ต้องพิจารณา applicability/observability แยกกัน ความละเอียดของส่วนต่าง ๆ ซ้าย/ขวาของบุคคล และขอบเขตอุปกรณ์ยังเป็นคำถามเปิด
+ข้อกำหนดผู้ใช้ล่าสุดหลัง foundation review: **End-to-End จากภาพเต็มเป็นผลหลัก และ Oracle เป็นผลวิเคราะห์แยก** เป้าหมายขั้นต่ำคือ person instance/mask และ upper/lower/footwear masks ที่ผูกเจ้าของถูกต้อง ระบบสุดท้ายต้องรองรับสีบน–ล่างเมื่อภาพเอื้อ พร้อม structured output และคำบรรยาย ส่วน attributes เพิ่มเติมไม่ mandatory
+
+taxonomy, วิธี annotation, Oracle input, metrics และเกณฑ์คุณภาพยัง PROPOSED จำนวนภาพสุดท้าย กำหนดส่ง กำลังคน และเวลา OPEN รายละเอียด [requirements/decision status](docs/BENCHMARK_REQUIREMENTS_DRAFT_TH.md) บันทึกการเปลี่ยนจาก OPEN รอบก่อนตามเวลา
 
 เริ่มอ่าน [ข้อกำหนดและหน่วยประเมินร่าง](docs/BENCHMARK_REQUIREMENTS_DRAFT_TH.md) กับ [หลักฐานและสมมติฐาน H-01–H-06](docs/EVIDENCE_AND_HYPOTHESES_TH.md) ซึ่งเชื่อมความต้องการ → source/locator → candidate → กรณีทดสอบ → วิธีตัดสิน ตัวเลือกเหล่านี้ยังไม่ใช่ class list, class IDs, palette หรือเกณฑ์คุณภาพที่ตรึงแล้ว
 
@@ -33,6 +35,7 @@
 | ข้อกำหนด เคส และแบบฟอร์ม | มีแล้วในสถานะ DRAFT | [ดัชนีเอกสาร](docs/FOUNDATION_INDEX_TH.md), [templates/](templates/); การมีไฟล์ไม่ได้ยืนยันว่ากติกาใช้ annotate ได้จริง |
 | Metadata/หลักฐาน audit เดิม | ตรวจ metadata แบบจำกัดและเทียบ hash แล้ว | [รายงานฐานงาน](reports/README.md); filename ตรง inventory เดิม แต่ไม่อ่าน ZIP payload ใหม่หรือยืนยันคุณภาพภาพ/annotation |
 | การดูภาพแบบจำกัดก่อนแยก workspace | มีรายงานเดิม เก็บภายใน | รอบนี้ตรวจไฟล์ manifest/receipt ไม่เปิดภาพซ้ำ และไม่อ้าง prevalence จาก sample |
+| Proposed exploration manifest/แบบบันทึก | เตรียมภายในแล้ว ยังไม่เปิดภาพ | [แผน 24+8](docs/AUDIT_PROTOCOL_DRAFT_TH.md); รายชื่อ/paths/exposure/coverage matrix อยู่ภายนอก Git เป็นข้อเสนอ ไม่ใช่ final membership |
 | คู่มือฉบับใช้งานและ annotation pilot | ยังไม่เริ่ม ต้องผ่าน exploration/ตัดสิน scope ก่อน | [guideline template](templates/annotation_guideline.template.md), [case register](docs/CASE_REGISTER_DRAFT_TH.md); ยังไม่มีผล pilot/independent agreement ให้รายงาน |
 | Annotation ที่ผ่าน QA และ dataset release | ยังไม่มีในพื้นที่งานที่ตรวจ | [QA template](templates/quality_review.template.md), [release manifest template](templates/release_manifest.example.json); ยังไม่มี manifest รุ่นจริงหรือผลรับรองคุณภาพ |
 

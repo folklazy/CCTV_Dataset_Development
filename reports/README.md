@@ -46,3 +46,16 @@
 รายงานตั้ง workspace อยู่ที่ work_root ตาม local config รายงานส่งกลับและทะเบียนไฟล์เดิมอยู่ใน `work_root/legacy/cctv_dataset/` ฉบับ public ปัจจุบันคือ [ทะเบียนไฟล์](../docs/FILE_REGISTER_TH.md) รายงาน foundation review ภายในบันทึก paths จริง วิธีตรวจ checksums และข้อจำกัด โดยไม่แก้รายงานประวัติย้อนหลัง
 
 ภาพ/preview, metadata/notes, รายชื่อไซต์/กล้อง/บุคคล, per-image manifests และหลักฐานบริษัทอยู่ภายนอก Git เอกสารสาธารณะเผยแพร่เฉพาะวิธีการ/ทางเลือกและสถานะที่จำเป็น การตรวจไฟล์และ synthetic tests ไม่พิสูจน์ annotation ถูกต้อง
+
+## ภาคเพิ่มหลัง eafe703 — เตรียม exploration ตาม requirements ล่าสุด
+
+ส่วนรายงาน foundation ด้านบนคงข้อความเดิมตามเวลาที่ตรวจ ไม่แก้ OPEN ในรอบก่อนให้ดูเหมือนได้รับคำตอบแล้ว ข้อกำหนดใหม่/การเปลี่ยนสถานะดู [requirements](../docs/BENCHMARK_REQUIREMENTS_DRAFT_TH.md) และ PLAN-002/003 ใน [decision log](../docs/DECISION_LOG_TH.md)
+
+- USER CONFIRMED: End-to-End หลัก, Oracle แยก; person/upper/lower/footwear masks + ownership; สีบน–ล่างเมื่อภาพเอื้อ; structured output/คำบรรยาย Attributes เพิ่มไม่ mandatory; จำนวน/กำหนดส่ง/กำลังคน/เวลา OPEN วิธี taxonomy/annotation/metrics/QA ยัง PROPOSED
+- เชื่อม records ใน manifest 12 ภาพเดิมกับ CSV ปัจจุบันได้ และตรวจ hash ของ manifest/report/metadata กับ receipt และ inventory เดิม โดยไม่เปิดภาพหรืออ่าน archive payload ใหม่ ประวัติ assistant exposure ไม่ใช่ independent human review หรือ curation result
+- เตรียม [แผน 24+8](../docs/AUDIT_PROTOCOL_DRAFT_TH.md) พร้อม proposed manifest ภายใน: coverage เดิม 12 + ใหม่ 12, discovery ใหม่ 8 รวม distinct filenames 32; unique image content ยังไม่ทราบ ใหม่หมายถึงไม่ปรากฏใน exposure log ที่ตรวจ ไม่ใช่รับรองว่าไม่เคยมีใครดู
+- discovery อ้างอิงเพียงบริบทของรายงานเคสเดิมและ raw grouping/record time; ยังไม่รู้ว่า candidate มีเคสนั้นจริง บางรายการห่างกันหลายนาที กลุ่มที่ยังไม่ครอบคลุมบันทึกใน private coverage matrix ไม่อ้างเป็นตัวแทนทางสถิติ
+- เตรียม [แบบบันทึก](../docs/CASE_REGISTER_DRAFT_TH.md) ที่แยก observed/inference/human-review และเวลา exploration/recording จาก annotation; ทุก observation ใหม่ยังไม่เริ่ม ผู้สำรวจ/ผู้ทบทวนยังไม่ระบุ ไม่มี independent review ใหม่
+- ตรวจแล้ว config phase เป็น descriptive metadata ไม่ใช่ permission gate เปลี่ยน local phase ให้ตรงงานโดยคง read-only/image/model flags และไม่เพิ่มความสามารถ annotation/inference; ค้น curation/dictionary เพิ่มเฉพาะ repo/legacy/พื้นที่ source ที่เกี่ยวข้อง ยังไม่พบต้นฉบับที่ปิดช่องว่างได้ ไม่ค้นทั้งเครื่องซ้ำ
+
+รายงาน/manifest/reproduction receipt และ paths จริงอยู่ใน fresh external work_root/runs ของรอบ exploration preparation ส่วนรายงาน foundation ภายในเดิมไม่แก้ ไม่มีการเปิดภาพ คัด final annotation หรือ model run ในรอบนี้

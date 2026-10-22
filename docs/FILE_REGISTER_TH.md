@@ -31,6 +31,8 @@
 
 รอบ foundation review ใช้ไฟล์เดิม: เพิ่มตารางขอบเขต/DEC ในข้อกำหนด ปรับ protocol เป็นแผนสำรวจร่าง เพิ่มการตรวจแหล่งต้นฉบับในทะเบียนหลักฐาน และปรับ README/index/dictionary/decision log ให้สถานะตรงกัน ไม่สร้างเอกสารเปล่าหรือ annotation specification หลายชุด สำเนาก่อนแก้และหลักฐานตรวจ metadata จริงอยู่ใน external provenance ไม่แก้ archive ประวัติ
 
+รอบเตรียม exploration หลัง eafe703: public เก็บ requirements/วิธีเลือกและแบบคำถามในเอกสารเดิม ส่วน `proposed_exploration_manifest.json/.csv`, `prior_exposure_log.csv`, `coverage_matrix_private.csv`, `exploration_observations_draft.csv`, private builder/input hashes/validation และรายงานภายในอยู่ใน fresh external run เท่านั้น generic CSV templates ใน Git ไม่ใช่แบบบันทึก actual run ทั้งหมด รายการเสนอไม่ใช่ curation หรือ final membership
+
 ## Mapping และ checksum
 
 `work_root/provenance/migration_copy_manifest.json` บันทึกทุก old path→copy path, size, SHA256 และผล copy verification ก่อนปรับ code/doc สำเนาเดิมทั้งหมดคง byte-identical ภายใต้ legacy/ ส่วน versionable migration index บันทึกการปรับโดยไม่แนบ raw records หรือ filenames รายภาพ
