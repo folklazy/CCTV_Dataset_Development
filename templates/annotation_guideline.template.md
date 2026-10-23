@@ -14,13 +14,19 @@
 
 ## กฎร่างและทางเลือก
 
+ตัวเลือก A/B/C ด้านล่างเสนอรูปแบบข้อมูลหรือ workflow ที่อยู่ภายใต้ข้อกำหนดเดียวกัน ผลกระทบของแต่ละทางเลือกเขียนกำกับไว้ ผู้ทบทวนยังแก้หรือเลื่อนคำตัดสินได้ ไม่เสนอการเติมส่วนที่ซ่อน การเดา owner หรือการรวม unknown เป็น background เป็นทางเลือก pilot
+
 ### R01 — person instance และ person mask
 
 **คำถาม:** อะไรเป็นคนหนึ่ง instance และ person mask ครอบคลุมเท่าใด?
 
 **หลักฐาน:** private review binding ของ R01 เชื่อม Exploration IDs/locator และข้อจำกัดที่ตรวจแล้ว; ไม่ใช้ metadata/category แทนการดูภาพ
 
-**ทางเลือก:** A: visible body + เสื้อผ้าที่สวมและ footwear เป็นฐาน; อุปกรณ์แยก; B: silhouette รวมของสวม/สะพายทั้งหมด; C: body-only และ garment masks แยก
+**ทางเลือก:**
+
+- A: visible body + เสื้อผ้าที่สวมและ footwear เป็นฐาน; อุปกรณ์แยก มี scope เรียบง่ายแต่ต้องเก็บ refs สำหรับ view อื่น
+- B: visible silhouette รวมอุปกรณ์ที่สวม/สะพาย แต่แยกสิ่งถือกับ material regions; ต้องตกลง bag/headwear inclusion และมีงานแยกชิ้นเพิ่ม
+- C: เก็บ primitive body/garment/accessory layers แล้ว derive person views ภายหลัง; ยืดหยุ่นกว่าแต่ใช้เวลาและต้องตรวจ mapping เพิ่ม
 
 **ข้อเสนอ Codex / เหตุผล:** เสนอ A เป็น working view เพื่อเชื่อม masks ขั้นต่ำกับเจ้าของ เก็บ accessory แยกเพื่อสร้าง evaluation view อื่นได้ ไม่ใช้ detector box หรือความครบทุก region เป็นตัวกำหนดว่ามี person; ตัวเลขเกณฑ์ขนาด/คุณภาพยังไม่กำหนด
 
@@ -36,7 +42,11 @@
 
 **หลักฐาน:** private review binding ของ R02 เชื่อม Exploration IDs/locator และข้อจำกัดที่ตรวจแล้ว; ไม่ใช้ metadata/category แทนการดูภาพ
 
-**ทางเลือก:** A: body/worn garments กับ associated accessories เป็นชั้นข้อมูลแยก; B: รวมวัตถุที่สัมผัสตัวเข้า person mask; C: ตัด accessories ทิ้งทั้งหมด
+**ทางเลือก:**
+
+- A: body/worn garments กับ associated accessories เป็นชั้นข้อมูลแยก; เชื่อม owner เมื่อมีหลักฐานและเลือก evaluation view ได้
+- B: เก็บเฉพาะขอบ person/garments ที่ยืนยันได้ พร้อม accessory-overlap refs/uncertainty ก่อนทำ accessory geometry; ลดงานเสริมแต่ยัง derive silhouette รวมไม่ได้ครบ
+- C: ทดลอง accessory geometry/type เพิ่มเฉพาะเคส pilot ที่กระทบขอบ person; วัดภาระก่อนตัดสิน ไม่เพิ่ม accessories เป็น mandatory ทั้งชุด
 
 **ข้อเสนอ Codex / เหตุผล:** เสนอ A: ผูกวัตถุกับ person เมื่อหลักฐานรองรับ และเก็บความไม่แน่ใจแยก เสื้อที่สวมกับผ้าที่ถือไม่สรุปจากสี/ความใกล้ เป้าหมาย bag/headwear inclusion ใน person view ยังรอทบทวน
 
@@ -52,7 +62,11 @@
 
 **หลักฐาน:** private review binding ของ R03 เชื่อม Exploration IDs/locator และข้อจำกัดที่ตรวจแล้ว; ไม่ใช้ metadata/category แทนการดูภาพ
 
-**ทางเลือก:** A: visible support พร้อม occlusion/truncation/unknown แยก; B: เติม amodal silhouette จากบริบท; C: ใช้เฉพาะคนเห็นครบ
+**ทางเลือก:**
+
+- A: visible support พร้อม occlusion/truncation/unknown แยก; คง partial person และ valid regions ทุกคนที่มีหลักฐาน
+- B: เก็บ confirmed visible core กับ boundary-uncertainty support แยก; ไม่เติมส่วนซ่อน แต่เพิ่มภาระอธิบาย valid domain
+- C: เก็บ partial-person record และ regions ที่ชัดทันที พร้อมคิว review เฉพาะส่วนที่ยังแยกไม่ได้; คงข้อมูลไว้แต่ความพร้อมแต่ละ task ต่างกัน
 
 **ข้อเสนอ Codex / เหตุผล:** เสนอ A: ไม่เติมด้านหลังสิ่งบังหรือ black region; คง partial person และ valid regions ที่สังเกตได้ ไม่ตัดทั้งคนเพราะ lower/footwear ไม่มีข้อมูล บริเวณที่ถูกปิดไม่กลายเป็น background อัตโนมัติ
 
@@ -66,7 +80,11 @@
 
 **หลักฐาน:** private review binding ของ R04 เชื่อม Exploration IDs/locator และข้อจำกัดที่ตรวจแล้ว; ไม่ใช้ metadata/category แทนการดูภาพ
 
-**ทางเลือก:** A: image-local person ref เมื่อยืนยันได้; unresolved owner แยก; B: ให้ owner เป็นคนที่ใกล้ที่สุด; C: merge คนที่ซ้อนเป็นคนเดียว
+**ทางเลือก:**
+
+- A: image-local person ref เมื่อยืนยันได้ และ owner candidates/unknown เมื่อยังไม่ชัด; ต้องตรวจ references กับ validity แยก
+- B: เก็บ unresolved visible region แยกจาก person geometries ที่ยืนยันแล้วจน adjudication; รักษาหลักฐานแต่เพิ่ม region ที่ยังผูกคนไม่ได้
+- C: แยกรอบ geometry กับรอบ ownership review พร้อมเก็บผลก่อนแก้; ทำงานเป็นลำดับได้แต่เพิ่ม handoff/revision cost ไม่ถือว่ามี independent review แล้ว
 
 **ข้อเสนอ Codex / เหตุผล:** เสนอ A: ใช้ visible continuity/บริบทที่อธิบายได้ เก็บ owner candidates/unknown เมื่อยังแยกไม่ได้ ไม่เดาจาก category และไม่ merge เพื่อให้ export ง่าย
 
@@ -82,7 +100,11 @@
 
 **หลักฐาน:** private review binding ของ R05 เชื่อม Exploration IDs/locator และข้อจำกัดที่ตรวจแล้ว; ไม่ใช้ metadata/category แทนการดูภาพ
 
-**ทางเลือก:** A: surface ที่เห็นพร้อม garment relation; mapping upper/lower unresolved ได้; B: แบ่งตามเส้นเอว/สัดส่วนคงที่; C: ใส่ทั้งชิ้นใน upper หรือ lower ตามชื่อชนิด
+**ทางเลือก:**
+
+- A: visible garment surface พร้อม relation และ upper/lower mapping ที่ยัง unresolved ได้; เก็บหลักฐานก่อนแต่ยังใช้ scoring บางส่วนไม่ได้
+- B: เก็บ outermost visible surfaces กับ layer relations แล้วทบทวน upper/lower projection แยก; รองรับหลายชั้นแต่ mapping/งานตรวจมากขึ้น ไม่เติม inner layer ที่ซ่อน
+- C: คง one-piece/ambiguous garment extent เป็น geometry แยกและ task validity ที่รอ mapping; รักษาคน/regions อื่นได้ แต่ต้องมีหลักฐานเพิ่มก่อนประเมิน upper/lower บริเวณนั้น
 
 **ข้อเสนอ Codex / เหตุผล:** เสนอ A: garment ที่ชัดคง visible region ของตัวมัน เสื้อชิ้นเดียวหรือรอยต่อไม่ชัดเก็บ unresolved extent ไม่ลากเส้นแบ่งสมมติและไม่ทำ geometry ซ้ำทั้งสอง region เพื่อเลี่ยงการตัดสิน ต้องหาหลักฐาน one-piece ชัดเพิ่มก่อนกติกานี้ผ่าน pilot
 
@@ -98,7 +120,11 @@
 
 **หลักฐาน:** private review binding ของ R06 เชื่อม Exploration IDs/locator และข้อจำกัดที่ตรวจแล้ว; ไม่ใช้ metadata/category แทนการดูภาพ
 
-**ทางเลือก:** A: footwear ที่เห็นแยกจาก skin; presence/observability แยก; B: รวมเท้าเป็น footwear ทุกกรณี; C: รองเท้าไม่ชัดถือว่า absent
+**ทางเลือก:**
+
+- A: footwear material ที่เห็นแยกจาก skin พร้อม presence/observability; แยกความหมายได้แต่ขอบ sandal อาจใช้เวลาตรวจ
+- B: เมื่อแยกวัสดุไม่ได้ให้บันทึก visible foot context/locator และ pending footwear geometry; คง person/regions อื่นไว้ แต่ยังให้คะแนน footwear ส่วนนั้นไม่ได้
+- C: เก็บ confirmed footwear core พร้อม boundary uncertainty และคิวทบทวน; คงหลักฐานบางส่วนแต่ต้องกำหนด validity ก่อน scoring ไม่เรียกส่วนที่ไม่เห็นว่า absent
 
 **ข้อเสนอ Codex / เหตุผล:** เสนอ A: รองเท้าแตะเก็บเฉพาะวัสดุที่เห็นและแยก skin ตามขอบที่ยืนยันได้ เมื่อขอบสายไม่ชัดให้บันทึก uncertainty; visible bare foot อาจรองรับ footwear absent เมื่อมนุษย์ตรวจแล้ว ไม่ใช้เท้าที่หลุดขอบเป็น absence
 
@@ -112,7 +138,11 @@
 
 **หลักฐาน:** private review binding ของ R07 เชื่อม Exploration IDs/locator และข้อจำกัดที่ตรวจแล้ว; ไม่ใช้ metadata/category แทนการดูภาพ
 
-**ทางเลือก:** A: presence, observability, annotation workflow และ value state แยก fields; B: ใช้ background/0 แทนทุกกรณี; C: ใช้ unknown ช่องเดียวครอบทุกความหมาย
+**ทางเลือก:**
+
+- A: presence, observability, annotation workflow และ value state แยก fields; ความหมายชัดแต่ต้องตรวจ combinations
+- B: เก็บเหตุการณ์งานและ reason records แล้ว derive state ด้วย mapping version ที่ตรวจย้อนกลับได้; ลดการแก้หลาย field แต่ระบบ derived view ซับซ้อนขึ้น
+- C: ใช้ state objects แยกตาม person/region/attribute และบันทึกความหมายเต็มตอน export; โครงสร้างละเอียดขึ้นแต่ไม่ flatten unknown/unobservable/not_annotated/absent เป็นค่าเดียว
 
 **ข้อเสนอ Codex / เหตุผล:** เสนอ A: absent คือมีหลักฐานว่า target ไม่มี; unknown คือข้อสรุปยังไม่แน่; unobservable คือภาพไม่รองรับการอ่าน; not_annotated เป็นสถานะงาน ไม่ใช่ความจริงของภาพ applicability อีกแกนหนึ่ง ไม่บังคับค่า inferred ให้เต็ม
 
@@ -128,7 +158,11 @@
 
 **หลักฐาน:** private review binding ของ R08 เชื่อม Exploration IDs/locator และข้อจำกัดที่ตรวจแล้ว; ไม่ใช้ metadata/category แทนการดูภาพ
 
-**ทางเลือก:** A: apparent color ต่อ visible region/ชั้น พร้อม value state/reason; B: เดาสีจริงของวัตถุหรือสีเด่นค่าเดียวเสมอ; C: ไม่เก็บสีทั้งหมด
+**ทางเลือก:**
+
+- A: apparent color ต่อ visible region/ชั้น พร้อม value state/reason; รองรับเป้าหมายสีโดยไม่เดาสีจริงและต้องมีหลักฐาน
+- B: เก็บคำบรรยายสีที่เห็นกับ support refs ก่อน mapping สู่ vocabulary รุ่นทดลอง; เลื่อนการตรึงชื่อสีได้แต่ยังเทียบ categorical score โดยตรงไม่ได้
+- C: เก็บชุด apparent colors แบบไม่บังคับ dominant color ต่อ visible layer พร้อมเหตุผล unknown; รองรับหลายสีแต่ต้องทดสอบวิธี matching และยังไม่ตรึงจำนวนสี
 
 **ข้อเสนอ Codex / เหตุผล:** เสนอ A ตามเป้าหมายระบบ: เมื่อเห็นให้บันทึก apparent color/หลายบริเวณที่มีหลักฐาน ถ้าเห็นแค่ความสว่างให้ระบุข้อจำกัด ไม่ตีเป็น hue ที่ไม่ทราบ เก็บหลายสี/ชั้นแบบ relation โดยไม่กำหนดจำนวนสี palette หรือ boundary; unknown พร้อมเหตุผลเมื่อมองไม่ได้
 
@@ -144,7 +178,11 @@
 
 **หลักฐาน:** private review binding ของ R09 เชื่อม Exploration IDs/locator และข้อจำกัดที่ตรวจแล้ว; ไม่ใช้ metadata/category แทนการดูภาพ
 
-**ทางเลือก:** A: คง source และ provenance; validity/ข้อจำกัดแยก; B: ลบ/เติมภาพแล้วถือว่ารายละเอียดกลับมา; C: ใช้กรอบที่มีอยู่เป็น GT
+**ทางเลือก:**
+
+- A: คง source/provenance พร้อม validity และ artifact refs แยก; ไม่ใช้ black/overlay เป็น GT หรือเติมข้อมูลที่ถูกปิด
+- B: เสนอ geometry ของบริเวณข้อมูลเสียที่ระบุได้ใน pilot พร้อม task-specific validity; รายละเอียดมากขึ้นแต่เพิ่มงานและต้องตรวจเครื่องมือก่อน
+- C: เริ่มจาก flags/reason ต่อ person/region และ source-artifact refs แล้วค่อยทบทวน pixel-domain policy; ลดงานเริ่มต้นแต่ยัง scoring บริเวณกำกวมไม่ได้ ไม่ตัดทั้งคนโดยอัตโนมัติ
 
 **ข้อเสนอ Codex / เหตุผล:** เสนอ A: ส่วนที่ถูกปิดไม่มีหลักฐานให้เติมเป็นคนหรือ background ไม่ใช้ detection box/text เป็น person/part annotation และยัง annotate ส่วนที่เห็นจริงของคนได้ตามกติกาที่มนุษย์ทบทวน
 
@@ -158,7 +196,11 @@
 
 **หลักฐาน:** private review binding ของ R10 เชื่อม Exploration IDs/locator และข้อจำกัดที่ตรวจแล้ว; ไม่ใช้ metadata/category แทนการดูภาพ
 
-**ทางเลือก:** A: บันทึก support ที่ยืนยันได้ + uncertain boundary/human adjudication; B: ใช้ขอบนอกสุดของรอยซ้ำเสมอ; C: deblur/generative fill แล้ววาดจากภาพใหม่
+**ทางเลือก:**
+
+- A: confirmed visible support พร้อม uncertain boundary และ human adjudication; ยังต้องทดสอบวิธีทำขอบ ไม่ใช้ threshold สากล
+- B: ทดลอง inner-confirmed/outer-possible boundary bracket เฉพาะ pilot; แสดงความไม่แน่ใจได้แต่เพิ่ม geometry สองชุดซึ่งยังไม่ใช่ final mask
+- C: single visible-support draft พร้อม boundary-uncertainty notes/review queue; format ง่ายกว่าแต่ต้องทดสอบ repeated review ก่อนกำหนด scoring domain ไม่มี generative enhancement
 
 **ข้อเสนอ Codex / เหตุผล:** เสนอ A เป็นกฎร่าง ยังไม่เลือก numeric blur threshold หรือวิธีตัดขอบสากล รอยซ้ำไม่ใช่หลาย person instances โดยอัตโนมัติ ไม่ใช้ enhancement เติมรายละเอียด
 
@@ -172,7 +214,11 @@
 
 **หลักฐาน:** private review binding ของ R11 เชื่อม Exploration IDs/locator และข้อจำกัดที่ตรวจแล้ว; ไม่ใช้ metadata/category แทนการดูภาพ
 
-**ทางเลือก:** A: locator เป็น reference เดิม; annotation person ID ใหม่ภายใน image เมื่อเริ่มจริง; B: ใช้ locator หรือ category เป็น GT Person ID; C: ใช้ลำดับ detector เป็น identity ถาวร
+**ทางเลือก:**
+
+- A: annotation person ID ใหม่ภายในภาพพร้อม temporary locator_ref และ provenance แยก; ตรวจ remap refs ทุก revision
+- B: opaque UUID ภายในภาพกับ display order แยก; ลดการชน ID แต่ชื่อยาวและต้องมี mapping ที่มนุษย์อ่านได้
+- C: local keys จาก reviewed candidate inventory พร้อม explicit remap เมื่อ split/merge; ทำซ้ำได้แต่ต้องเก็บ revision log ไม่ใช้ detector/category เป็น identity
 
 **ข้อเสนอ Codex / เหตุผล:** เสนอ A: person ID ไม่ยืนยันบุคคลข้ามภาพ เก็บ locator_ref/source/hash/guideline/annotation revision แยก ไม่เขียนทับ observation เดิม owner unresolved ไม่สร้าง person ปลอมมาเติมช่อง
 
@@ -186,7 +232,11 @@
 
 **หลักฐาน:** private review binding ของ R12 เชื่อม Exploration IDs/locator และข้อจำกัดที่ตรวจแล้ว; ไม่ใช้ metadata/category แทนการดูภาพ
 
-**ทางเลือก:** A: geometry master ใน original encoded-pixel frame พร้อม explicit transform chain; B: เก็บเฉพาะ cropped display coordinates; C: เดา scale จากขนาด preview
+**ทางเลือก:**
+
+- A: geometry master ใน original encoded-pixel frame พร้อม explicit transform chain; คืนพิกัดตรวจง่ายแต่ต้องรองรับในเครื่องมือ
+- B: เก็บ native crop coordinates กับ transform chain แล้ว export canonical geometry สู่ภาพต้นฉบับ; ใช้ crop workflow ได้แต่ต้องผ่าน inverse/roundtrip checks และคง native evidence
+- C: ทำบน original canvas โดย zoom เพื่อแสดงผลเท่านั้นและตรวจ export dimensions/IDs; ลด resize transforms แต่ขึ้นกับ GUI และยังต้องตรวจ format จริง
 
 **ข้อเสนอ Codex / เหตุผล:** เสนอ A: เก็บ original width/height/orientation และ crop rectangle, scale_x/y, padding หรือ affine matrix; display crop ไม่ใช่ GT bbox ตรวจ inverse จุดอ้างอิงและใช้ nearest-neighbor เฉพาะ label raster ไม่อ้างว่าการย่อแล้วขยายคืนรายละเอียดเดิมได้
 

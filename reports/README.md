@@ -88,3 +88,5 @@
 Synthetic-only checks ตรวจ PNG dimensions/IDs/owner-state preservation/point inverse และแยก display palette จากสีเสื้อ ใช้ Pillow/JSON ที่มีอยู่ ชุด tests รวม 17 รายการผ่าน ไม่มีเครื่องมือ annotation GUI ที่ยืนยันใช้งานได้ใน scope ที่สำรวจ จึงยังไม่มี GUI/COCO/RLE roundtrip หรือ human annotation reliability ผลทดสอบนี้ไม่พิสูจน์ annotation quality
 
 แผน pilot เสนอ 8 unique images แยก calibration/first pass ตามกฎที่ต้องทดสอบ จำนวนยังไม่อนุมัติ คน/ผู้ตรวจ/เวลา/กำหนดส่ง OPEN ไม่มี agreement threshold หรือ Final Dataset count/Final Test ที่กำหนดแล้ว One-piece ชัด รองเท้า/เท้าเปล่าหลายมุมและ known modality ยังเป็นช่องว่างเพื่อเสนอสำรวจเฉพาะจุดภายหลัง
+
+ตรวจเนื้อหาต่อหลัง c6f28c4: ปรับทางเลือก A/B/C ของ R01–R12 เป็นวิธีเก็บข้อมูล/แบ่งขั้นงานที่ใช้ได้ภายใต้ constraints พร้อมผลกระทบของแต่ละทางเลือก ข้อเสนอหลักยังเดิมและ PROPOSED ไม่ให้วิธีที่ขัดข้อกำหนดกลายเป็นตัวเลือกอนุมัติ ชุดทบทวนภายในปรับข้อความตามกันและเก็บฉบับก่อนแก้ ไม่มีภาพใหม่หรือ annotation เพิ่ม
