@@ -34,9 +34,11 @@ cp -n config/audit.example.json config/local.json
 | `metadata_csv`, `metadata_json`, `metadata_xlsx` | ไฟล์ export ทั้งสามรูปแบบที่ต่างกันและอยู่ใต้ dataset_root โดยตรง |
 | `work_root` | โฟลเดอร์งานภายนอก Git ที่สร้างไว้แล้ว และไม่ทับซ้อน source/repository |
 | `source_read_only`, `inspect_images`, `run_models` | คงค่า `true`, `false`, `false` สำหรับเครื่องมือปัจจุบัน |
-| `phase` | local config ปัจจุบันใช้ `exploration_manifest_preparation_only`; เป็นคำอธิบายงาน ไม่ใช่ permission gate และไม่เปิดสิทธิ์ภาพ/annotation/inference |
+| `phase` | หลังสำรวจใช้ `bounded_visual_exploration_completed`; visual loader รับเฉพาะ `bounded_visual_exploration` ระหว่างงานที่อนุญาต |
+| `annotation_enabled`, `training_enabled`, `benchmark_enabled` | ต้องเป็น false; unsupported capabilities ไม่เปิดโดยการเปลี่ยน phase |
+| `visual_scope` | private manifest absolute path, SHA256 และ approved_count ที่ pin จาก proposal ที่อนุญาต; ยังเก็บภายนอก Git ไม่ใช่ final release |
 
-ตรวจ current scripts แล้ว phase ไม่ถูกใช้ควบคุมการเข้าถึง: validator ตรวจ safety flags และพื้นที่ ส่วน audit output มี phase ของตัวเอง เปลี่ยนเพียง phase ใน ignored local config หลังสำรอง และตรวจ --check-config ผ่าน ทดสอบว่า inspect_images/run_models=true ยังถูกปฏิเสธ ไม่แก้ source code เพื่อขยาย capability; config example ยังคง label setup สำหรับการตั้งเครื่องครั้งแรก
+ณ b8bb9ed phase เป็น descriptive metadata หลังได้รับอนุญาต visual จึงเพิ่ม dedicated loader ที่ตรวจ phase ร่วมกับ flags/hash/count/IDs/snapshot โดยตรง ไม่ลดเงื่อนไข default metadata loader ซึ่งยังต้อง inspect_images=false; wrong/closed phase และ model/annotation/training/benchmark ถูกปฏิเสธ config example คง label setup สำหรับเริ่มต้น ส่วน local config จริงมีประวัติเปิด bounded scope/ปิดหลังจบเก็บใน private run
 
 Validator ใช้ path ที่ resolve แล้วและปฏิเสธ source/work/repository ที่ทับซ้อนกัน การเปิด source แบบอ่านอย่างเดียวเป็นพฤติกรรมของเครื่องมือ ไม่ได้เปลี่ยน permissions หรือ mount ต้นทางให้เป็น read-only ระดับระบบ Local config เป็นข้อมูลเฉพาะเครื่องที่ ignored ห้าม commit แม้จะเป็น repository public
 
@@ -66,7 +68,7 @@ python3 -B scripts/audit_package.py --config config/local.json
 
 สคริปต์นี้อ่าน CSV/JSON/XLSX ตาม filenames ใน config ตรวจ ZIP central directory ด้วย split parts รูปแบบ `_partNN.zip.NNN` ตามลำดับ และบันทึก SHA256 ของ source-package files ในโฟลเดอร์ต้นทาง รองรับ schema/export layout ที่ระบุใน [data dictionary](DATA_DICTIONARY_TH.md) ไม่ใช่ importer สำหรับทุก dataset format หาก layout เปลี่ยนต้องตรวจ reader/config ก่อนใช้
 
-เครื่องมือไม่ decode/extract ภาพ ไม่ execute merge script และไม่แก้ statuses/notes ยังไม่มีคำสั่ง annotation, adjudication หรือ release building อัตโนมัติอยู่ใน repository นี้
+metadata CLI ไม่ decode/extract ภาพหรือ execute merge script และไม่แก้ statuses/notes รอบ visual ใช้ private bounded reader ผ่าน guard เพื่ออ่านเฉพาะ members ที่อนุญาตพร้อม strict Pillow decode จาก environment ที่มีอยู่แล้ว ไม่ติดตั้ง/ปรับ environment เพิ่ม Guard/tests และ metadata tools ยังใช้ standard library ไม่มี annotation/adjudication/model/release runner ใหม่
 
 ## ผลลัพธ์และการทำซ้ำ
 

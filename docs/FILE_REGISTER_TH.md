@@ -6,7 +6,8 @@
 | --- | --- |
 | scripts/audit_package.py | คัดลอก reader เดิม; ปรับ root/config/output ภายนอกและ metadata filenames จาก config |
 | scripts/prepare_handoff.py | ปรับ document provenance ให้จำกัด repository นี้และออก work_root |
-| scripts/workspace_paths.py | validator ใหม่: absolute local paths, source/work/repository disjoint และ read-only scope |
+| scripts/workspace_paths.py | absolute paths/disjoint/read-only validation; dedicated hash-pinned bounded visual scope, ปฏิเสธ capability อื่นและ closed scope |
+| tests/test_visual_scope.py | synthetic checks ของ phase/flags/manifest/hash/snapshot/count/IDs/path isolation; ไม่อ่านภาพจริง |
 | tests/test_split_archive.py | tests เดิมที่ปรับ import path และใช้ timestamp สมมติ |
 | tests/test_workspace_setup.py | synthetic CLI tests, output isolation, readonly source, config rejection และ independent working directory |
 | templates/source_inventory.csv, metadata_linkage.csv, duplicate_groups.csv | แบบฟอร์มเดิม header-only สำหรับหน่วยที่ต่างกัน |
@@ -32,6 +33,8 @@
 รอบ foundation review ใช้ไฟล์เดิม: เพิ่มตารางขอบเขต/DEC ในข้อกำหนด ปรับ protocol เป็นแผนสำรวจร่าง เพิ่มการตรวจแหล่งต้นฉบับในทะเบียนหลักฐาน และปรับ README/index/dictionary/decision log ให้สถานะตรงกัน ไม่สร้างเอกสารเปล่าหรือ annotation specification หลายชุด สำเนาก่อนแก้และหลักฐานตรวจ metadata จริงอยู่ใน external provenance ไม่แก้ archive ประวัติ
 
 รอบเตรียม exploration หลัง eafe703: public เก็บ requirements/วิธีเลือกและแบบคำถามในเอกสารเดิม ส่วน `proposed_exploration_manifest.json/.csv`, `prior_exposure_log.csv`, `coverage_matrix_private.csv`, `exploration_observations_draft.csv`, private builder/input hashes/validation และรายงานภายในอยู่ใน fresh external run เท่านั้น generic CSV templates ใน Git ไม่ใช่แบบบันทึก actual run ทั้งหมด รายการเสนอไม่ใช่ curation หรือ final membership
+
+รอบ bounded visual หลัง b8bb9ed: public เพิ่มเฉพาะ guard/tests และวิธีการ/สรุปที่ไม่มี per-image IDs รายชื่อบริษัท หรือภาพ ส่วน payload/crops, CRC/SHA/decode receipts, fresh observations/locator rows, discovery/legacy comparison, exposure/time gaps และรายงานจริงเก็บใน fresh external run ไม่แก้ draft หรือ historical reports
 
 ## Mapping และ checksum
 

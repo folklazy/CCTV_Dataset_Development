@@ -1,2 +1,4 @@
 # Python >=3.10; standard library only for setup, metadata audit and synthetic tests.
 # No packages are installed or model environments changed by this setup.
+# Authorized private visual decode used pre-existing Pillow; not needed for metadata/guard tests.
+# No automatic installation or model execution is provided.

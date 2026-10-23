@@ -10,7 +10,7 @@
 | [ข้อกำหนด](BENCHMARK_REQUIREMENTS_DRAFT_TH.md) | USER CONFIRMED objectives หลัง eafe703 แยกจาก REQ/DEC วิธีการ | เป้าหมายยืนยันแล้ว; taxonomy/annotation/metrics/QA PROPOSED |
 | [หลักฐานและสมมติฐาน](EVIDENCE_AND_HYPOTHESES_TH.md) | source/locator → การปรับใช้ → สิ่งต้องพิสูจน์ → hypothesis | ทบทวนห้าแหล่งแบบเจาะจงแล้ว; ไม่มีผล pilot |
 | [ทะเบียนเคส](CASE_REGISTER_DRAFT_TH.md) | K/X tags, วิธีเลือกภาพและแบบบันทึก | draft; status เดิมไม่ใช่ผลตรวจรอบนี้ |
-| [Protocol/แผนสำรวจ](AUDIT_PROTOCOL_DRAFT_TH.md) | วิธีเลือก 24+8, seed/ลำดับ, reuse/exposure, ช่องว่าง coverage และเงื่อนไขขยาย | private proposed manifest เตรียมแล้ว; ยังไม่เปิดภาพ/ไม่คัด final |
+| [Protocol/แผนสำรวจ](AUDIT_PROTOCOL_DRAFT_TH.md) | preparation 24+8 และ bounded visual guard/วิธีบันทึกผล | สำรวจรายการเดิมแล้ว; ไม่มี annotation/final split |
 | [Data dictionary](DATA_DICTIONARY_TH.md) | fields ที่ตรวจใน export ปัจจุบันและข้อจำกัด record/person/time | ตรวจ schema/hash แล้ว; ความหมายระบบยังมีช่องว่าง |
 | [Decision log](DECISION_LOG_TH.md) | การเปลี่ยนแปลงตั้งแต่แยก repository | append-only |
 | [Release manifest template](../templates/release_manifest.example.json) | source/annotation/guideline/code references ที่จะผูกต่อรุ่น | template-only; ยังไม่มีค่ารุ่นจริง |

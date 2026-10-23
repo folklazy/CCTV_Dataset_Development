@@ -1,5 +1,9 @@
 """Resolve this repository and validate isolated, local-only data/work paths."""
 import json
+import csv
+import hashlib
+import io
+import re
 from datetime import datetime, timezone
 from pathlib import Path
 from uuid import uuid4
@@ -12,7 +16,7 @@ def overlaps(left, right):
     return left == right or left in right.parents or right in left.parents
 
 
-def validate_config(config, repository=REPOSITORY):
+def validate_config(config, repository=REPOSITORY, purpose="metadata"):
     result = dict(config)
     for key in ("dataset_root", "work_root", "metadata_csv", "metadata_json", "metadata_xlsx"):
         value = result.get(key)
@@ -30,15 +34,86 @@ def validate_config(config, repository=REPOSITORY):
             raise ValueError(f"{key} must be a file directly under dataset_root")
     if len({result[k] for k in ("metadata_csv", "metadata_json", "metadata_xlsx")}) != 3:
         raise ValueError("Metadata formats must reference three distinct files")
-    if (result.get("source_read_only") is not True or result.get("inspect_images") is not False
-            or result.get("run_models") is not False):
-        raise ValueError("Only read-only metadata/document audit is supported")
+    if result.get("source_read_only") is not True or result.get("run_models") is not False:
+        raise ValueError("Source must be read-only and models disabled")
+    if purpose == "metadata":
+        if result.get("inspect_images") is not False:
+            raise ValueError("Metadata commands require inspect_images=false")
+    elif purpose == "bounded_visual":
+        if (result.get("inspect_images") is not True
+                or result.get("phase") != "bounded_visual_exploration"
+                or any(result.get(k) is not False for k in
+                       ("annotation_enabled", "training_enabled", "benchmark_enabled"))):
+            raise ValueError("Explicit bounded visual scope and disabled other capabilities required")
+    else:
+        raise ValueError("Unsupported capability")
+    if any(result.get(k, False) is not False for k in
+           ("annotation_enabled", "training_enabled", "benchmark_enabled")):
+        raise ValueError("Annotation, training and benchmark are unsupported")
     return result
 
 
 def load_local_config(path=None):
     path = Path(path) if path else REPOSITORY / "config/local.json"
     return validate_config(json.loads(path.read_text(encoding="utf-8")))
+
+
+def load_visual_scope(path=None, repository=REPOSITORY):
+    """Load an explicitly authorized, hash-pinned proposal; never open image data."""
+    path = Path(path) if path else repository / "config/local.json"
+    config = validate_config(json.loads(path.read_text(encoding="utf-8")),
+                             repository=repository, purpose="bounded_visual")
+    scope = config.get("visual_scope", {})
+    raw_path = scope.get("manifest_path", "")
+    if not raw_path or not Path(raw_path).is_absolute() or Path(raw_path).is_symlink():
+        raise ValueError("Visual manifest must be a regular absolute private path")
+    manifest_path = Path(raw_path).resolve(strict=True)
+    if not manifest_path.is_file() or not manifest_path.is_relative_to(Path(config["work_root"])):
+        raise ValueError("Visual manifest must be inside external work_root")
+    data = manifest_path.read_bytes()
+    if hashlib.sha256(data).hexdigest() != scope.get("manifest_sha256"):
+        raise ValueError("Visual manifest checksum differs from authorized proposal")
+    manifest = json.loads(data)
+    records = manifest.get("records", [])
+    count = scope.get("approved_count")
+    if type(count) is not int or not 1 <= count <= 32 or len(records) != count:
+        raise ValueError("Visual proposal count must match explicit scope, maximum 32")
+    names = [row["filename"] for row in records]
+    ids = [row["exploration_id"] for row in records]
+    if (len(set(names)) != count or len(set(ids)) != count
+            or [row["proposed_order"] for row in records] != list(range(1, count + 1))
+            or any(not isinstance(x, str) or re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9_-]{0,63}", x) is None
+                   for x in ids)
+            or any(not n or "/" in n or "\\" in n or "\x00" in n or n in {".", ".."} for n in names)):
+        raise ValueError("Visual proposal identities/order must be unique and safe")
+    metadata_path = Path(config["metadata_csv"])
+    before = metadata_path.stat()
+    metadata = metadata_path.read_bytes()
+    after = metadata_path.stat()
+    if (before.st_size, before.st_mtime_ns) != (after.st_size, after.st_mtime_ns):
+        raise ValueError("Metadata changed during scope validation")
+    if hashlib.sha256(metadata).hexdigest() != manifest["input_refs"]["metadata_sha256"]:
+        raise ValueError("Metadata snapshot differs from approved proposal")
+    rows = list(csv.DictReader(io.StringIO(metadata.decode("utf-8-sig"))))
+    by_name = {row["filename"]: row for row in rows}
+    if len(by_name) != len(rows):
+        raise ValueError("Ambiguous metadata filenames")
+    checks = {"site": "site", "camera_name": "camera_name",
+              "incident_timestamp_raw": "incident_timestamp",
+              "curation_status_raw_unchanged": "curate_status"}
+    for row in records:
+        source = by_name.get(row["filename"])
+        if source is None or any(row[k] != source[v] for k, v in checks.items()):
+            raise ValueError("Proposal record no longer matches metadata")
+    return config, manifest
+
+
+def require_visual_ids(manifest, requested):
+    """Reject additions and repeated requests rather than silently expanding scope."""
+    by_id = {row["exploration_id"]: row for row in manifest["records"]}
+    if not requested or len(requested) != len(set(requested)) or any(x not in by_id for x in requested):
+        raise ValueError("Requested images must be distinct members of the approved proposal")
+    return [by_id[x] for x in requested]
 
 
 def create_run(config, kind):

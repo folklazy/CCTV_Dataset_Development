@@ -59,3 +59,22 @@
 - ตรวจแล้ว config phase เป็น descriptive metadata ไม่ใช่ permission gate เปลี่ยน local phase ให้ตรงงานโดยคง read-only/image/model flags และไม่เพิ่มความสามารถ annotation/inference; ค้น curation/dictionary เพิ่มเฉพาะ repo/legacy/พื้นที่ source ที่เกี่ยวข้อง ยังไม่พบต้นฉบับที่ปิดช่องว่างได้ ไม่ค้นทั้งเครื่องซ้ำ
 
 รายงาน/manifest/reproduction receipt และ paths จริงอยู่ใน fresh external work_root/runs ของรอบ exploration preparation ส่วนรายงาน foundation ภายในเดิมไม่แก้ ไม่มีการเปิดภาพ คัด final annotation หรือ model run ในรอบนี้
+
+## ภาคเพิ่ม 23 ตุลาคม 2026 — bounded visual exploration หลัง b8bb9ed
+
+รายงานก่อนหน้าด้านบนคงตามเวลา ภายหลังผู้ใช้อนุญาตให้เปิดรายการเดิมครบ รวม historical reopens จึงดำเนิน visual exploration และเพิ่ม fresh run แยกจาก draft/รายงานเดิม
+
+| สิ่งที่ตรวจ | ผล / หน่วยและขอบเขต |
+| --- | --- |
+| เปิดตาม manifest | 32/32 records สำเร็จ: 20 new filenames ต่อ log ที่ตรวจ และ 12 historical reopens; ไม่เปิดภาพนอก manifest |
+| Payload integrity/decode | CRC/SHA256/strict full decode ผ่าน 32/32, อ่านไม่ได้ 0; เป็นการตรวจไฟล์ ไม่ใช่ annotation correctness |
+| Exact duplicates | 32 filenames มี 31 unique encoded payloads หนึ่งคู่ bytes ตรงกัน; คงทั้งสอง records และ curation เดิม ไม่ถือชื่อใหม่เป็นเนื้อหาใหม่เสมอ |
+| หลักฐานภาพ | มี observed/inference/needs-human-review และ locator ตามความแตกต่างรายคน; ผลรายภาพ/ภาพ/crops/แหล่งข้อมูลจริงอยู่ภายนอก Git |
+| ขอบเขตผล | เห็น person/region/color support ได้บางกรณี แต่ยังไม่มี masks/GT/independent human review หรือผล End-to-End/Oracle |
+| Discovery | มีทั้งเคสพบ/ไม่พบ และองค์ประกอบ uncertain; record ที่ duplicate ไม่เพิ่มหลักฐานภาพอิสระ ไม่ตีความเป็น success rate/prevalence |
+| ประวัติและเวลา | exposure ใช้พัฒนา protocol; Final Test ยัง UNASSIGNED; เวลา active visual/annotation ที่ไม่วัดคง null และรายงาน timestamp gaps หลังหยุดข้าม turn |
+| Source และระบบ | metadata/proposal hashes และ source stat ไม่เปลี่ยน หลังจบปิด inspect_images/visual phase; models/annotation/training/benchmark ปิดตลอด |
+
+สิ่งที่ร่างเป็นข้อเสนอได้คือ visible-support/unknown, owner/accessory/outer-layer questions, crop provenance, color observability และการไม่เติมคำบรรยายเกินหลักฐาน ต้องให้มนุษย์ทบทวนก่อนใช้สร้าง GT ยังต้องสำรวจเพิ่มเติมภายหลังเรื่อง one-piece ที่เห็นเต็มตัว รองเท้า/เท้าเปล่าชัดเจน หลายสภาพแสง/known modality และ coverage ที่ไม่อยู่ใน sample รอบนี้ไม่เพิ่มสมาชิกและไม่ตรึง taxonomy จำนวนสี QA หรือขนาด final dataset
+
+[Protocol](../docs/AUDIT_PROTOCOL_DRAFT_TH.md) และ [case form](../docs/CASE_REGISTER_DRAFT_TH.md) อธิบายวิธี ส่วน [guard](../scripts/workspace_paths.py)/[synthetic tests](../tests/test_visual_scope.py) ตรวจ permission boundaries รวม tests ปัจจุบัน 14 รายการผ่าน ไม่มีการติดตั้งแพ็กเกจหรือแก้ environment โมเดล การดูภาพใช้ Pillow ที่มีอยู่เดิมและไม่รันโมเดล

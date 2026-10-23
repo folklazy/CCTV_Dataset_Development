@@ -2,7 +2,7 @@
 
 โครงการวิจัยเพื่อพัฒนาชุดภาพ CCTV พร้อมคำตอบอ้างอิงสำหรับประเมิน **Human Parsing ระดับบุคคล** โดยเชื่อมส่วนร่างกายและเสื้อผ้าที่มองเห็นกับเจ้าของในภาพ และบันทึกที่มาข้อมูล กติกา annotation การตรวจทาน และรุ่นของชุดประเมินให้ตรวจย้อนกลับได้
 
-**สถานะ ณ 22 ตุลาคม 2026: เตรียม proposed exploration manifest และแบบบันทึกภายในแล้วตามข้อกำหนดล่าสุด ยังไม่เปิดภาพรอบใหม่หรือเริ่ม annotation pilot** ยังไม่มีชุด annotation หรือ dataset release ที่ยืนยันในพื้นที่งานที่ตรวจ และยังไม่มีผลตรวจคุณภาพ annotation รายงานนี้ไม่ประกาศผลประเมินโมเดล
+**สถานะ ณ 23 ตุลาคม 2026: สำรวจภาพตาม manifest ครบ 32 records แล้ว พบ 31 unique encoded payloads ยังไม่เริ่ม annotation pilot หรือรันโมเดล** ยังไม่มีชุด annotation หรือ dataset release ที่ยืนยันในพื้นที่งานที่ตรวจ และยังไม่มีผลตรวจคุณภาพ annotation รายงานนี้ไม่ประกาศผลประเมินโมเดล
 
 ฐานงานเดิมและการเปลี่ยนแปลงหลังได้รับข้อกำหนดใหม่แยกตามเวลาใน [รายงานสถานะ](reports/README.md) เริ่มอ่าน [ประเด็นตัดสินใจ/คำถาม](docs/BENCHMARK_REQUIREMENTS_DRAFT_TH.md) → [แผนสำรวจร่าง](docs/AUDIT_PROTOCOL_DRAFT_TH.md) → [การตรวจแหล่งต้นฉบับห้างาน](docs/EVIDENCE_AND_HYPOTHESES_TH.md) รายละเอียดในร่างเดิมยังแก้ไขได้ ไม่ถือว่าผู้ใช้อนุมัติทั้งหมด
 
@@ -34,8 +34,9 @@ taxonomy, วิธี annotation, Oracle input, metrics และเกณฑ�
 | Repository และเครื่องมือสำรวจ | มีแล้ว ตรวจจากไฟล์ปัจจุบันได้ | [scripts/](scripts/), [tests/](tests/), [config example](config/audit.example.json); การทดสอบสังเคราะห์ตรวจพฤติกรรมเครื่องมือ |
 | ข้อกำหนด เคส และแบบฟอร์ม | มีแล้วในสถานะ DRAFT | [ดัชนีเอกสาร](docs/FOUNDATION_INDEX_TH.md), [templates/](templates/); การมีไฟล์ไม่ได้ยืนยันว่ากติกาใช้ annotate ได้จริง |
 | Metadata/หลักฐาน audit เดิม | ตรวจ metadata แบบจำกัดและเทียบ hash แล้ว | [รายงานฐานงาน](reports/README.md); filename ตรง inventory เดิม แต่ไม่อ่าน ZIP payload ใหม่หรือยืนยันคุณภาพภาพ/annotation |
-| การดูภาพแบบจำกัดก่อนแยก workspace | มีรายงานเดิม เก็บภายใน | รอบนี้ตรวจไฟล์ manifest/receipt ไม่เปิดภาพซ้ำ และไม่อ้าง prevalence จาก sample |
-| Proposed exploration manifest/แบบบันทึก | เตรียมภายในแล้ว ยังไม่เปิดภาพ | [แผน 24+8](docs/AUDIT_PROTOCOL_DRAFT_TH.md); รายชื่อ/paths/exposure/coverage matrix อยู่ภายนอก Git เป็นข้อเสนอ ไม่ใช่ final membership |
+| ประวัติดูภาพก่อนแยก workspace | มีรายงานเดิม เก็บภายใน | เก็บเป็นหลักฐานตามเวลา ไม่แทนผลสำรวจรอบใหม่ |
+| Bounded visual exploration ล่าสุด | เปิดตาม manifest ครบแล้ว | [รายงานสาธารณะ](reports/README.md): 32 records/31 payloads ไม่ใช่ prevalence หรือ annotation QA; รายละเอียดและภาพอยู่ภายนอก Git |
+| Proposed exploration manifest/แบบบันทึก | ใช้รายการเดิมสำรวจและสร้างผล run ใหม่แล้ว | [วิธี 24+8 และ bounded review](docs/AUDIT_PROTOCOL_DRAFT_TH.md); เก็บ draft/รายงานเดิมพร้อมผลใหม่แยกกัน ไม่มี final membership |
 | คู่มือฉบับใช้งานและ annotation pilot | ยังไม่เริ่ม ต้องผ่าน exploration/ตัดสิน scope ก่อน | [guideline template](templates/annotation_guideline.template.md), [case register](docs/CASE_REGISTER_DRAFT_TH.md); ยังไม่มีผล pilot/independent agreement ให้รายงาน |
 | Annotation ที่ผ่าน QA และ dataset release | ยังไม่มีในพื้นที่งานที่ตรวจ | [QA template](templates/quality_review.template.md), [release manifest template](templates/release_manifest.example.json); ยังไม่มี manifest รุ่นจริงหรือผลรับรองคุณภาพ |
 
@@ -119,11 +120,11 @@ Repository public นี้เผยแพร่โค้ด เครื่อ�
 
 ## ข้อจำกัดและขั้นตอนถัดไป
 
-ยังไม่ยืนยัน taxonomy ที่เหมาะกับภาพจริงทั้งชุด ความสอดคล้องระหว่างผู้ทำ annotation ค่า coverage/unknown ที่ยอมรับได้ หรือคุณภาพ reference annotations การดูภาพแบบจำกัดในประวัติไม่ตอบคำถามเหล่านี้ทั้งหมด และยังไม่มีผลประเมินโมเดลบน dataset รุ่นที่พร้อมใช้
+ยังไม่ยืนยัน taxonomy ที่เหมาะกับภาพจริงทั้งชุด ความสอดคล้องระหว่างผู้ทำ annotation ค่า coverage/unknown ที่ยอมรับได้ หรือคุณภาพ reference annotations การสำรวจแบบจำกัดยังไม่ตอบคำถามเหล่านี้ทั้งหมด และยังไม่มีผลประเมินโมเดลบน dataset รุ่นที่พร้อมใช้
 
 ต้องรักษา raw curation statuses และ notes ตามต้นฉบับ `pending` ใน export ปัจจุบันไม่ลบล้าง selected/rejected/flagged เดิม ส่วน event `category` ไม่ผูกบทบาทให้ทุกคนในภาพโดยอัตโนมัติ
 
-ขั้นต่อไปคือปิดคำถามด้าน population/สิทธิ์/ที่มา ตรวจ coverage และกรณีกำกวมตามขอบเขตที่อนุญาต แล้วเตรียมคู่มือกับผู้ทำ pilot ก่อนเริ่ม annotation จริง รอบปรับเอกสารนี้ไม่เริ่ม annotation, inference, training หรือ benchmark และไม่แก้ภาพ/metadata/ผลทดลองเดิม
+ขั้นต่อไปคือร่างกฎ visible support/owner/accessory/ชั้นเสื้อ/สีที่ยังไม่แน่ใจให้มนุษย์ทบทวน และเสนอการสำรวจเพิ่มเฉพาะช่องว่าง เช่นชุดชิ้นเดียว รองเท้า/เท้าเปล่า และ coverage ที่ขาด ก่อนจัด annotation pilot กับผู้ทำจริง รอบนี้ไม่เปิดภาพนอก manifest ไม่ทำ annotation, inference, training หรือ benchmark และไม่แก้ metadata/ผลคัดเลือก/ผลทดลองเดิม
 
 ## แหล่งอ้างอิงที่ใช้ตั้งโจทย์
 

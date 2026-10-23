@@ -38,7 +38,7 @@
 
 ตาม [protocol 24+8](AUDIT_PROTOCOL_DRAFT_TH.md): reuse ประวัติเดิม 12 records แล้วเติม coverage ใหม่ 12 จาก raw site-camera pairs ที่ยังขาด และ discovery ใหม่ 8 จากบริบทของ anchors ตามกติกา/seed ที่บันทึกใน private manifest ไม่ใช้ category เป็น event/person label และไม่ใช้เวลาเป็นหลักฐานสภาพภาพ
 
-ตอนนี้มี proposed membership/seed แล้ว แต่ยังไม่เปิดภาพหรือสุ่ม final test; metadata-only deterministic tie-break ไม่ใช่ probability sample ไม่มี prevalence estimate สถานะของเคสเดิมด้านบนยัง REPORTED และ X ยัง HYPOTHETICAL จนมีการเปิดดู/บันทึกตามขอบเขตที่ได้รับอนุญาต
+ณ preparation มี proposed membership/seed แล้วและยังไม่เปิดภาพ ภายหลัง bounded exploration ทำครบตามรายการเดิมโดยไม่มี final test; metadata-only deterministic tie-break ไม่ใช่ probability sample ไม่มี prevalence estimate สถานะของเคสเดิมด้านบนยัง REPORTED และ X ยัง HYPOTHETICAL จนมีการเปิดดู/บันทึกตามขอบเขตที่ได้รับอนุญาต
 
 ไม่เปลี่ยน raw curation/status/notes ตาม proposal หากรอบหน้าพบเคสไม่ตรงสมมติฐานให้บันทึก found/not found/uncertain พร้อมเหตุผลการเพิ่ม/แทนรายการใน revision ใหม่ คงประวัติรายการเดิม ไม่แปลง pending เป็น unreviewed หรือโยก discovery ไป final โดยเงียบ ๆ
 
@@ -62,7 +62,7 @@
 | `reviewer_id`, `review_state`, `independent_review_state` | ผู้ทบทวนกับผู้สำรวจคนละบทบาท ถึงยังไม่ทราบคนจริงก็เก็บ UNASSIGNED/NOT_PERFORMED; ไม่อ้าง independent review จนทำตามวิธีที่กำหนด |
 | `annotation_time_seconds_not_collected`, `case_tags_proposed`, `decision_refs` | เวลา annotation ยังว่าง/ไม่เก็บ และห้ามใช้ exploration time ประมาณแรงงาน masks; K/X tags และ DEC เชื่อมข้อสงสัย |
 
-เวลาและ observation ใหม่ยังว่างในทุกแถว แบบฟอร์มอาจใช้ free text/สถานะ unknown-not-reviewed ที่เสนอ ก่อนกำหนด controlled vocabulary ใน pilot ไม่มี confidence ที่อ้าง calibrated probability และไม่ถ่ายทอด category เป็นบทบาทคน
+แบบ draft ใน preparation คงเวลา/observation ว่างตามเดิม ผล visual ใหม่แยกใน fresh run ด้วย exploration-v1.1 เป็น frame records และ locator rows เพิ่มได้ ไม่เขียนทับ draft/ประวัติ รูปแบบ free text/สถานะยังแก้ได้ก่อน controlled vocabulary ใน pilot ไม่มี confidence ที่อ้าง calibrated probability และไม่ถ่ายทอด category เป็นบทบาทคน
 
 ## 8. กติกาการดูภาพสำหรับ audit
 
@@ -84,3 +84,13 @@
 - BENCHMARK_REQUIREMENTS_DRAFT_TH.md — REQ-01, REQ-08 ถึง REQ-20
 - EVIDENCE_AND_HYPOTHESES_TH.md — C01 ถึง C11 และ H-01 ถึง H-06
 - P1: DATASET_DETAILS(2).md Rev. 2; ไม่แก้ไขต้นฉบับในรอบนี้
+
+## 11. บทเรียนสำหรับกฎร่างจาก bounded visual exploration
+
+มีข้อสังเกตจากภาพใหม่ครบตาม manifest แล้ว แต่ตาราง K/X ข้างบนยังบอกที่มาจาก P1/สมมติฐานเดิม ไม่อัปเกรดทุกเคสเป็น observed โดยรวม ผลรายเคส/IDs อยู่ใน private run ผู้สำรวจเป็น assistant/Codex; independent human review NOT_PERFORMED
+
+ประเด็นที่ต้องร่างก่อน annotation pilot คือ visible support ที่ขาดเป็นช่วงเมื่อถูกบัง, region owner เมื่อคน/สิ่งถือ/ผ้าพาดซ้อน, scope ของ bag/outer layer กับ person mask, upper/lower ที่ไม่เห็นรอยต่อ, barefoot/sandal/unobservable, สีในแสง/cast/หลายชั้น และ source text/boxes/black regions ที่ไม่ใช่ GT ไม่มีหลักฐานให้เรียกทุกคน/ทุก region annotate ได้ครบจาก exploration นี้
+
+ข้อสังเกตคนเล็ก/ส่วนหัวที่ขอบ/possible person ต้องใช้ locator และ uncertainty ไม่สร้าง GT Person ID หรือ certify negative จากการมองไม่พบคน เสื้อชิ้นเดียวชัดเจน/รองเท้ารายละเอียดหลายมุมและ known-modality ยังเป็นช่องว่าง ไม่เพิ่มภาพนอก manifest ในรอบนี้
+
+ผล discovery มีทั้งเคสที่พบ/ไม่พบและ component ที่ uncertain พร้อมกรณี exact duplicate ของ anchor จึงไม่เป็น success rate หรือ prevalence เวลา active visual ที่ไม่วัดและ annotation time คง null แม้มีเวลาประมวลผลภาพ ไม่มีการใช้เวลา AI ประมาณแรงงาน masks มนุษย์

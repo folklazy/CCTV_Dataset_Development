@@ -1,6 +1,6 @@
 # แผนและรายการเสนอสำรวจ 24+8 — PROPOSED
 
-ปรับหลัง foundation review commit eafe703 ตาม [Research Objectives & Constraints ล่าสุด](BENCHMARK_REQUIREMENTS_DRAFT_TH.md) รอบนี้จัดทำ proposed exploration manifest และแบบบันทึกภายในแล้ว **ยังไม่เปิดภาพใหม่หรือภาพเดิมซ้ำ ไม่ทำ annotation และไม่กำหนด Final Test** รายงานรอบก่อนคงเป็นหลักฐานตามเวลา
+ปรับหลัง foundation review commit eafe703 ตาม [Research Objectives & Constraints ล่าสุด](BENCHMARK_REQUIREMENTS_DRAFT_TH.md) ส่วน 1–7 บันทึกวิธีและสถานะรอบ preparation ที่ยังไม่เปิดภาพ ณ b8bb9ed; ส่วน 8 บันทึก bounded visual exploration ที่ได้รับอนุญาตภายหลังและเสร็จแล้ว รายงาน/draft เดิมคงตามเวลา ไม่มี annotation หรือ Final Test ที่กำหนดแล้ว
 
 ## 1. สิ่งที่ exploration ต้องช่วยตัดสิน
 
@@ -65,6 +65,23 @@ End-to-End เป็นผลหลักและ Oracle แยก จึงต
 
 ## 7. สถานะระบบและเงื่อนไขก่อนเปิดภาพ
 
-config phase ปัจจุบันเป็น `exploration_manifest_preparation_only` หลังตรวจว่า script ไม่ใช้ phase เป็น permission gate แต่ใช้ safety flags/ขอบเขตความสามารถจริง คง `source_read_only=true`, `inspect_images=false`, `run_models=false`; ไม่เพิ่ม runner หรือสิทธิ์ annotation/inference ดู [คู่มือพื้นที่งาน](SCOPE_AND_OWNERSHIP_TH.md)
+ณ preparation config phase เป็น `exploration_manifest_preparation_only` และตอนนั้น script ไม่ใช้ phase เป็น permission gate แต่ใช้ safety flags/ขอบเขตความสามารถจริง คง `source_read_only=true`, `inspect_images=false`, `run_models=false`; ไม่เพิ่ม runner หรือสิทธิ์ annotation/inference ดู [คู่มือพื้นที่งาน](SCOPE_AND_OWNERSHIP_TH.md)
 
 ก่อนเริ่ม visual exploration ต้องระบุผู้สำรวจ/ผู้ทบทวนและเวลาที่ใช้ได้ พร้อมยืนยันขอบเขตรอบภาพใหม่แยกจากงานเตรียมนี้ หาก curation/dictionary ยังไม่พบ ให้ระบุ missing และสำรวจในกรอบ export ที่เข้าถึงได้ ไม่เปลี่ยน pending/selected/rejected/flagged หรือเดา label ของบุคคล
+
+## 8. วิธีสำรวจภาพจริงแบบจำกัดหลัง b8bb9ed — COMPLETED
+
+ใช้ manifest เดิมทั้ง 32 records ไม่มีการแทน/เพิ่มรายการ ตรวจ metadata SHA256 และ mapping ไป current ZIP central-directory member ที่ไม่กำกวม อ่าน split ZIP โดยไม่ merge/extract ทั้งแพ็กเกจ เก็บเฉพาะ encoded payload ที่อนุญาตใน private run ตรวจ ZIP CRC, SHA256, strict decode และ dimensions; ไฟล์ที่อ่านไม่ได้ต้องมี error record ไม่แทนเงียบ ๆ การตรวจเหล่านี้ไม่เป็น annotation QA
+
+- ใช้ dedicated `load_visual_scope()` และ `require_visual_ids()` ใน [workspace_paths](../scripts/workspace_paths.py): phase ต้องตรง bounded visual, source read-only, inspect_images เปิดโดย explicit scope, models/annotation/training/benchmark ปิด; private manifest hash/count<=32/IDs/order/snapshot ต้องตรง นี่เป็น operational cap ของขั้นที่อนุญาต ไม่ใช่ final dataset quota
+- เริ่ม 8 records แรกแล้วทบทวนฟอร์มเป็น exploration-v1.1: เพิ่ม locator รายคน/region question, source overlay/สี/ความไม่แน่ใจ และ discovery component results โดยไม่สร้าง person GT ID/masks แล้วทำต่อจนครบ
+- ดูภาพเต็มก่อน ใช้ crop เมื่อจำเป็น บันทึก source-pixel rectangle ว่าเป็น **display crop ไม่ใช่ GT bbox** ไม่มี generative enhancement/เติมส่วนที่หาย ภาพ/crops/รายชื่อ/record notes ทั้งหมดอยู่ภายนอก Git
+- บันทึก observed/inference/needs-human-review ใหม่ก่อน explicit comparison กับ legacy notes; assistant มี prior context จึงไม่อ้าง blinded review/independent validation รายงานผู้สำรวจ assistant/Codex และ human review NOT_PERFORMED
+- ใช้ SHA256 เปรียบเทียบ exact encoded-byte duplicates ภายในชุดที่อ่านจริง คง record identity และประวัติแยกจาก byte identity; near-duplicate/same-event ไม่ได้ยืนยันด้วยภาพกล้องเดียวหรือเวลาห่างสั้น
+- Discovery บันทึก found/not_found/uncertain ราย component เป้าหมายอิง anchor ที่เสนอไว้ ไม่ใช้เป็น success rate; ผลของ record ที่ bytes ซ้ำไม่ใช่หลักฐานใหม่อิสระ
+- แยกเวลา read/CRC/decode, display-tool calls และ recording เท่าที่วัดได้ active visual/เวลา annotation ไม่ได้วัดจึง null ระหว่างการหยุดข้าม turn มี timestamp บางส่วนไม่ถูก persist ให้รายงาน missing ไม่ใช้เวลา extract/resume/elapsed days แทน
+- เพิ่ม exposure log ต่อ record/payload รวม reopens และ new filenames ที่ bytes อาจเหมือน record เดิม `final_test_membership=false` คือยังไม่จัดเข้า Final Test, `final_split_assignment=UNASSIGNED` ยังไม่ตัดสินว่าจะกันจาก final อย่างไร
+
+หลังปิดรอบ local config เป็น `bounded_visual_exploration_completed`, inspect_images=false และ models/annotation/training/benchmark ปิดทั้งหมด visual loader ปฏิเสธ closed phase แต่ metadata CLI ยังตรวจ config ได้ ไม่เพิ่มภาพนอก manifest หรือเริ่ม pilot จากการทำ exploration เสร็จ
+
+ข้อสรุปและข้อจำกัดที่เผยแพร่ได้อยู่ใน [รายงาน](../reports/README.md) ส่วน reference IDs รายภาพและหลักฐานจริงอยู่ในรายงานภายใน
