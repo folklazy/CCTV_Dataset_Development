@@ -202,3 +202,7 @@
 
 - BENCHMARK_REQUIREMENTS_DRAFT_TH.md — REQ/DEC
 - CASE_REGISTER_DRAFT_TH.md — K cases และข้อจำกัดข้อมูล
+
+### Targeted check สำหรับคู่มือ v0.1 — 23 ตุลาคม 2026
+
+ตรวจซ้ำเฉพาะ S05 MHP v2 §3.1 PDF p.4 (per-person plane/background semantics), S07 CCIHP §2 PDF p.2 (human/accessory scope และแยก semantic-characteristics), S11 Cityscapes §2.2 PDF p.3 (unclear/void) เพื่อประกอบ R01/R02/R04/R05/R07/R08 ใน [คู่มือ](../templates/annotation_guideline.template.md) ไม่ทบทวน sources อื่นทั้งชุด ไม่คัดลอก numeric IDs/จำนวนสี/ignore thresholds และไม่ถือกฎของงานเหล่านี้เป็นข้อบังคับ CCTV หลักฐานภาพของเราและคำตัดสินมนุษย์ยังต้องแยกจากข้อเสนอ

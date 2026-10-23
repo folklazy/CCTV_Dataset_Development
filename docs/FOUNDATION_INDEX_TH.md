@@ -13,6 +13,9 @@
 | [Protocol/แผนสำรวจ](AUDIT_PROTOCOL_DRAFT_TH.md) | preparation 24+8 และ bounded visual guard/วิธีบันทึกผล | สำรวจรายการเดิมแล้ว; ไม่มี annotation/final split |
 | [Data dictionary](DATA_DICTIONARY_TH.md) | fields ที่ตรวจใน export ปัจจุบันและข้อจำกัด record/person/time | ตรวจ schema/hash แล้ว; ความหมายระบบยังมีช่องว่าง |
 | [Decision log](DECISION_LOG_TH.md) | การเปลี่ยนแปลงตั้งแต่แยก repository | append-only |
+| [คู่มือทดลอง v0.1](../templates/annotation_guideline.template.md) | R01–R12 → ทางเลือก/เหตุผล/ผลกระทบ; evidence binding และภาพอยู่ภายใน | PROPOSED รอมนุษย์ทบทวน |
+| [แผน pilot/QA](../templates/quality_review.template.md) | decision priorities, ขนาดเริ่มที่เสนอ, timing/review/revision และข้อจำกัดเมื่อทำคนเดียว | PROPOSED; ยังไม่เริ่ม |
+| [Contract example](../templates/annotation_contract_v0_1.example.json) | schema placeholder แยก ID/owner/states/geometry/display/provenance | ไม่ใช่ annotation จริงหรือ schema ที่อนุมัติแล้ว |
 | [Release manifest template](../templates/release_manifest.example.json) | source/annotation/guideline/code references ที่จะผูกต่อรุ่น | template-only; ยังไม่มีค่ารุ่นจริง |
 
 Handoff เต็ม รายงานเก่า รายละเอียดบริษัท และภาพตัวอย่างเดิมอยู่ใน work_root/legacy ตาม local config ไม่ใช่ dependency ที่ต้อง commit หรือ fetch เพื่อรันทดสอบสังเคราะห์

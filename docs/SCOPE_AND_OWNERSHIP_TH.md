@@ -75,3 +75,18 @@ metadata CLI ไม่ decode/extract ภาพหรือ execute merge script
 แต่ละ execution สร้าง `work_root/runs/<kind>-<UTC>-<id>/` ใหม่ Output มีเวลารันและ hashes ตามขอบเขตคำสั่ง เช่น `audit_configuration.json` เก็บ `script_sha256` สำหรับ package audit คำสั่งปัจจุบันยังไม่บันทึก code commit หรือสร้าง release manifest ให้อัตโนมัติ
 
 รายละเอียดแพ็กเกจ, filenames จริง, linkage, notes และสถิติเฉพาะบริษัทอยู่ภายนอก Git ส่วน repository เก็บ schema/แบบฟอร์มให้ตรวจวิธีทำได้ ดูการสำรอง source/docs และ local config แยกกันที่ [ทะเบียนไฟล์](FILE_REGISTER_TH.md)
+
+## คู่มือ v0.1 และการตรวจสังเคราะห์
+
+Review packet ภายในใช้เฉพาะ cached payloads/crops ที่อยู่ใน 32 records เดิม ผ่าน manifest/metadata/payload hash checks ไม่มีการอ่านภาพใหม่จาก ZIP การเปิดจริงบันทึกใน exposure log แยกจาก human review และ curation เปิด static index.html บนเครื่องที่เข้าถึงไฟล์ได้ หรือใช้ localhost server เฉพาะ packet directory ตาม HOW_TO_REVIEW_TH.md ภายใน ไม่เริ่มบริการใหม่หรืออัปโหลดภาพในรอบนี้
+
+`annotation_contract.py --self-check` สร้างแต่ invented image/masks/IDs และ JSON ภายนอก Git ไม่ทำ annotation จริง ต้องใช้ Python ที่มี Pillow อยู่แล้ว โดยไม่แก้ environment ตัวอย่าง placeholder ที่ต้องตั้งให้ตรงเครื่อง:
+
+```bash
+CCTV_IMAGE_PYTHON=/absolute/path/to/existing/python
+"$CCTV_IMAGE_PYTHON" -B scripts/annotation_contract.py --self-check --config config/local.json --output /absolute/path/to/external-work/fresh-synthetic-check
+```
+
+output ต้องเป็น directory ใหม่ใต้ work_root และไม่อยู่ใน source/repository สคริปต์ปฏิเสธ overwrite และใช้ read-only/model-disabled config Core metadata/guard tests ยังใช้ standard library; PNG roundtrip test จะ skip บน Python ที่ไม่มี Pillow รอบนี้รัน suite ด้วย existing Pillow environment ผ่านครบ ไม่ติดตั้ง packages
+
+ผลตรวจรองรับ PNG dimensions/uint16 IDs/JSON owner-state preservation, crop/resize/padding inverse จุดและการแยก display palette จาก attribute ไม่มีการทดสอบ GUI/COCO/RLE format import/export หรือการคืนรายละเอียดที่หายจากการ downsample ยังไม่พิสูจน์ annotation quality

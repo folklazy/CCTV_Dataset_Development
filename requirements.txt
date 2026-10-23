@@ -2,3 +2,4 @@
 # No packages are installed or model environments changed by this setup.
 # Authorized private visual decode used pre-existing Pillow; not needed for metadata/guard tests.
 # No automatic installation or model execution is provided.
+# The optional synthetic PNG roundtrip test also uses existing Pillow; no auto-install.

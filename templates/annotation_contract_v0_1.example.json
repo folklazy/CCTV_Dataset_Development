@@ -1,0 +1,86 @@
+{
+  "artifact_type": "template_only_not_real_annotation",
+  "schema_version": "0.1-PROPOSED",
+  "guideline_version": "0.1-PROPOSED",
+  "ontology_version": null,
+  "annotation_revision": null,
+  "image": {
+    "image_id": "TEMPLATE_IMAGE_ID",
+    "source_record_ref": null,
+    "payload_sha256": null,
+    "width": null,
+    "height": null,
+    "coordinate_frame": "original_encoded_pixels",
+    "orientation": null
+  },
+  "persons": [
+    {
+      "person_id": "TEMPLATE_IMAGE_LOCAL_PERSON_ID",
+      "temporary_locator_ref": null,
+      "presence_state": "unknown",
+      "observability": "unknown",
+      "annotation_state": "not_annotated",
+      "visible_person_mask_ref": null,
+      "mask_scope_policy_ref": null,
+      "occlusion_notes": null,
+      "truncation_notes": null
+    }
+  ],
+  "regions": [
+    {
+      "region_id": "TEMPLATE_REGION_ID",
+      "person_id": null,
+      "ownership_state": "unknown",
+      "ownership_reason": "template placeholder; owner has not been assessed",
+      "owner_candidates": [],
+      "candidate_concepts": [],
+      "garment_relation_refs": [],
+      "geometry_ref": null,
+      "geometry_coordinate_frame": "original_encoded_pixels",
+      "mask_zero_meaning": "outside_this_support_not_automatic_background",
+      "validity_mask_ref": null,
+      "presence_state": "unknown",
+      "observability": "unknown",
+      "annotation_state": "not_annotated"
+    }
+  ],
+  "attributes": [
+    {
+      "attribute_id": "TEMPLATE_ATTRIBUTE_ID",
+      "region_ref": "TEMPLATE_REGION_ID",
+      "name": "color",
+      "target": "apparent_color_PROPOSED",
+      "value": null,
+      "value_state": "unknown",
+      "applicability": "unknown",
+      "reason": "template placeholder; no observation",
+      "color_vocabulary_ref": null
+    }
+  ],
+  "geometry_transforms": [],
+  "display": {
+    "palette_ref": null,
+    "purpose": "UI only; never clothing-color ground truth"
+  },
+  "description": {
+    "text": null,
+    "claim_refs": [],
+    "status": "not_annotated"
+  },
+  "evaluation": {
+    "disposition": "UNDECIDED",
+    "policy_ref": null,
+    "final_split_assignment": "UNASSIGNED"
+  },
+  "provenance": {
+    "source_version_ref": null,
+    "tool_and_format_version": null,
+    "annotator": null,
+    "reviewer": null,
+    "decision_refs": [],
+    "independent_review_status": "NOT_PERFORMED",
+    "code_commit": null,
+    "created_at": null,
+    "supersedes": null
+  }
+}

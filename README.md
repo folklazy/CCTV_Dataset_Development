@@ -2,7 +2,7 @@
 
 โครงการวิจัยเพื่อพัฒนาชุดภาพ CCTV พร้อมคำตอบอ้างอิงสำหรับประเมิน **Human Parsing ระดับบุคคล** โดยเชื่อมส่วนร่างกายและเสื้อผ้าที่มองเห็นกับเจ้าของในภาพ และบันทึกที่มาข้อมูล กติกา annotation การตรวจทาน และรุ่นของชุดประเมินให้ตรวจย้อนกลับได้
 
-**สถานะ ณ 23 ตุลาคม 2026: สำรวจภาพตาม manifest ครบ 32 records แล้ว พบ 31 unique encoded payloads ยังไม่เริ่ม annotation pilot หรือรันโมเดล** ยังไม่มีชุด annotation หรือ dataset release ที่ยืนยันในพื้นที่งานที่ตรวจ และยังไม่มีผลตรวจคุณภาพ annotation รายงานนี้ไม่ประกาศผลประเมินโมเดล
+**สถานะ ณ 23 ตุลาคม 2026: ร่างคู่มือ annotation v0.1 พร้อมชุดทบทวนภายใน schema ทดลองและแผน pilot แล้ว ทุกกฎยัง PROPOSED ยังไม่เริ่ม annotation จริงหรือ pilot** ยังไม่มีชุด annotation หรือ dataset release ที่ยืนยันในพื้นที่งานที่ตรวจ และยังไม่มีผลตรวจคุณภาพ annotation รายงานนี้ไม่ประกาศผลประเมินโมเดล
 
 ฐานงานเดิมและการเปลี่ยนแปลงหลังได้รับข้อกำหนดใหม่แยกตามเวลาใน [รายงานสถานะ](reports/README.md) เริ่มอ่าน [ประเด็นตัดสินใจ/คำถาม](docs/BENCHMARK_REQUIREMENTS_DRAFT_TH.md) → [แผนสำรวจร่าง](docs/AUDIT_PROTOCOL_DRAFT_TH.md) → [การตรวจแหล่งต้นฉบับห้างาน](docs/EVIDENCE_AND_HYPOTHESES_TH.md) รายละเอียดในร่างเดิมยังแก้ไขได้ ไม่ถือว่าผู้ใช้อนุมัติทั้งหมด
 
@@ -37,7 +37,7 @@ taxonomy, วิธี annotation, Oracle input, metrics และเกณฑ�
 | ประวัติดูภาพก่อนแยก workspace | มีรายงานเดิม เก็บภายใน | เก็บเป็นหลักฐานตามเวลา ไม่แทนผลสำรวจรอบใหม่ |
 | Bounded visual exploration ล่าสุด | เปิดตาม manifest ครบแล้ว | [รายงานสาธารณะ](reports/README.md): 32 records/31 payloads ไม่ใช่ prevalence หรือ annotation QA; รายละเอียดและภาพอยู่ภายนอก Git |
 | Proposed exploration manifest/แบบบันทึก | ใช้รายการเดิมสำรวจและสร้างผล run ใหม่แล้ว | [วิธี 24+8 และ bounded review](docs/AUDIT_PROTOCOL_DRAFT_TH.md); เก็บ draft/รายงานเดิมพร้อมผลใหม่แยกกัน ไม่มี final membership |
-| คู่มือฉบับใช้งานและ annotation pilot | ยังไม่เริ่ม ต้องผ่าน exploration/ตัดสิน scope ก่อน | [guideline template](templates/annotation_guideline.template.md), [case register](docs/CASE_REGISTER_DRAFT_TH.md); ยังไม่มีผล pilot/independent agreement ให้รายงาน |
+| คู่มือ v0.1/schema/review packet/แผน pilot | เตรียมแล้วในสถานะ PROPOSED รอมนุษย์ทบทวน | [คู่มือ](templates/annotation_guideline.template.md), [แผน pilot](templates/quality_review.template.md); ยังไม่มี annotation จริง/pilot/independent agreement |
 | Annotation ที่ผ่าน QA และ dataset release | ยังไม่มีในพื้นที่งานที่ตรวจ | [QA template](templates/quality_review.template.md), [release manifest template](templates/release_manifest.example.json); ยังไม่มี manifest รุ่นจริงหรือผลรับรองคุณภาพ |
 
 Checksum ที่ตรงกัน การจับคู่ชื่อไฟล์ หรือ synthetic tests ที่ผ่าน เป็นหลักฐานด้านไฟล์และการทำงานของเครื่องมือ การยืนยันความถูกต้องของ annotation ต้องได้ผลตรวจจากกระบวนการที่กำหนดต่างหาก ตัวเลขจากรายงานเก่าและข้อสังเกตใน sample ไม่ใช้แทนจำนวนล่าสุดหรือ prevalence ของทั้งชุด
@@ -55,6 +55,14 @@ Checksum ที่ตรงกัน การจับคู่ชื่อไ�
 | 5. เตรียมชุดประเมินเป็นรุ่น | กำหนด membership และการแยกกลุ่มข้อมูลตาม policy ที่อนุมัติ พร้อมข้อจำกัดการใช้ | release manifest, hashes, source/annotation/guideline versions และ code commit |
 
 รายละเอียดวิธี snapshot หน่วยวัด และข้อจำกัดอยู่ใน [audit protocol ร่าง](docs/AUDIT_PROTOCOL_DRAFT_TH.md) ยังไม่สร้าง train/validation/test split หรือเปลี่ยนสถานะคัดภาพในรอบนี้
+
+## คู่มือทดลองและสิ่งที่พร้อมให้มนุษย์ทบทวน
+
+เริ่มที่ [คู่มือ v0.1](templates/annotation_guideline.template.md) ซึ่งขยาย template เดิมเป็นกฎ R01–R12 พร้อมทางเลือก เหตุผล ผลต่อ annotation/evaluation และสถานะรอทบทวน ชุดภาพเต็ม/crops พร้อม Exploration IDs/locators/decision sheet อยู่ภายนอก Git เป็น static HTML ภายใน ไม่ใช่ระบบ annotation ใหม่ และไม่เป็น blinded/independent review
+
+[ตารางตัดสินใจและแผน pilot](templates/quality_review.template.md) เสนอรอบเริ่ม 8 unique payloads โดยแยก calibration/first pass จำนวนนี้ยังไม่อนุมัติ ผู้ทำ ผู้ตรวจ เวลา และกำหนดส่ง OPEN อ่าน [schema ร่าง](docs/DATA_DICTIONARY_TH.md) กับ [contract example](templates/annotation_contract_v0_1.example.json) สำหรับ image/person/region/attribute/state/provenance ที่ยังแก้ได้
+
+Synthetic checks ผ่านเฉพาะ Pillow PNG + JSON และ point transforms: dimensions, IDs/owner/states และ display-color separation ไม่ใช่ผล GUI export/import หรือคุณภาพ annotation ยังไม่มี annotation GUI ที่ตรวจใช้งานได้ใน environment ที่สำรวจ จึงต้องทดสอบเครื่องมือที่เลือกจริงก่อน pilot ไม่มีการติดตั้งหรือย้ายข้อมูลจริงไประบบใหม่
 
 ## หลักการสร้างคำตอบอ้างอิงและตรวจทาน
 

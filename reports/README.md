@@ -78,3 +78,13 @@
 สิ่งที่ร่างเป็นข้อเสนอได้คือ visible-support/unknown, owner/accessory/outer-layer questions, crop provenance, color observability และการไม่เติมคำบรรยายเกินหลักฐาน ต้องให้มนุษย์ทบทวนก่อนใช้สร้าง GT ยังต้องสำรวจเพิ่มเติมภายหลังเรื่อง one-piece ที่เห็นเต็มตัว รองเท้า/เท้าเปล่าชัดเจน หลายสภาพแสง/known modality และ coverage ที่ไม่อยู่ใน sample รอบนี้ไม่เพิ่มสมาชิกและไม่ตรึง taxonomy จำนวนสี QA หรือขนาด final dataset
 
 [Protocol](../docs/AUDIT_PROTOCOL_DRAFT_TH.md) และ [case form](../docs/CASE_REGISTER_DRAFT_TH.md) อธิบายวิธี ส่วน [guard](../scripts/workspace_paths.py)/[synthetic tests](../tests/test_visual_scope.py) ตรวจ permission boundaries รวม tests ปัจจุบัน 14 รายการผ่าน ไม่มีการติดตั้งแพ็กเกจหรือแก้ environment โมเดล การดูภาพใช้ Pillow ที่มีอยู่เดิมและไม่รันโมเดล
+
+## ภาคเพิ่ม 23 ตุลาคม 2026 — คู่มือทดลองและชุดทบทวนหลัง c5139f4
+
+ขยาย [คู่มือเดิมเป็น v0.1](../templates/annotation_guideline.template.md) พร้อม R01–R12 ที่มีคำถาม หลักฐานอ้างภายใน ทางเลือก ข้อเสนอ/เหตุผล ผลต่อ evaluation และสถานะ PROPOSED จัด [ตารางตัดสินใจก่อน pilot/แผน QA](../templates/quality_review.template.md) และ [schema ร่าง](../docs/DATA_DICTIONARY_TH.md) แล้ว ไม่ถือว่าอนุมัติกฎหรือเริ่ม annotation
+
+ชุด static HTML ภายในมี 10 unique cached payloads พร้อม full frames/display crops/locators/ทางเลือกและ decision sheet ยัง PENDING_HUMAN_REVIEW ใช้เฉพาะข้อมูลใน 32 records เดิม ไม่เปิดภาพใหม่จาก ZIP ไม่วาด masks จริงและไม่มี blinded/independent human review ประวัติเปิดจริงแยกไว้ใน run ใหม่ ไม่แก้ observations/curation เดิม
+
+Synthetic-only checks ตรวจ PNG dimensions/IDs/owner-state preservation/point inverse และแยก display palette จากสีเสื้อ ใช้ Pillow/JSON ที่มีอยู่ ชุด tests รวม 17 รายการผ่าน ไม่มีเครื่องมือ annotation GUI ที่ยืนยันใช้งานได้ใน scope ที่สำรวจ จึงยังไม่มี GUI/COCO/RLE roundtrip หรือ human annotation reliability ผลทดสอบนี้ไม่พิสูจน์ annotation quality
+
+แผน pilot เสนอ 8 unique images แยก calibration/first pass ตามกฎที่ต้องทดสอบ จำนวนยังไม่อนุมัติ คน/ผู้ตรวจ/เวลา/กำหนดส่ง OPEN ไม่มี agreement threshold หรือ Final Dataset count/Final Test ที่กำหนดแล้ว One-piece ชัด รองเท้า/เท้าเปล่าหลายมุมและ known modality ยังเป็นช่องว่างเพื่อเสนอสำรวจเฉพาะจุดภายหลัง

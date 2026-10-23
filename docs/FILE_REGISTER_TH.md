@@ -36,6 +36,12 @@
 
 รอบ bounded visual หลัง b8bb9ed: public เพิ่มเฉพาะ guard/tests และวิธีการ/สรุปที่ไม่มี per-image IDs รายชื่อบริษัท หรือภาพ ส่วน payload/crops, CRC/SHA/decode receipts, fresh observations/locator rows, discovery/legacy comparison, exposure/time gaps และรายงานจริงเก็บใน fresh external run ไม่แก้ draft หรือ historical reports
 
+รอบคู่มือ v0.1 ใช้ annotation_guideline.template.md และ quality_review.template.md เดิมเป็นคู่มือ/แผน pilot พร้อมปรับ DATA_DICTIONARY_TH.md เพิ่ม schema ร่าง เพิ่มเฉพาะ contract example, synthetic checker และ tests ที่จำเป็น ส่วน static review HTML/images/crops/Exploration IDs/locators/decision sheet และผลตรวจจริงอยู่นอก Git ไม่แก้รายงาน/observations เดิม
+
+- `scripts/annotation_contract.py`: reference/state/coordinate checks และ synthetic-only PNG/JSON self-check ไม่เป็น annotation GUI/importer และไม่อ่านภาพ CCTV
+- `tests/test_annotation_contract.py`: inverse geometry, safe output, PNG/JSON roundtrip และ failure cases ของ owner/unknown/dimensions; PNG test ต้องมี Pillow ที่ติดตั้งอยู่แล้ว
+- `templates/annotation_contract_v0_1.example.json`: placeholder ของ image/person/region/attribute/provenance; ไม่มี masks หรือแถว annotation จริง
+
 ## Mapping และ checksum
 
 `work_root/provenance/migration_copy_manifest.json` บันทึกทุก old path→copy path, size, SHA256 และผล copy verification ก่อนปรับ code/doc สำเนาเดิมทั้งหมดคง byte-identical ภายใต้ legacy/ ส่วน versionable migration index บันทึกการปรับโดยไม่แนบ raw records หรือ filenames รายภาพ

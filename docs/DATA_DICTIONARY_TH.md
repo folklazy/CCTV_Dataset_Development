@@ -18,3 +18,23 @@
 เทียบ CSV/JSON/XLSX ทุก field และจำนวนซ้ำ ใช้ null→empty normalization เฉพาะ comparison โดยไม่เขียนกลับต้นทาง CSV row locator ใช้ trace ภายใน snapshot ไม่ใช่ stable event/person ID
 
 Identity, byte SHA256, ZIP CRC header, decoded image validity และ person geometry เป็นคนละข้อมูล CRC header ไม่เท่ากับ payload verification คนหลายคนในภาพต้องมี binding ที่พิสูจน์ได้ ไม่ถ่ายทอด category ให้ทุกคนเอง
+
+## Annotation schema ทดลอง v0.1 — PROPOSED หลัง c5139f4
+
+metadata dictionary ด้านบนคงความหมายตาม export ไม่เพิ่ม raw curation notes/status จากงาน annotation แบบ [contract example](../templates/annotation_contract_v0_1.example.json) เป็นโครง placeholder ไม่ใช่ข้อมูลจริง และไม่ใช่ JSON Schema ที่ตรวจครอบคลุมทุก field ด้วย validator อัตโนมัติ
+
+| Entity / field group | ความสัมพันธ์ที่เสนอ / สิ่งที่ยังไม่ตรึง |
+| --- | --- |
+| image | image ID + source record ref + payload SHA256 แยกจากกัน; original width/height/orientation/coordinate frame; ไม่เอา filename time เป็น event identity |
+| person | image-local person ID ที่สร้างเมื่อ annotate จริง แยก temporary locator ref; visible mask ref/mask-scope policy, presence/observability/workflow; ไม่ยืนยันบุคคลข้ามภาพ |
+| region | region ID → owner person ref เมื่อ known; unknown owner เป็น null พร้อม candidates/reason, geometry/validity refs แยก; เสื้อหลายชั้น/one-piece relation และ candidate concepts ยัง PROPOSED |
+| attribute | attribute ID → region ref; apparent color target เป็นข้อเสนอ, value/state/reason/applicability/lexicon ref แยกกัน ไม่กำหนดชื่อ/จำนวนสี |
+| display | palette/style refs เพื่อดู masks ไม่ใช่ attribute สีเสื้อ; เปลี่ยน palette ต้องไม่เปลี่ยน semantic/instance raster หรือคำตอบสี |
+| geometry | canonical original encoded-pixel coordinates; crop/scale/padding/affine chain ชัดเจน; raster dimensions ตรง image; การย่อสูญรายละเอียดได้แม้ inverse จุดถูก |
+| provenance/revision | source/tool/schema/guideline/ontology/code versions, annotator/reviewer, decision refs, annotation revision/supersedes; human review ไม่เกิดจาก checksum |
+| description | text/claim refs/status; สร้างจาก facts ที่มี support และ uncertainty ไม่เติมสี/บทบาท/identity ที่ไม่มีหลักฐาน; ยังไม่มี description GT |
+| evaluation | disposition/policy ref และ Final Test UNASSIGNED; unknown/ignore/not annotated ไม่ถูกแปลงเป็น background/absent; ไม่กำหนด metric domain สุดท้ายในร่างนี้ |
+
+ศูนย์ของ binary region mask หมายถึงนอก support ของ region นั้น ไม่ได้ยืนยันว่าเป็น known background ของทุก task บริเวณไม่เห็น/ถูกปิด/ยังไม่ annotate ต้องใช้ validity/state ที่ยังเสนอแยกกัน ไม่สร้าง person ปลอมเพื่อให้ owner field ไม่ว่าง และไม่ทิ้ง partial people เพราะข้อมูลไม่ครบ
+
+[annotation_contract.py](../scripts/annotation_contract.py) ตรวจ subset ของ contract (IDs/owner refs/value states/dimensions) และทำ synthetic-only PNG/JSON roundtrip ไม่ได้เป็น annotation GUI/importer หรือ validator ครอบ schema ทั้งหมด Numeric IDs และ validity codes ใน fixture เป็นค่าทดสอบสมมติ ไม่ใช่ ontology ที่อนุมัติ ตัวอย่างจริง/รายชื่อและ masks จริงทั้งหมดต้องอยู่นอก repository
