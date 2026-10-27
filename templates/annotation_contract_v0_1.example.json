@@ -2,7 +2,7 @@
   "artifact_type": "template_only_not_real_annotation",
   "schema_version": "0.1-PROPOSED",
   "guideline_version": "0.1-PROPOSED",
-  "ontology_version": null,
+  "ontology_version": "cctv-design-v0.1-PROPOSED",
   "annotation_revision": null,
   "image": {
     "image_id": "TEMPLATE_IMAGE_ID",
@@ -11,7 +11,13 @@
     "width": null,
     "height": null,
     "coordinate_frame": "original_encoded_pixels",
-    "orientation": null
+    "orientation": null,
+    "source_scope": {
+      "value": "unknown",
+      "basis": null,
+      "source_crop_transform": null
+    },
+    "file_check_ref": null
   },
   "persons": [
     {
@@ -23,7 +29,28 @@
       "visible_person_mask_ref": null,
       "mask_scope_policy_ref": null,
       "occlusion_notes": null,
-      "truncation_notes": null
+      "truncation_notes": null,
+      "bbox_visible": {
+        "coordinates_xyxy": null,
+        "coordinate_frame": "original_encoded_pixels",
+        "method": null,
+        "ground_truth_in_this_template": false
+      },
+      "scale_observation": {
+        "visible_extent_y": null,
+        "visible_height_px": null,
+        "measurement_method": null,
+        "full_body_height_estimate_px": null,
+        "world_distance_m": null,
+        "calibration_ref": null
+      },
+      "task_views": {
+        "upper_garment_region_refs": [],
+        "lower_garment_region_refs": [],
+        "footwear_region_refs": [],
+        "cross_zone_projection_state": "not_annotated",
+        "validity_policy_ref": null
+      }
     }
   ],
   "regions": [
@@ -41,7 +68,13 @@
       "validity_mask_ref": null,
       "presence_state": "unknown",
       "observability": "unknown",
-      "annotation_state": "not_annotated"
+      "annotation_state": "not_annotated",
+      "region_kind": "unknown",
+      "semantic_class_id": null,
+      "semantic_assignment_state": "not_annotated",
+      "visibility": "unknown",
+      "maskability": "not_assessed",
+      "attribute_readability": "not_assessed"
     }
   ],
   "attributes": [
@@ -81,6 +114,25 @@
     "independent_review_status": "NOT_PERFORMED",
     "code_commit": null,
     "created_at": null,
-    "supersedes": null
-  }
+    "supersedes": null,
+    "inspection_and_exposure_refs": [],
+    "source_record_alias_refs": []
+  },
+  "ontology_proposal": {
+    "status": "PROPOSED_NOT_USER_APPROVED",
+    "definition_ref": "../docs/DATASET_DESIGN_V0_1_TH.md",
+    "core_classes": {
+      "1": "head_region",
+      "2": "exposed_body",
+      "3": "upper_garment",
+      "4": "lower_garment",
+      "5": "cross_zone_garment",
+      "6": "footwear"
+    },
+    "auxiliary_classes": {
+      "101": "associated_object"
+    },
+    "background_unknown_ignore_are_semantic_classes": false
+  },
+  "relations": []
 }

@@ -38,3 +38,14 @@ metadata dictionary ด้านบนคงความหมายตาม ex
 ศูนย์ของ binary region mask หมายถึงนอก support ของ region นั้น ไม่ได้ยืนยันว่าเป็น known background ของทุก task บริเวณไม่เห็น/ถูกปิด/ยังไม่ annotate ต้องใช้ validity/state ที่ยังเสนอแยกกัน ไม่สร้าง person ปลอมเพื่อให้ owner field ไม่ว่าง และไม่ทิ้ง partial people เพราะข้อมูลไม่ครบ
 
 [annotation_contract.py](../scripts/annotation_contract.py) ตรวจ subset ของ contract (IDs/owner refs/value states/dimensions) และทำ synthetic-only PNG/JSON roundtrip ไม่ได้เป็น annotation GUI/importer หรือ validator ครอบ schema ทั้งหมด Numeric IDs และ validity codes ใน fixture เป็นค่าทดสอบสมมติ ไม่ใช่ ontology ที่อนุมัติ ตัวอย่างจริง/รายชื่อและ masks จริงทั้งหมดต้องอยู่นอก repository
+
+
+## Dataset Design v0.1 — การขยาย 27 ตุลาคม 2026
+
+[ข้อเสนอแบบมีคำแนะนำชัดเจน](DATASET_DESIGN_V0_1_TH.md) ระบุ core parsing IDs 1–6 และ auxiliary ID 101 ในสถานะ PROPOSED พร้อมขอบเขต/เหตุผล ไม่ใช่การตรึง ID จาก benchmark อื่น แบบ contract เดิมเพิ่ม ontology proposal, source image scope, visible bbox/scale observation, task views, region kind/semantic assignment/visibility/maskability/readability, relations และ exposure/alias refs โดยไม่มี annotation จริง
+
+ภาพและบุคคลใช้สามคำถามแยกกัน: มีหลักฐานว่า target อยู่หรือไม่ → อ่านขอบพอทำ mask หรือไม่ → อ่านชนิด/สี/รายละเอียดหรือไม่ not_assessed ไม่ใช่ unobservable การตรวจภาพไม่เปลี่ยน not_annotated ของงาน masks และไม่เขียน source curation status
+
+outside_core_vocabulary คือทราบชนิดแต่ไม่ได้อยู่ใน core labels ต่างจาก unknown ที่ยังไม่ทราบ และจาก absent ที่ทราบว่าไม่มี Region ที่ไม่มี core label อาจยังเป็น person support ได้ ต้องมี validity/provenance ไม่กลายเป็น known scene background โดยอัตโนมัติ source_scope ต้องมี basis; ภาพ tight framing ไม่ได้พิสูจน์ประวัติ crop เอง
+
+ไฟล์ JSON เป็น example contract ที่แก้ได้ ไม่ใช่ JSON Schema validator เต็มรูปแบบ ความสัมพันธ์ owner/geometry ของ format เครื่องมือจริงยังต้องตรวจเมื่อเลือกเครื่องมือ ไม่มี annotation agreement หรือเวลา annotation ที่วัดแล้ว

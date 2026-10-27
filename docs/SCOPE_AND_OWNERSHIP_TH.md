@@ -90,3 +90,23 @@ CCTV_IMAGE_PYTHON=/absolute/path/to/existing/python
 output ต้องเป็น directory ใหม่ใต้ work_root และไม่อยู่ใน source/repository สคริปต์ปฏิเสธ overwrite และใช้ read-only/model-disabled config Core metadata/guard tests ยังใช้ standard library; PNG roundtrip test จะ skip บน Python ที่ไม่มี Pillow รอบนี้รัน suite ด้วย existing Pillow environment ผ่านครบ ไม่ติดตั้ง packages
 
 ผลตรวจรองรับ PNG dimensions/uint16 IDs/JSON owner-state preservation, crop/resize/padding inverse จุดและการแยก display palette จาก attribute ไม่มีการทดสอบ GUI/COCO/RLE format import/export หรือการคืนรายละเอียดที่หายจากการ downsample ยังไม่พิสูจน์ annotation quality
+
+
+## Whole-export review หลังขยายขอบเขต
+
+คำสั่งผู้ใช้ 27 ตุลาคม 2026 อนุญาตตรวจ current export ทั้งชุดแทน limit 32 เดิม ใช้ `phase=dataset_inventory_and_visual_review`, `inspect_images=true`, `source_read_only=true` และ flags model/annotation/training/benchmark=false เพิ่ม `dataset_review_scope` ใน ignored local config: `manifest_path`, `manifest_sha256`, `approved_count` ผูกกับ manifest ภายนอกที่มี authorization, metadata SHA256, record-to-archive-member mapping และ archive piece signatures คง loader bounded เดิมสำหรับประวัติ ไม่เปิด capability อื่นตาม phase
+
+สคริปต์ [dataset_review.py](../scripts/dataset_review.py) ใช้ private run ที่เป็นเจ้าของ manifest เท่านั้น ตัวอย่าง placeholder ต่อไปนี้ต้องแทนด้วย existing Python/run ที่ตรวจแล้ว ไม่ใช่คำสั่งสร้าง scope หรืออนุญาต dataset ใหม่:
+
+```bash
+CCTV_REVIEW_PYTHON=/absolute/path/to/existing/python-with-pillow
+CCTV_REVIEW_RUN=/absolute/path/to/external-work/runs/current-authorized-review
+"$CCTV_REVIEW_PYTHON" -B scripts/dataset_review.py --run "$CCTV_REVIEW_RUN" status
+"$CCTV_REVIEW_PYTHON" -B scripts/dataset_review.py --run "$CCTV_REVIEW_RUN" next-batch --batch-sheets 4
+```
+
+`check-files --workers 2` ตรวจเฉพาะ NOT_CHECKED/CACHE_ERROR และเก็บ attempt history; source decode failures ไม่ retry/แทนที่เงียบ ๆ `make-sheets --seed 20261027` ใช้ metadata strata ที่ยืนยัน field ได้ ไม่ใช้ category เป็น person class หรือเวลาเป็น modality/event identity Freeze seed/order ก่อนสร้าง sheets และปฏิเสธการผสมแผนใหม่ใน run เดิม ทั้งสองคำสั่งนี้ต้องมี Pillow เดิม ไม่จำเป็นต้องรันตรวจไฟล์ซ้ำเมื่อ inventory/checkpoint ครบและ inputs ไม่เปลี่ยน
+
+`next-batch` ไม่เปิดภาพหรือสร้าง observation ส่วน `status` ไม่ตรวจคุณภาพ annotation ต้องเปิดภาพจริงผ่าน viewer แล้วบันทึก display/exposure และ observations พร้อมระดับ overview/native, observed/inference/needs review ใน private ledger ก่อนนับ coverage ภาพ diagnostic ที่ strict decode ไม่ผ่านคงสถานะแยก ไม่เพิ่ม canonical coverage โดยอัตโนมัติ ตัว helper บันทึกข้อสังเกต/รายงานจริงอยู่ภายนอก Git
+
+Default metadata CLI ยังคงต้อง `inspect_images=false` จึงไม่ใช้ local config ที่เปิด visual phase มาข้าม guard ของ metadata tools ใช้ snapshot ที่มีอยู่หรือ config เฉพาะ metadata ที่ยังปิดภาพเมื่อมีเหตุให้ตรวจใหม่ ส่วน synthetic tests ไม่ใช้ local config และไม่เปิดข้อมูลจริง

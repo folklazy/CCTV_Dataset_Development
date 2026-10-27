@@ -42,6 +42,10 @@
 - `tests/test_annotation_contract.py`: inverse geometry, safe output, PNG/JSON roundtrip และ failure cases ของ owner/unknown/dimensions; PNG test ต้องมี Pillow ที่ติดตั้งอยู่แล้ว
 - `templates/annotation_contract_v0_1.example.json`: placeholder ของ image/person/region/attribute/provenance; ไม่มี masks หรือแถว annotation จริง
 
+## Whole-export review และ Dataset Design v0.1
+
+รอบ whole-export review 27 ตุลาคม 2026 เพิ่ม `scripts/dataset_review.py`, `tests/test_dataset_review.py` และ [Dataset Design v0.1](DATASET_DESIGN_V0_1_TH.md) ใช้ DATA_DICTIONARY/contract example/requirements เดิมต่อ ไม่สร้าง annotation app ใหม่ Full manifests, SQLite ledger, payloads/thumbnails/contact sheets, per-record statuses, observations, diagnostics, class evidence IDs และ checkpoints จริงอยู่ใน external work_root เท่านั้น ไม่เป็นไฟล์ที่นำขึ้น public Git
+
 ## Mapping และ checksum
 
 `work_root/provenance/migration_copy_manifest.json` บันทึกทุก old path→copy path, size, SHA256 และผล copy verification ก่อนปรับ code/doc สำเนาเดิมทั้งหมดคง byte-identical ภายใต้ legacy/ ส่วน versionable migration index บันทึกการปรับโดยไม่แนบ raw records หรือ filenames รายภาพ

@@ -2,9 +2,11 @@
 
 โครงการวิจัยเพื่อพัฒนาชุดภาพ CCTV พร้อมคำตอบอ้างอิงสำหรับประเมิน **Human Parsing ระดับบุคคล** โดยเชื่อมส่วนร่างกายและเสื้อผ้าที่มองเห็นกับเจ้าของในภาพ และบันทึกที่มาข้อมูล กติกา annotation การตรวจทาน และรุ่นของชุดประเมินให้ตรวจย้อนกลับได้
 
-**สถานะ ณ 23 ตุลาคม 2026: ร่างคู่มือ annotation v0.1 พร้อมชุดทบทวนภายใน schema ทดลองและแผน pilot แล้ว ทุกกฎยัง PROPOSED ยังไม่เริ่ม annotation จริงหรือ pilot** ยังไม่มีชุด annotation หรือ dataset release ที่ยืนยันในพื้นที่งานที่ตรวจ และยังไม่มีผลตรวจคุณภาพ annotation รายงานนี้ไม่ประกาศผลประเมินโมเดล
+**สถานะ ณ 27 ตุลาคม 2026: ตรวจไฟล์ export ทั้งชุดแล้ว และกำลังคัดกรองภาพจริงเป็น batches พร้อม checkpoint** มี [Dataset Design v0.1](docs/DATASET_DESIGN_V0_1_TH.md) เสนอ core parsing classes 6 คลาสกับ auxiliary objects และโครงสร้าง person/region/owner/validity ทุกข้อยัง PROPOSED การเปิดดูภาพยังไม่ครบทุก unique payload ไม่ใช่ annotation/pilot หรือผลโมเดล
 
 ฐานงานเดิมและการเปลี่ยนแปลงหลังได้รับข้อกำหนดใหม่แยกตามเวลาใน [รายงานสถานะ](reports/README.md) เริ่มอ่าน [ประเด็นตัดสินใจ/คำถาม](docs/BENCHMARK_REQUIREMENTS_DRAFT_TH.md) → [แผนสำรวจร่าง](docs/AUDIT_PROTOCOL_DRAFT_TH.md) → [การตรวจแหล่งต้นฉบับห้างาน](docs/EVIDENCE_AND_HYPOTHESES_TH.md) รายละเอียดในร่างเดิมยังแก้ไขได้ ไม่ถือว่าผู้ใช้อนุมัติทั้งหมด
+
+สำหรับรอบตรวจทั้งชุด เริ่มที่ [Dataset Design v0.1](docs/DATASET_DESIGN_V0_1_TH.md): ตาราง proposed IDs/นิยาม ขอบเขต ambiguous garments, โครงสร้างข้อมูลและข้อเสนอแผนคัดประมาณ 2,400 ภาพในกรอบสองพันกว่าแต่ไม่เกินสามพัน จำนวนนี้ไม่ใช่ Final Test หรือ membership ที่ตรึงแล้ว หลักฐานภาพและสถานะราย record อยู่ภายนอก Git
 
 ## ที่มาและวัตถุประสงค์
 
@@ -33,9 +35,10 @@ taxonomy, วิธี annotation, Oracle input, metrics และเกณฑ�
 | --- | --- | --- |
 | Repository และเครื่องมือสำรวจ | มีแล้ว ตรวจจากไฟล์ปัจจุบันได้ | [scripts/](scripts/), [tests/](tests/), [config example](config/audit.example.json); การทดสอบสังเคราะห์ตรวจพฤติกรรมเครื่องมือ |
 | ข้อกำหนด เคส และแบบฟอร์ม | มีแล้วในสถานะ DRAFT | [ดัชนีเอกสาร](docs/FOUNDATION_INDEX_TH.md), [templates/](templates/); การมีไฟล์ไม่ได้ยืนยันว่ากติกาใช้ annotate ได้จริง |
-| Metadata/หลักฐาน audit เดิม | ตรวจ metadata แบบจำกัดและเทียบ hash แล้ว | [รายงานฐานงาน](reports/README.md); filename ตรง inventory เดิม แต่ไม่อ่าน ZIP payload ใหม่หรือยืนยันคุณภาพภาพ/annotation |
+| Metadata/หลักฐาน audit | ตรวจทั้ง current export และใช้ประวัติตาม snapshot | [รายงานฐานงาน](reports/README.md); แยก directory linkage, CRC/decode/duplicate checks ออกจากการดูภาพและ annotation quality |
+| Whole-export file/visual review | file checks ครบ; visual screening กำลังทำต่อ | [วิธีและข้อเสนอ](docs/DATASET_DESIGN_V0_1_TH.md), [เครื่องมือ](scripts/dataset_review.py); generated sheets ไม่เท่ากับ reviewed มีสถานะ/จำนวนคงเหลือราย record ใน private checkpoint |
 | ประวัติดูภาพก่อนแยก workspace | มีรายงานเดิม เก็บภายใน | เก็บเป็นหลักฐานตามเวลา ไม่แทนผลสำรวจรอบใหม่ |
-| Bounded visual exploration ล่าสุด | เปิดตาม manifest ครบแล้ว | [รายงานสาธารณะ](reports/README.md): 32 records/31 payloads ไม่ใช่ prevalence หรือ annotation QA; รายละเอียดและภาพอยู่ภายนอก Git |
+| Bounded visual exploration รอบก่อน | เปิดตาม manifest ครบแล้ว | [รายงานสาธารณะ](reports/README.md): 32 records/31 payloads ไม่ใช่ prevalence หรือ annotation QA; รายละเอียดและภาพอยู่ภายนอก Git |
 | Proposed exploration manifest/แบบบันทึก | ใช้รายการเดิมสำรวจและสร้างผล run ใหม่แล้ว | [วิธี 24+8 และ bounded review](docs/AUDIT_PROTOCOL_DRAFT_TH.md); เก็บ draft/รายงานเดิมพร้อมผลใหม่แยกกัน ไม่มี final membership |
 | คู่มือ v0.1/schema/review packet/แผน pilot | เตรียมแล้วในสถานะ PROPOSED รอมนุษย์ทบทวน | [คู่มือ](templates/annotation_guideline.template.md), [แผน pilot](templates/quality_review.template.md); ยังไม่มี annotation จริง/pilot/independent agreement |
 | Annotation ที่ผ่าน QA และ dataset release | ยังไม่มีในพื้นที่งานที่ตรวจ | [QA template](templates/quality_review.template.md), [release manifest template](templates/release_manifest.example.json); ยังไม่มี manifest รุ่นจริงหรือผลรับรองคุณภาพ |
@@ -104,6 +107,8 @@ python3 -B scripts/audit_package.py --check-config
 python3 -B scripts/prepare_handoff.py
 ```
 
+เครื่องมือ whole-export review และคำสั่ง resume อยู่ใน [วิธีใช้งาน](docs/SCOPE_AND_OWNERSHIP_TH.md) ต้องใช้ private hash-pinned scope ที่ได้รับอนุญาต คำสั่ง `next-batch` ส่งรายการสำหรับเปิดดู ไม่ mark reviewed ให้อัตโนมัติ
+
 `audit_package.py` แบบไม่ใส่ `--check-config` ใช้ตรวจ metadata exports กับ ZIP directory และ hash ไฟล์แพ็กเกจ เขียน run ใหม่ใต้ external `work_root/runs/` โดยไม่ decode ภาพ ยังไม่มี annotation runner, QA adjudication system หรือ release builder อัตโนมัติ
 
 ## การเชื่อมรุ่นข้อมูล คู่มือ annotation และ code
@@ -130,9 +135,9 @@ Repository public นี้เผยแพร่โค้ด เครื่อ�
 
 ยังไม่ยืนยัน taxonomy ที่เหมาะกับภาพจริงทั้งชุด ความสอดคล้องระหว่างผู้ทำ annotation ค่า coverage/unknown ที่ยอมรับได้ หรือคุณภาพ reference annotations การสำรวจแบบจำกัดยังไม่ตอบคำถามเหล่านี้ทั้งหมด และยังไม่มีผลประเมินโมเดลบน dataset รุ่นที่พร้อมใช้
 
-ต้องรักษา raw curation statuses และ notes ตามต้นฉบับ `pending` ใน export ปัจจุบันไม่ลบล้าง selected/rejected/flagged เดิม ส่วน event `category` ไม่ผูกบทบาทให้ทุกคนในภาพโดยอัตโนมัติ
+ต้องรักษา raw curation statuses และ notes ตามต้นฉบับ `pending` ใน export ปัจจุบันไม่ลบล้าง selected/rejected/flagged เดิม ส่วน record-level `category` ยังไม่มี authoritative event/person binding จึงไม่ผูกบทบาทให้ทุกคนในภาพโดยอัตโนมัติ
 
-ขั้นต่อไปคือร่างกฎ visible support/owner/accessory/ชั้นเสื้อ/สีที่ยังไม่แน่ใจให้มนุษย์ทบทวน และเสนอการสำรวจเพิ่มเฉพาะช่องว่าง เช่นชุดชิ้นเดียว รองเท้า/เท้าเปล่า และ coverage ที่ขาด ก่อนจัด annotation pilot กับผู้ทำจริง รอบนี้ไม่เปิดภาพนอก manifest ไม่ทำ annotation, inference, training หรือ benchmark และไม่แก้ metadata/ผลคัดเลือก/ผลทดลองเดิม
+งานปัจจุบันคือคัดกรองภาพที่ยังไม่ได้เปิดต่อจาก private checkpoint และตรวจ native เฉพาะกรณีที่มีผลต่อ class/owner/สี โดยใช้ scope ทั้ง current export ที่ผู้ใช้อนุญาตแล้ว ไม่จำกัดอยู่ที่ manifest 32 records เดิม ข้อเสนอ [Dataset Design v0.1](docs/DATASET_DESIGN_V0_1_TH.md) พร้อมให้ทบทวนด้าน class/schema และแผนคัด candidate แต่ยังไม่ประกาศ taxonomy ผ่านการตรวจทั้งประชากร รอบนี้ไม่ทำ annotation/pilot, inference, training หรือ benchmark ไม่กำหนด Final Test และไม่แก้ metadata/ผลคัดเลือก/ผลทดลองเดิม
 
 ## แหล่งอ้างอิงที่ใช้ตั้งโจทย์
 

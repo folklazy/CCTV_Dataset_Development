@@ -39,12 +39,13 @@ def validate_config(config, repository=REPOSITORY, purpose="metadata"):
     if purpose == "metadata":
         if result.get("inspect_images") is not False:
             raise ValueError("Metadata commands require inspect_images=false")
-    elif purpose == "bounded_visual":
+    elif purpose in {"bounded_visual", "dataset_review"}:
+        phase = "bounded_visual_exploration" if purpose == "bounded_visual" else "dataset_inventory_and_visual_review"
         if (result.get("inspect_images") is not True
-                or result.get("phase") != "bounded_visual_exploration"
+                or result.get("phase") != phase
                 or any(result.get(k) is not False for k in
                        ("annotation_enabled", "training_enabled", "benchmark_enabled"))):
-            raise ValueError("Explicit bounded visual scope and disabled other capabilities required")
+            raise ValueError("Explicit authorized visual phase and disabled other capabilities required")
     else:
         raise ValueError("Unsupported capability")
     if any(result.get(k, False) is not False for k in
@@ -105,6 +106,51 @@ def load_visual_scope(path=None, repository=REPOSITORY):
         source = by_name.get(row["filename"])
         if source is None or any(row[k] != source[v] for k, v in checks.items()):
             raise ValueError("Proposal record no longer matches metadata")
+    return config, manifest
+
+
+def load_dataset_review_scope(path=None, repository=REPOSITORY):
+    """Validate an explicitly authorized whole-current-export review, not annotation."""
+    path = Path(path) if path else repository / "config/local.json"
+    config = validate_config(json.loads(path.read_text(encoding="utf-8")),
+                             repository=repository, purpose="dataset_review")
+    scope = config.get("dataset_review_scope", {})
+    target = Path(scope.get("manifest_path", ""))
+    if (not target.is_absolute() or target.is_symlink()
+            or not target.resolve(strict=True).is_relative_to(Path(config["work_root"]))):
+        raise ValueError("Whole-dataset review manifest must be private and external")
+    data = target.read_bytes()
+    if hashlib.sha256(data).hexdigest() != scope.get("manifest_sha256"):
+        raise ValueError("Whole-dataset review manifest checksum changed")
+    manifest = json.loads(data)
+    if manifest.get("authorization") != "user_authorized_current_dataset_read_only_review":
+        raise ValueError("Explicit current-dataset review authorization required")
+    metadata = Path(config["metadata_csv"]).read_bytes()
+    if hashlib.sha256(metadata).hexdigest() != manifest.get("metadata_sha256"):
+        raise ValueError("Metadata snapshot changed")
+    rows = list(csv.DictReader(io.StringIO(metadata.decode("utf-8-sig"))))
+    records = manifest.get("records", [])
+    if not rows or len(records) != len(rows) or scope.get("approved_count") != len(rows):
+        raise ValueError("Whole-export scope must match every metadata record")
+    ids = [r["record_id"] for r in records]
+    if len(set(ids)) != len(ids) or any(re.fullmatch(r"R\d{5,8}", x) is None for x in ids):
+        raise ValueError("Review record IDs must be unique and safe")
+    for row, record in zip(rows, records):
+        if record["metadata"] != row:
+            raise ValueError("Review record differs from approved metadata snapshot")
+    source = Path(config["dataset_root"])
+    for part in manifest.get("archive_parts", []):
+        name = part["name"]
+        if Path(name).name != name:
+            raise ValueError("Unsafe archive piece path")
+        p = source / name
+        if p.is_symlink() or not p.is_file():
+            raise ValueError("Archive piece unavailable")
+        st = p.stat()
+        if [st.st_size, st.st_mtime_ns] != part["size_mtime_ns"]:
+            raise ValueError("Archive piece changed after review scope creation")
+    if not manifest.get("archive_parts"):
+        raise ValueError("Archive scope cannot be empty")
     return config, manifest
 
 

@@ -90,3 +90,18 @@ Synthetic-only checks ตรวจ PNG dimensions/IDs/owner-state preservation/p
 แผน pilot เสนอ 8 unique images แยก calibration/first pass ตามกฎที่ต้องทดสอบ จำนวนยังไม่อนุมัติ คน/ผู้ตรวจ/เวลา/กำหนดส่ง OPEN ไม่มี agreement threshold หรือ Final Dataset count/Final Test ที่กำหนดแล้ว One-piece ชัด รองเท้า/เท้าเปล่าหลายมุมและ known modality ยังเป็นช่องว่างเพื่อเสนอสำรวจเฉพาะจุดภายหลัง
 
 ตรวจเนื้อหาต่อหลัง c6f28c4: ปรับทางเลือก A/B/C ของ R01–R12 เป็นวิธีเก็บข้อมูล/แบ่งขั้นงานที่ใช้ได้ภายใต้ constraints พร้อมผลกระทบของแต่ละทางเลือก ข้อเสนอหลักยังเดิมและ PROPOSED ไม่ให้วิธีที่ขัดข้อกำหนดกลายเป็นตัวเลือกอนุมัติ ชุดทบทวนภายในปรับข้อความตามกันและเก็บฉบับก่อนแก้ ไม่มีภาพใหม่หรือ annotation เพิ่ม
+
+
+## Whole-export review และ Dataset Design v0.1 — 27 ตุลาคม 2026
+
+คำสั่งใหม่จากผู้ใช้ขยาย read-only file/visual review จาก manifest เดิมไปยัง current export ทั้งชุด พร้อมขอข้อเสนอ class/schema และแผนคัดสองพันกว่าไม่เกินสามพันภาพ ขอบเขตนี้ไม่เปิด annotation/pilot/model/training/benchmark และไม่กำหนด Final Test รายงาน foundation/preparation/visual/guideline ข้างต้นคงเป็นหลักฐานตามเวลาของตน
+
+CONFIRMED เฉพาะไฟล์: ตรวจ metadata exports/linkage และ CRC/decode/dimensions/byte-vs-pixel duplicates ทั้ง population ที่เข้าถึงได้ เก็บผลแยก strict failures กับ alternate-decoder diagnostics ไม่แก้ต้นฉบับหรือ curation statuses ข้ออ้างย้อนหลังบางส่วนยังไม่มีข้อมูลต้นทางรองรับ และพบว่าข้ออ้าง dimensions แบบเดียวทั้งชุดไม่ตรงกับไฟล์จริง
+
+**Visual screening ยังไม่ครบ** มี actual display events, overview notes และ targeted native observations เพิ่มจากชุดเดิม พร้อมสถานะทุก record/duplicate alias และ checkpoint ภายใน การสร้าง sheets หรือมี coverage บางภาพทุก metadata group ไม่เท่ากับตรวจภาพทั้งหมด ไม่เผยแพร่ actual IDs, metadata, paths, ภาพ/crops หรือหลักฐานบริษัท
+
+[Dataset Design v0.1](../docs/DATASET_DESIGN_V0_1_TH.md) ส่งมอบตาราง 6 core classes + auxiliary object, person/region/owner/validity/geometry contract, สีเป็น attribute และการเชื่อม structured output เสนอ cross-zone garment ที่ไม่สร้างเส้นแบ่งเอวสมมติ เก็บชิ้นสวมนอก core และ unknown ต่างจาก background ทุกข้อยัง PROPOSED พร้อม private native evidence binding ไม่ใช่ GT/ข้ออนุมัติผู้ใช้
+
+แผน 2,400 unique image groups เป็น operating target ในกรอบผู้ใช้ ใช้ metadata coverage กับ visually confirmed diversity และ review ความใกล้ซ้ำ ไม่ใช่ Final Test หรือ membership ที่เลือกแล้ว [คำสั่ง resume](../docs/SCOPE_AND_OWNERSHIP_TH.md) ใช้ inventory เดิมต่อได้ ไม่ต้อง decode ทั้งชุดใหม่ สถานะจำนวนเปิดจริง/เหลือและเหตุผลการเลือก native cases อยู่ใน private report/pointer
+
+Annotation agreement และ human annotation time ยัง NOT_MEASURED; source timestamp/modality/curation dictionary, production tool compatibility, กำลังคน/กำหนดส่ง/สิทธิ์ข้อมูลจริง OPEN การตรวจสังเคราะห์พิสูจน์พฤติกรรมเครื่องมือเฉพาะที่ทดสอบ ไม่พิสูจน์ annotation quality

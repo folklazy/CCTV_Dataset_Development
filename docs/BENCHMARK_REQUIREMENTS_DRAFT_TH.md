@@ -142,3 +142,12 @@ REQ-20 (PROPOSED): annotation หลักสะท้อนงานและ�
 สามารถเริ่ม pilot ได้เมื่อมีภาพที่เชื่อม source ได้ มีร่างนิยาม candidate ครบขอบเขต มีรายการกรณีที่ต้องทดสอบ มีผู้ทำ/ผู้ตรวจที่ระบุจริง และมีแผนบันทึกผลก่อนแก้คู่มือ
 
 ยังไม่ต้องเลือกเครื่องมือถาวรหรือมีจำนวนคลาสสุดท้ายในขั้นนี้ การตัดสินใจใหม่บันทึกวัน เหตุผล หลักฐาน ผู้ตัดสิน และผลกระทบต่อไฟล์/คะแนน
+
+
+## 11. ขอบเขตล่าสุด 27 ตุลาคม 2026 — USER CONFIRMED งาน / PROPOSED วิธี
+
+ผู้ใช้อนุญาต file checks และ visual screening ของ current dataset ทั้งชุดแบบ read-only พร้อม batches/checkpoints แทน access limit 32 เดิม ต้องส่งมอบ [Dataset Design v0.1](DATASET_DESIGN_V0_1_TH.md) ที่แนะนำ classes/โครงสร้าง/เหตุผล ไม่หยุดที่แผนสำรวจหรือรอ annotation agreement
+
+กรอบวางแผน candidate subset ที่ผู้ใช้ระบุคือประมาณสองพันกว่าภาพ ไม่เกินสามพัน แทน OPEN แบบไม่มีกรอบของรอบเก่า ส่วนจำนวน Final Dataset จริง/สมาชิก/โควตาย่อย/Final Test ยังไม่กำหนด ข้อเสนอ 2,400 เป็น operating target ภายในกรอบ ไม่ใช่การอนุมัติจำนวนจากผู้ใช้
+
+เป้าหมาย End-to-End หลัก/Oracle แยก, person/upper/lower/footwear owner, สีเมื่อสังเกตได้ และ structured output คงเดิม Classes/IDs/schema/วิธี/metrics/QA ยัง PROPOSED กำลังคน เวลา กำหนดส่งและสิทธิ์เผยแพร่ข้อมูลจริง OPEN แต่ไม่เป็นเหตุหยุดการตรวจที่ทำได้ ไม่มี annotation/pilot/model/training/benchmark/Final Test ในงานนี้ และไม่ใช้ CCIHP taxonomy เป็นข้อบังคับ
