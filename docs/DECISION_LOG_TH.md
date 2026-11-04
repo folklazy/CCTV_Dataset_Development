@@ -45,3 +45,13 @@
 | CASE-20261104-02 / OBSERVED + PROPOSED_POLICY | เพิ่มN01–N06จากภาพต้นฉบับเพื่อแยก presence/semantic/color validity และ reflection/overlay | Reuse case register/design/QAเดิม; private locators/hashesเชื่อมเคส ไม่เผยแพร่ภาพหรือ IDs | ยังไม่มี masks/GUI export/ผู้ใช้ตรวจรับ; เสนอ fixed GT-derived scene/task validity ยังไม่ถือเป็น accepted labeling rule |
 
 ไม่รัน inference/annotation/training/benchmark ไม่ติดตั้งหรือดาวน์โหลด ไม่เปลี่ยน environment/โมเดลของงานอื่น; เวลา annotation โดยคนและ model calls ของงานนี้ยังไม่ได้วัด/ไม่มีตามลำดับ การอัปเดตเอกสารไม่รับรอง GT หรือกำหนด Final Test Git history เก็บ commit identity
+
+
+## Work log — 2026-11-04T17:47:07.140920+07:00 (Asia/Bangkok)
+
+| Work/decision ID | การกระทำและเหตุผล | Inputs / outputs / verification | Blockers และ next action |
+| --- | --- | --- | --- |
+| INTAKE-20261104-03 / COMPLETED_WORK_UNIT | ตรวจ HEAD/tree/process/source scope แล้วต่อ S0077–S0088 ตาม frozen sheet order ไม่เปิด worker ซ้ำ | HEAD681d455 + parent review DB; private `visual-review-continuation-20261104T104316Z`; overview192 เพิ่ม191และซ้ำประวัติ1, native2; source guard, hashes14, membership/notes, old-prefix และ arithmeticผ่าน | รวม1,429/detail66 เหลือ7,792; ต่อS0089 ไม่มี background worker; candidate/pilotยังไม่freeze |
+| CASE-20261104-03 / OBSERVED + PROPOSED_POLICY | เพิ่มN07–N08จากต้นฉบับ: มุมก้ม/หมวก/พืชบัง และปื้นสว่างทับศีรษะ เพื่อแยก presence จาก target observability | Reuse case/design/reportเดิม; privatehashes/locators ไม่เผยแพร่ข้อมูลจริง; ยังไม่มี masks/ผู้ใช้ตรวจรับ | policyยัง PROPOSED_NOT_FROZEN ต้องตรวจ tool/annotation contract ก่อน pilot ไม่เติมส่วนซ่อนหรือเดาสาเหตุปื้น |
+
+ไม่มี inference/annotation/training/benchmark หรือการติดตั้ง/ดาวน์โหลด ไม่แก้ raw metadata/source curation และไม่จัด Final Test เวลาทำ annotation โดยคนยังไม่ได้วัด Git history เก็บ commit identity

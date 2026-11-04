@@ -159,3 +159,29 @@ Annotation agreement และ human annotation time ยัง NOT_MEASURED; sou
 Private work unit `visual-review-continuation-20261104T103212Z` เก็บ BEFORE.sqlite3, checkpoint before/after, SESSION, overview/native observations และ RECONCILIATION เชื่อม parent review run เดิม ไม่เผยแพร่ภาพ IDs บริษัท หรือ metadata บน public Git รายงานรอบก่อนด้านบนเป็น historical snapshot ตามเวลา
 
 **Next action:** ต่อ S0077 พร้อม coverage/uncertainty notes; ภายหลังจัด shortlist pilot24จากภาพที่เปิดต้นฉบับครบและเหตุผลจาก coverage ไม่ใช่คะแนนโมเดล กติกาใหม่ยัง PROPOSED_NOT_FROZEN ไม่มี SAM3 calls, masks หรือการตรวจรับโดยผู้ใช้ในรอบนี้
+
+
+## Review S0077-S0088
+
+ตรวจปิด work unit **2026-11-04T17:47:07.140920+07:00 (Asia/Bangkok)** จาก HEAD681d455 และ checkpoint เดิม: **INTAKE_IN_PROGRESS / ANNOTATION_NOT_STARTED** ตารางรอบก่อนด้านบนคงเป็น historical snapshots ไม่ใช่จำนวนปัจจุบัน
+
+| รายการ | ผลจริง |
+| --- | --- |
+| Source records / readable / unreadable | 9,328 / 9,322 / 6 ใช้ file audit เดิมหลัง source guard ผ่าน |
+| Readable pixel-unique | 9,221 |
+| Overview รอบนี้ | 192 records ใน S0077–S0088 เปิดจริงและมี notes ครบ |
+| ใหม่ / เคยเปิดมาก่อน | 191 / 1 pixel groups; ไม่นับประวัติซ้ำ |
+| รวมตรวจภาพจริง | 1,429 groups จาก1,238ก่อนรอบนี้ |
+| Native detail รอบนี้ / รวม detail | 2 / 66 unique groups; สองภาพอยู่ใน overview ชุดนี้ ไม่บวกจำนวนซ้ำ |
+| ยังไม่เปิดดู | 7,792 groups |
+| Generated / reviewed sheets | 577 / 88 |
+| จุดทำต่อ | S0089 ไม่มี background screening หลังจบ turn |
+| Candidate2400 / pilot24 / release300 | membershipยังไม่freeze ไม่มี GT หรือ model calls ใหม่ |
+
+ไม่พบ dataset-review worker ใน process snapshot ก่อนเริ่ม จึงต่อ ledger เดิม ตรวจ source-manifest SHA/metadata CSV hash/archive-piece signatures ผ่าน ใช้ cached images ที่ตรวจ hash ตรงกับ inventory: 12sheets+2native full frames ไม่ decode/full rehash source ทั้งชุด ตรวจ192unique IDs/notes, overlapกับประวัติ1group, arithmetic และ observations/notesเก่าไม่เปลี่ยน ผ่านทั้งหมด นี่เป็น intake consistency ไม่ใช่ execution/annotation acceptance
+
+[เคส N07–N08](../docs/CASE_REGISTER_DRAFT_TH.md#native-detail-เพิ่มจาก-s0077-s0088) เพิ่ม coverage เรื่องมุมก้ม/หมวก/พืชบังและปื้นสว่างทับศีรษะ แยกคนที่เห็นจริงจากความสามารถอ่านทุก target ไม่บังคับ unknown เป็น absent หรือ BG ไม่ยืนยันสาเหตุปื้นหรือความเท่ากันของ boundary จากภาพตัวอย่าง
+
+Private work unit `visual-review-continuation-20261104T104316Z` เก็บ BEFORE.sqlite3, checkpoint before/after, SESSION, overview/native notes, RECONCILIATION และ publication receipt เชื่อม parent run เดิม ภาพ/IDs/metadataไม่ขึ้น Git ไม่มี inference/annotation/training/ติดตั้งหรือดาวน์โหลด และไม่แตะ benchmark ที่กำลังรันอยู่
+
+**Next action:** ต่อ S0089 ตาม order/seed เดิมและเก็บ coverage ที่ตรวจจริง เมื่อเตรียม pilot ต้องเปิดต้นฉบับครบตามสมาชิกที่เสนอและบันทึกเหตุผล ไม่ใช้ชุดตัวอย่างรอบนี้แทน membership24หรือ sample ที่เป็นตัวแทนประชากรทั้งหมด

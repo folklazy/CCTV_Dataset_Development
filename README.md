@@ -4,9 +4,9 @@
 
 เป้าหมายปัจจุบันคือ Hair / Face / Upper / Lower พร้อมสีเสื้อผ้าบน–ล่าง ใช้ X-AnyLabeling และเตรียม SAM3 pre-annotation โดยผู้ใช้ตรวจแก้ทุกภาพ เริ่ม pilot 24 → release แรก 300 ภาพ ส่วนประมาณ 2,400 เป็น candidate pool ที่ยังไม่เลือกสมาชิกครบ
 
-เริ่มอ่าน [ข้อเสนอปัจจุบันและลำดับงาน](docs/DATASET_DESIGN_V0_1_TH.md#revision-งานปัจจุบัน--4-พฤศจิกายน-2026) → [ผล intake ล่าสุด](reports/README.md#visual-review-รอบต่อ--4-พฤศจิกายน-2026) → [แผน pilot/QA](templates/quality_review.template.md) เก็บภาพ/metadata/annotations/รายชื่อจริงไว้ private ไม่มี model inference หรือ annotation ในรอบนี้
+เริ่มอ่าน [ข้อเสนอปัจจุบันและลำดับงาน](docs/DATASET_DESIGN_V0_1_TH.md#revision-งานปัจจุบัน--4-พฤศจิกายน-2026) → [ผล intake ล่าสุด](reports/README.md#review-s0077-s0088) → [แผน pilot/QA](templates/quality_review.template.md) เก็บภาพ/metadata/annotations/รายชื่อจริงไว้ private ไม่มี model inference หรือ annotation ในรอบนี้
 
-ฐานข้อมูลตรวจไฟล์: 9,328 records, readable 9,322, unreadable 6; unique decoded-pixel groups 9,221 เปิดดูรวมแล้ว 1,238 groups (overview/native ตามระดับหลักฐาน) เหลือ 7,983 groups ยังไม่เปิดดู ต่อที่ S0077 ไม่มี membership 2,400/24 หรือ GT ใหม่ที่ freeze แล้ว
+ฐานข้อมูลตรวจไฟล์: 9,328 records, readable 9,322, unreadable 6; unique decoded-pixel groups 9,221 เปิดดูรวมแล้ว 1,429 groups (overview/native ตามระดับหลักฐาน) เหลือ 7,792 groups ยังไม่เปิดดู ต่อที่ S0089 ไม่มี membership 2,400/24 หรือ GT ใหม่ที่ freeze แล้ว
 
 ## เนื้อหาเดิม ณ 27 ตุลาคม 2026 — ประวัติและรายละเอียดพื้นฐาน
 
