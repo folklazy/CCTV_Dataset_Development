@@ -55,3 +55,11 @@
 | CASE-20261104-03 / OBSERVED + PROPOSED_POLICY | เพิ่มN07–N08จากต้นฉบับ: มุมก้ม/หมวก/พืชบัง และปื้นสว่างทับศีรษะ เพื่อแยก presence จาก target observability | Reuse case/design/reportเดิม; privatehashes/locators ไม่เผยแพร่ข้อมูลจริง; ยังไม่มี masks/ผู้ใช้ตรวจรับ | policyยัง PROPOSED_NOT_FROZEN ต้องตรวจ tool/annotation contract ก่อน pilot ไม่เติมส่วนซ่อนหรือเดาสาเหตุปื้น |
 
 ไม่มี inference/annotation/training/benchmark หรือการติดตั้ง/ดาวน์โหลด ไม่แก้ raw metadata/source curation และไม่จัด Final Test เวลาทำ annotation โดยคนยังไม่ได้วัด Git history เก็บ commit identity
+
+
+## Work log — 2026-11-04T19:09:20.636353+07:00 (Asia/Bangkok)
+
+| Work/decision ID | การกระทำและเหตุผล | Inputs / outputs / verification | Blockers / next action |
+| --- | --- | --- | --- |
+| SPEED-20261104-01 / USER_CLARIFIED + IMPLEMENTED_WORKFLOW | ผู้ใช้ต้องการให้Codexตรวจเร็วขึ้น คงwhole-export scope; ใช้16sheets/batch, compact notesรายภาพ และnativeเฉพาะเคสจำเป็น ลดการอธิบาย/แก้เอกสารซ้ำ | ไม่เปลี่ยนmodel/GT/ระดับหลักฐาน; codes+legend private; ไม่เปิดsubagents/SAM3 | ไม่มีการรับรองspeedupจากmodelหรือETA; ทำต่อS0105ด้วยวิธีนี้ |
+| INTAKE-20261104-04 / COMPLETED_WORK_UNIT | ตรวจS0089–S0104จริงครบ256records มีใหม่254และซ้ำประวัติ2; native1ไม่เพิ่มภาพซ้ำ | HEAD38db43a + existing guard/DB; private `visual-review-fast-batch-20261104T120354Z`; hashes17, notes/membership, prior-prefix, arithmeticผ่าน; รวม1,683/detail67 เหลือ7,538 | Whole-exportยังไม่จบ ไม่มีbackground worker; source/annotation/inferenceเดิมไม่เปลี่ยน |

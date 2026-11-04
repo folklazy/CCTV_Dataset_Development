@@ -185,3 +185,22 @@ Private work unit `visual-review-continuation-20261104T103212Z` เก็บ BEF
 Private work unit `visual-review-continuation-20261104T104316Z` เก็บ BEFORE.sqlite3, checkpoint before/after, SESSION, overview/native notes, RECONCILIATION และ publication receipt เชื่อม parent run เดิม ภาพ/IDs/metadataไม่ขึ้น Git ไม่มี inference/annotation/training/ติดตั้งหรือดาวน์โหลด และไม่แตะ benchmark ที่กำลังรันอยู่
 
 **Next action:** ต่อ S0089 ตาม order/seed เดิมและเก็บ coverage ที่ตรวจจริง เมื่อเตรียม pilot ต้องเปิดต้นฉบับครบตามสมาชิกที่เสนอและบันทึกเหตุผล ไม่ใช้ชุดตัวอย่างรอบนี้แทน membership24หรือ sample ที่เป็นตัวแทนประชากรทั้งหมด
+
+
+## Review S0089-S0104
+
+ตรวจปิดwork unit **2026-11-04T19:09:20.636353+07:00 (Asia/Bangkok)**: INTAKE_IN_PROGRESS / ANNOTATION_NOT_STARTED ผู้ใช้ชี้แจงให้Codexตรวจเร็วขึ้น จึงคงขอบเขตเดิมและปรับเป็น16sheetsพร้อมบันทึกสั้นรายภาพ ไม่เปลี่ยนไปทำpilotแทนส่วนที่ยังไม่ตรวจ
+
+| รายการ | ผลจริง |
+| --- | --- |
+| เปิดoverviewรอบนี้ / ใหม่ / เคยเปิดแล้ว | 256 records / 254 / 2 pixel groups |
+| รวมเปิดดูจริง / uniqueทั้งชุด / คงเหลือ | 1,683 / 9,221 / 7,538 groups |
+| Native detailเพิ่ม / รวมdetail | 1 / 67 groups; ภาพnativeอยู่ในoverviewจึงไม่บวกซ้ำ |
+| Generated / reviewed sheets | 577 / 104 |
+| จุดทำต่อ | S0105; ไม่มี background screening หลังจบturn |
+
+ไม่พบdataset-review workerก่อนเริ่ม Source manifest/metadata CSV hash/archive signaturesผ่าน ใช้auditเดิม ตรวจhash16sheets+1native frame, 256IDs/notesครบ, overlapกับประวัติ2groups, old observations/notesไม่เปลี่ยน และarithmeticผ่าน เป็นintake consistency ไม่ใช่annotation acceptance
+
+Private work unit `visual-review-fast-batch-20261104T120354Z` เก็บSESSION/BEFORE.sqlite3/checkpoint before-after/compact codesพร้อมlegend/display events/RECONCILIATION ระดับfine boundariesและสีที่ไม่ได้ตรวจต้นฉบับยังNOT_ASSESSED; uncertainไม่ใช่confirmed negative ภาพnativeหนึ่งเคสยังไม่ยืนยันว่าเสื้อผ้าเป็นชิ้นเดียวหรือแยกชิ้น จึงไม่ใช้สีต่อเนื่องเป็นหลักฐานcross-zone
+
+ไม่มีinference/annotation/ติดตั้ง/ดาวน์โหลดหรือแก้raw data/benchmark เก็บcandidate2400/pilot24/release300เป็นเป้าหมายที่ยังไม่มีmembershipfreeze รหัสบันทึกสั้นไม่ใช่GT; สรุป/commitครั้งเดียวต่อwork unit ไม่อ้างspeedupหรือETAที่ไม่ได้วัดแบบควบคุม
