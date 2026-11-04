@@ -133,3 +133,29 @@ Annotation agreement และ human annotation time ยัง NOT_MEASURED; sou
 อัปเดต [design ฉบับเดิม](../docs/DATASET_DESIGN_V0_1_TH.md#revision-งานปัจจุบัน--4-พฤศจิกายน-2026), requirements, dictionary, guideline และ QA ให้แยกเป้าหมาย 4 targets + clothing color ออกจากข้อเสนอ 6 คลาส/pilot8 เดิม กติกาละเอียดยัง PROPOSED_NOT_FROZEN ขนาด workflow24→300/ผู้ใช้ตรวจทุกภาพยืนยันตามบทสนทนา ไม่ใช่การรับรอง schema/annotation quality
 
 **Next action:** ต่อ overview S0069 ตาม sheet order เดิม เก็บ coverage ของ small person/occlusion/blur/light/viewpoint และ targeted native observations แล้วจัด private candidate/pilot membership จากภาพที่ตรวจต้นฉบับจริง ก่อน annotation ต้องปิด label/unknown/color/export contract และตรวจเครื่องมือจริง ไม่เริ่ม SAM3/annotation ใน work unit นี้ ไม่มี background screening ที่จะเดินต่อเองหลังจบ turn
+
+
+## Visual review รอบต่อ — 4 พฤศจิกายน 2026
+
+**สถานะตรวจปิด work unit 2026-11-04T17:37:31.497141+07:00 (Asia/Bangkok): INTAKE_IN_PROGRESS / ANNOTATION_NOT_STARTED** ต่อจาก commit31668ac และ checkpoint เดิม; ไม่พบ dataset-review Python worker ใน process snapshot ก่อนเริ่ม ไม่เปิด GPU/controller/model/annotation และไม่เปลี่ยนข้อมูลต้นฉบับ
+
+| รายการ | ผลตรวจจริง |
+| --- | --- |
+| Source records / readable / unreadable | 9,328 / 9,322 / 6 — reuse audit เดิมหลัง source guard ผ่าน |
+| Pixel-unique groups | 9,221 |
+| Overview ที่เปิดรอบนี้ | S0069–S0076 รวม128 records มี display events/notes ครบ |
+| เพิ่มภาพที่ยังไม่เคยเปิดจริง | 126 groups; อีก2 groups เคยเปิดผ่าน prior/detail review แล้ว ไม่บวกซ้ำ |
+| รวมเปิดดูจริง | 1,238 groups จาก1,112ก่อนรอบนี้ |
+| Native full-frame detail | เพิ่ม6ภาพ รวม64 unique groups; อยู่ใน overview ชุดนี้ ไม่บวกเป็นภาพใหม่อีก6 |
+| ยังไม่เปิดดู | 7,983 groups |
+| Sheets generated / reviewed | 577 / 76 |
+| Candidate2400 / pilot24 / release300 | ยังไม่มี membership ที่ freeze หรือ GT ใหม่ |
+| จุดทำต่อ | S0077 ตาม order/seed เดิม; ไม่มี background screening ที่เดินเองหลัง turn |
+
+ตรวจ private source-manifest hash/metadata CSV hash/archive-piece signatures ด้วย guard เดิม และ hashes ของ8contact sheets+6cached native full frames ที่เปิด ไม่ decode/full rehash source ทั้งชุดซ้ำ ตรวจ128 unique record IDs กับ notes, ภาพที่ซ้ำกับ review เดิม2groups, checkpoint arithmetic และ prefix ของ observations/notesเก่าไม่เปลี่ยน ผล PASS เป็นความสอดคล้องของ intake ไม่ใช่ annotation/execution acceptance
+
+ผล native detail และข้อเสนอการจัดการอยู่ใน [ทะเบียนเคส N01–N06](../docs/CASE_REGISTER_DRAFT_TH.md#ข้อสังเกตภาพจริงรอบต่อ--4-พฤศจิกายน-2026): near-monochromeพร้อมoverlay, โครงเหล็กบังคน, reflection, blur/partial person, คนสัมผัสกัน และ uncertain presence ไม่ยืนยัน IR/สีแท้/ขอบส่วนซ่อนหรือ absence จากภาพไม่ชัด
+
+Private work unit `visual-review-continuation-20261104T103212Z` เก็บ BEFORE.sqlite3, checkpoint before/after, SESSION, overview/native observations และ RECONCILIATION เชื่อม parent review run เดิม ไม่เผยแพร่ภาพ IDs บริษัท หรือ metadata บน public Git รายงานรอบก่อนด้านบนเป็น historical snapshot ตามเวลา
+
+**Next action:** ต่อ S0077 พร้อม coverage/uncertainty notes; ภายหลังจัด shortlist pilot24จากภาพที่เปิดต้นฉบับครบและเหตุผลจาก coverage ไม่ใช่คะแนนโมเดล กติกาใหม่ยัง PROPOSED_NOT_FROZEN ไม่มี SAM3 calls, masks หรือการตรวจรับโดยผู้ใช้ในรอบนี้

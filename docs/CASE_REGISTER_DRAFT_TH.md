@@ -94,3 +94,19 @@
 ข้อสังเกตคนเล็ก/ส่วนหัวที่ขอบ/possible person ต้องใช้ locator และ uncertainty ไม่สร้าง GT Person ID หรือ certify negative จากการมองไม่พบคน เสื้อชิ้นเดียวชัดเจน/รองเท้ารายละเอียดหลายมุมและ known-modality ยังเป็นช่องว่าง ไม่เพิ่มภาพนอก manifest ในรอบนี้
 
 ผล discovery มีทั้งเคสที่พบ/ไม่พบและ component ที่ uncertain พร้อมกรณี exact duplicate ของ anchor จึงไม่เป็น success rate หรือ prevalence เวลา active visual ที่ไม่วัดและ annotation time คง null แม้มีเวลาประมวลผลภาพ ไม่มีการใช้เวลา AI ประมาณแรงงาน masks มนุษย์
+
+
+## ข้อสังเกตภาพจริงรอบต่อ — 4 พฤศจิกายน 2026
+
+ตารางนี้เป็น **OBSERVED_BY_CODEX** จาก native full-frame displays ที่มี SHA256/locator ส่วนตัว ไม่ใช่ REPORTED จาก legacy report และไม่ใช่ GT/การตรวจรับโดยผู้ใช้ รหัส N ใช้เชื่อมหลักฐาน private ของ work unit `visual-review-continuation-20261104T103212Z` โดยไม่เผยแพร่ image IDs หรือภาพจริงใน Git
+
+| Case | สิ่งที่เห็นจากต้นฉบับ | ผลต่อกติกาที่แนะนำ (PROPOSED) | สิ่งที่ยังยืนยันไม่ได้ |
+| --- | --- | --- | --- |
+| N01 / K03,K05 | ฉากเกือบขาวดำ แต่กรอบและข้อความที่ติดมาเป็นสี คนอยู่ระยะไกล | แยก semantic observability ออกจาก color validity; ไม่ใช้สีกรอบเป็นสีเสื้อผ้า ไม่ใช้กรอบเดิมเป็น person GT | กล้องเป็น IR หรือไม่ และ chromatic color ของเสื้อผ้า |
+| N02 / K02 | คนก้มและถูกโครงเหล็กบัง มีสิ่งสะพายแยกจากเสื้อ | annotate เฉพาะ visible support, รักษารูพื้นหลังและแยก accessory/garment | รูปร่างใต้โครงสร้างและขอบส่วนที่ซ่อน |
+| N03 / reflection | คนเดินชิดผิวสะท้อน เห็น reflection อีกด้าน | ไม่เพิ่ม physical-person count จาก reflection; เสนอ scene validity region ที่กำหนดจาก GT และใช้ร่วมทุกระบบ | ยังไม่มี reflection mask หรือผลตรวจโดยผู้ใช้ |
+| N04 / blur,partial | คนถูกตัดขอบล่าง ขอบหน้าและผมเบลอในภาพเกือบขาวดำ | มี person ไม่แปลว่า annotate ครบ4targetsหรือสีได้; unknown ไม่ใช่ absent/BG | precise Hair/Face boundary และสีเสื้อผ้า |
+| N05 / K02,K04 | คนสองคนเดินชิดกัน มีแขนพาดใกล้ไหล่และแสงไฟแรง | แยก owner เฉพาะส่วนที่เห็น; สีที่ปรากฏไม่ใช่สีแท้ภายใต้แสงมาตรฐาน | ขอบส่วนที่ถูกคนข้างเคียงบังและ intrinsic color |
+| N06 / K06 | เปิดต้นฉบับบริเวณแคบหลังตู้แล้ว ยังยืนยันบุคคลไม่ได้ | คง uncertain-presence; ไม่รับเป็น negative หรือบังคับสร้าง person GT | มีคนอยู่หลังสิ่งบังหรือไม่มีจริง |
+
+เคสเหล่านี้เป็นรายการสำหรับทดสอบกติกา/coverage ไม่ใช่ prevalence หรือความสำเร็จของ annotation; ไม่อนุมานชนิดเสื้อผ้าหรือ modality จากชื่อ field และไม่ขยาย scope ไปหาโมเดลใหม่

@@ -35,3 +35,13 @@
 | RULE-20261104-01 / PROPOSED_NOT_FROZEN | เสนอ auxiliary Neck/Cross-zone/Person-other, observed-color-only และ GT-only validity แทนการบังคับแบ่ง dress/คอหรือเดาขอบที่ซ่อน | Design current revision; attached guideline เป็น reference ที่ยังต้องแก้ ไม่มีการยกระดับจากชื่อคลาสหรือภาพ4ตัวอย่างเป็น equivalence | ตรวจ schema/GUI roundtrip และ pilot ภายหลังเมื่อกฎพร้อม; ไม่มี hard pixel/IoU/color threshold ที่รับรองในรอบนี้ |
 
 เวลาที่วัดจากคนจริง/active annotation time ยัง null ไม่มี GT masks, agreement, model calls หรือ dataset release ใหม่ Git history เก็บ commit identity ไม่เติม hash ของ commit ตัวเองลงรายการนี้
+
+
+## Work log — 2026-11-04T17:37:31.497141+07:00 (Asia/Bangkok)
+
+| Work/decision ID | การกระทำและเหตุผล | Inputs / outputs / verification | Blockers และ next action |
+| --- | --- | --- | --- |
+| INTAKE-20261104-02 / COMPLETED_WORK_UNIT | ต่อ frozen sheet order S0069–S0076 หลังตรวจ actual HEAD/process/source guard ไม่ใช้จำนวนจากข้อความเก่า | Parent checkpoint/DB + commit31668ac; private `visual-review-continuation-20261104T103212Z`; overview128, ใหม่126และซ้ำกับ prior2, native6; hashes14display artifacts, membership, old-prefix immutability และ arithmeticผ่าน | เหลือ7,983pixel groups; ต่อS0077; candidate/pilot membershipยังไม่freeze ไม่มี background worker |
+| CASE-20261104-02 / OBSERVED + PROPOSED_POLICY | เพิ่มN01–N06จากภาพต้นฉบับเพื่อแยก presence/semantic/color validity และ reflection/overlay | Reuse case register/design/QAเดิม; private locators/hashesเชื่อมเคส ไม่เผยแพร่ภาพหรือ IDs | ยังไม่มี masks/GUI export/ผู้ใช้ตรวจรับ; เสนอ fixed GT-derived scene/task validity ยังไม่ถือเป็น accepted labeling rule |
+
+ไม่รัน inference/annotation/training/benchmark ไม่ติดตั้งหรือดาวน์โหลด ไม่เปลี่ยน environment/โมเดลของงานอื่น; เวลา annotation โดยคนและ model calls ของงานนี้ยังไม่ได้วัด/ไม่มีตามลำดับ การอัปเดตเอกสารไม่รับรอง GT หรือกำหนด Final Test Git history เก็บ commit identity
