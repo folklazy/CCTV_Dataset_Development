@@ -1,5 +1,17 @@
 # CCTV Human Parsing Evaluation Dataset
 
+**สถานะล่าสุด 4 พฤศจิกายน 2026: INTAKE_IN_PROGRESS / ANNOTATION_NOT_STARTED**
+
+เป้าหมายปัจจุบันคือ Hair / Face / Upper / Lower พร้อมสีเสื้อผ้าบน–ล่าง ใช้ X-AnyLabeling และเตรียม SAM3 pre-annotation โดยผู้ใช้ตรวจแก้ทุกภาพ เริ่ม pilot 24 → release แรก 300 ภาพ ส่วนประมาณ 2,400 เป็น candidate pool ที่ยังไม่เลือกสมาชิกครบ
+
+เริ่มอ่าน [ข้อเสนอปัจจุบันและลำดับงาน](docs/DATASET_DESIGN_V0_1_TH.md#revision-งานปัจจุบัน--4-พฤศจิกายน-2026) → [ผล intake ล่าสุด](reports/README.md#intake-ต่อจาก-checkpoint--4-พฤศจิกายน-2026) → [แผน pilot/QA](templates/quality_review.template.md) เก็บภาพ/metadata/annotations/รายชื่อจริงไว้ private ไม่มี model inference หรือ annotation ในรอบนี้
+
+ฐานข้อมูลตรวจไฟล์: 9,328 records, readable 9,322, unreadable 6; unique decoded-pixel groups 9,221 เปิดดูรวมแล้ว 1,112 groups (overview/native ตามระดับหลักฐาน) เหลือ 8,109 groups ยังไม่เปิดดู ต่อที่ S0069 ไม่มี membership 2,400/24 หรือ GT ใหม่ที่ freeze แล้ว
+
+## เนื้อหาเดิม ณ 27 ตุลาคม 2026 — ประวัติและรายละเอียดพื้นฐาน
+
+ข้อเสนอ 6 คลาสและ pilot 8 ภาพในส่วนเดิมต่อไปนี้เป็นประวัติ ไม่ใช่ scope ปัจจุบัน การเปลี่ยนแปลงอ้าง revision ด้านบนและ decision log โดยไม่ลบผลเดิม
+
 โครงการวิจัยเพื่อพัฒนาชุดภาพ CCTV พร้อมคำตอบอ้างอิงสำหรับประเมิน **Human Parsing ระดับบุคคล** โดยเชื่อมส่วนร่างกายและเสื้อผ้าที่มองเห็นกับเจ้าของในภาพ และบันทึกที่มาข้อมูล กติกา annotation การตรวจทาน และรุ่นของชุดประเมินให้ตรวจย้อนกลับได้
 
 **สถานะ ณ 27 ตุลาคม 2026: ตรวจไฟล์ export ทั้งชุดแล้ว และกำลังคัดกรองภาพจริงเป็น batches พร้อม checkpoint** มี [Dataset Design v0.1](docs/DATASET_DESIGN_V0_1_TH.md) เสนอ core parsing classes 6 คลาสกับ auxiliary objects และโครงสร้าง person/region/owner/validity ทุกข้อยัง PROPOSED การเปิดดูภาพยังไม่ครบทุก unique payload ไม่ใช่ annotation/pilot หรือผลโมเดล

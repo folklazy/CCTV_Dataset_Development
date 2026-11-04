@@ -24,3 +24,14 @@
 | DES-003 / 2026-10-27 | Codex / PROPOSED; supersedes earlier recommendations only | Design v0.1 เสนอ composite head, exposed skin, upper/lower/cross-zone/footwear กับ auxiliary associated objects; socks/gloves outside core vocabulary เมื่อทราบชนิด และ C05 ที่ขาด anatomical boundary คง upper/lower projection unresolved | ทางเลือกในคู่มือ R01–R12 เดิมคงเป็นประวัติ/ทางเลือก ไม่ถือว่าอนุมัติแล้ว ข้อเสนอใหม่เปลี่ยนคำแนะนำบางส่วนโดยไม่เปลี่ยน requirements ไม่มี universal waist cut/size cutoff/color palette และไม่มี class reassignment จริง |
 
 รายการใหม่ต้องมีวัน ผู้ตัดสิน สถานะ หลักฐาน/locator เหตุผล ทางเลือก และผลกระทบต่อรุ่นคู่มือ/ข้อมูล/คะแนน ถ้า supersede ให้ระบุรายการเดิมและเก็บประวัติ ไม่เปลี่ยน OPEN เป็น ACCEPTED โดยไม่มีการตัดสินจริง
+
+
+## Intake / workflow update — 2026-11-04T17:13:55.991614+07:00 (Asia/Bangkok)
+
+| Work/decision ID | การกระทำ/เหตุผล | Inputs / outputs / verification | Blockers และ next action |
+| --- | --- | --- | --- |
+| INTAKE-20261104-01 / COMPLETED_WORK_UNIT | ต่อจาก HEAD71f9f21 ด้วย source read-only และ audit เดิมที่ bindings ตรง เปิด S0065–S0068 แล้วตรวจ native4 เพื่อแยก visibility/blur/occlusion จาก absent | Existing scope + DB/checkpoint; private work unit `pilot-preparation-intake-20261104T100937Z`; ตรวจ local source guard, hashes8 display artifacts, notes64, native4, counts/membership และ docs links; รวม overview1,112/detail58 เหลือ8,109 ไม่ใช้ generated577 sheets เป็น reviewed | Whole-export visual review ยังไม่ครบ; ต่อ S0069 ไม่มี model/annotation job |
+| WF-20261104-01 / USER_CONFIRMED_WORKFLOW | บันทึกเป้าหมาย4 targets+clothing color, X-AnyLabeling, ผู้ใช้ตรวจทุกภาพ, pilot24→300 รวม pilot, หกภาพผู้ใช้ทำก่อนเห็น AI draft ตามคำตอบผู้ใช้ในบทสนทนา | Reuse design/guideline/QA เดิม; six-class proposal และ pilot8 คงเป็นประวัติ | Candidate2400/actual pilot membership ยังไม่ freeze; ข้อเสนอแบ่ง24dev+276eval ยังไม่ใช่ split ที่รับรอง |
+| RULE-20261104-01 / PROPOSED_NOT_FROZEN | เสนอ auxiliary Neck/Cross-zone/Person-other, observed-color-only และ GT-only validity แทนการบังคับแบ่ง dress/คอหรือเดาขอบที่ซ่อน | Design current revision; attached guideline เป็น reference ที่ยังต้องแก้ ไม่มีการยกระดับจากชื่อคลาสหรือภาพ4ตัวอย่างเป็น equivalence | ตรวจ schema/GUI roundtrip และ pilot ภายหลังเมื่อกฎพร้อม; ไม่มี hard pixel/IoU/color threshold ที่รับรองในรอบนี้ |
+
+เวลาที่วัดจากคนจริง/active annotation time ยัง null ไม่มี GT masks, agreement, model calls หรือ dataset release ใหม่ Git history เก็บ commit identity ไม่เติม hash ของ commit ตัวเองลงรายการนี้

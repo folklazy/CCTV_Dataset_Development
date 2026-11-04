@@ -1,5 +1,23 @@
 # แผน annotation pilot และ QA ทดลอง v0.1 — PROPOSED
 
+## แผน pilot ปัจจุบัน — 4 พฤศจิกายน 2026
+
+ผู้ใช้เลือก workflow pilot **24 ภาพ** แล้วขยายเป็น **300 ภาพรวม pilot** แทนข้อเสนอ 8 ภาพเดิมด้านล่าง รายชื่อยัง NOT_SELECTED และยังไม่เริ่ม annotation เสนอ 6 calibration + 18 workflow โดยเลือก 6 ใน workflow ให้ผู้ใช้ทำจาก RGB ก่อนเห็น AI draft ไม่มีการประเมินจากผลโมเดลเพื่อเลือกภาพ
+
+| Gate | หลักฐานก่อนเดินต่อ |
+| --- | --- |
+| Membership | 24 unique pixel groups ที่เปิดต้นฉบับแล้ว พร้อม coverage/เหตุผลเลือกและประวัติเห็นข้อมูล; ไม่อ้างว่าเป็น sample แทนประชากรทั้งหมด |
+| Annotation contract | กติกา 4 targets/auxiliary/owner/unknown/color มี revision ชัด; ห้ามทำ unknown เป็น BG, เติมส่วนซ่อน หรือตัด dress ด้วย heuristic |
+| Tool readiness | export/import รักษาขนาด orientation holes disjoint parts owner และ unknown; synthetic expected masks ไม่ผูกกับ logic ของ exporter; ต้องทดลอง GUI/API จริง |
+| AI draft | บันทึก model/checkpoint/source/prompt/config/device/calls/error; ร่างแยกจาก HUMAN_REVIEW ไม่ auto-accept |
+| Human review | ผู้ใช้ตรวจทุกภาพ แยก NEEDS_FIX กับ ACCEPTED; 6 ภาพ blind เก็บผลก่อนเห็น AI และก่อน adjudication ไม่อ้าง independent annotators สองคน |
+| Pilot closure | รายงานปัญหา mask/class/owner/color, เวลาเครื่องและเวลาคนที่วัดจริง, corrections และผลกระทบของ rule revisions; ไม่มีเกณฑ์ agreement ที่แต่งเป็นมาตรฐาน |
+| ขยายงาน | freeze คู่มือหลังแก้ปัญหา pilot; ทำ batches 20 พร้อม checkpoint ไม่เปิดทั้ง 2,400 โดยอัตโนมัติ |
+
+ข้อเสนอ 24 dev + 276 evaluation ยังไม่ใช่ split ที่รับรอง ต้องตรวจ duplicate/event/exposure และใช้กฎเดียวกันก่อน release สถานะทำงาน DRAFT → HUMAN_REVIEW → NEEDS_FIX หรือ ACCEPTED; checksum ผ่านอย่างเดียวไม่ให้ ACCEPTED
+
+## แผนและคำถาม v0.1 เดิม — ประวัติ
+
 ปรับแบบฟอร์ม QA เดิมเป็นแผนที่ตรวจทานได้ ยังไม่เริ่ม annotation จริง ไม่กำหนดเกณฑ์ agreement/คะแนนผ่าน จำนวน Final Dataset หรือ Final Test ผู้ทำ ผู้ตรวจ เวลา และกำหนดส่ง **OPEN**
 
 ## 1. ประเด็นตัดสินก่อน pilot เรียงตามผลกระทบ

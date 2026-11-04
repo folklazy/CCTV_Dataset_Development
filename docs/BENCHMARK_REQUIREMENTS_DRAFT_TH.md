@@ -1,5 +1,9 @@
 # ข้อกำหนด dataset/evaluation — DRAFT
 
+> **Current scope override — 4 พฤศจิกายน 2026:** เป้าหมายรอบ dataset ใหม่คือ Hair/Face/Upper/Lower + สีเสื้อผ้าบน–ล่าง ผู้ใช้ตรวจทุกภาพ ใช้ X-AnyLabeling และเตรียม SAM3 draft; pilot 24 → 300 รวม pilot, candidate pool ประมาณ 2,400 ยังไม่เป็น membership ที่เลือกแล้ว ดู [revision ปัจจุบัน](DATASET_DESIGN_V0_1_TH.md#revision-งานปัจจุบัน--4-พฤศจิกายน-2026) กติกา Neck/Cross-zone/validity/thresholds ยัง PROPOSED_NOT_FROZEN; footwear/body/accessories ไม่เป็น hard requirement ของ release นี้เพียงเพราะอยู่ในข้อเสนอเดิมด้านล่าง ไม่มีการตัดข้อมูลประวัติหรือแก้ benchmark เดิม
+
+## ข้อกำหนดและข้อเสนอเดิม — เก็บตามเวลา
+
 คัดต่อจาก foundation เดิมเฉพาะกระบวนการและข้อเสนอ ตัด baseline บริษัทออก ต้นฉบับ/วันที่/locator คงอยู่ใน private archive ยังไม่ตรึงทุก REQ/DEC หรือ class list
 
 ## 1. Research Objectives & Constraints — USER CONFIRMED หลัง foundation review

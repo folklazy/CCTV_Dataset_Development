@@ -1,5 +1,7 @@
 # Data dictionary — schema ที่นำมาจาก export เดิม
 
+> **Revision note — 4 พฤศจิกายน 2026:** raw metadata dictionary คงเดิม เป้าหมาย annotation เปลี่ยนเป็น 4 targets + clothing color ตาม [design ปัจจุบัน](DATASET_DESIGN_V0_1_TH.md#revision-งานปัจจุบัน--4-พฤศจิกายน-2026) IDs ของ 6-class proposal และ example contract เดิมยังไม่ใช่ IDs ของ release ใหม่ ต้อง version schema และกำหนด mapping ก่อนสร้าง GT จริง; ไม่มีการเปลี่ยนไฟล์ annotation/metadata เดิมรอบนี้
+
 ทบทวน 22 ตุลาคม 2026: อ่าน CSV ปัจจุบันและ hash ของสาม metadata exports เทียบหลักฐานเดิมแล้ว ตารางด้านล่างแยกชื่อ field ที่ตรวจได้ออกจากความหมายระบบที่ยังขาด สถิติ/ค่า/path จริงเก็บภายนอก Git ตาม [รายงานฐานงาน](../reports/README.md) ไม่ใช้ schema inspection เป็นการตรวจภาพ
 
 พบเพียงแปด fields ในตาราง ไม่มี explicit event ID, sequence/burst ID, track/person ID, bbox/mask หรือ modality field กลุ่ม site+camera+เวลาเป็น candidate สำหรับสำรวจ ไม่ใช่ลำดับเหตุการณ์ที่ยืนยันแล้ว ค่า unknown ที่เป็น literal ต้องแยกจากจำนวนสถานที่จริง

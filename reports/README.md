@@ -105,3 +105,31 @@ CONFIRMED เฉพาะไฟล์: ตรวจ metadata exports/linkage แ
 แผน 2,400 unique image groups เป็น operating target ในกรอบผู้ใช้ ใช้ metadata coverage กับ visually confirmed diversity และ review ความใกล้ซ้ำ ไม่ใช่ Final Test หรือ membership ที่เลือกแล้ว [คำสั่ง resume](../docs/SCOPE_AND_OWNERSHIP_TH.md) ใช้ inventory เดิมต่อได้ ไม่ต้อง decode ทั้งชุดใหม่ สถานะจำนวนเปิดจริง/เหลือและเหตุผลการเลือก native cases อยู่ใน private report/pointer
 
 Annotation agreement และ human annotation time ยัง NOT_MEASURED; source timestamp/modality/curation dictionary, production tool compatibility, กำลังคน/กำหนดส่ง/สิทธิ์ข้อมูลจริง OPEN การตรวจสังเคราะห์พิสูจน์พฤติกรรมเครื่องมือเฉพาะที่ทดสอบ ไม่พิสูจน์ annotation quality
+
+
+## Intake ต่อจาก checkpoint — 4 พฤศจิกายน 2026
+
+**ตรวจปิด work unit เวลา 2026-11-04T17:13:55.991614+07:00 (Asia/Bangkok): INTAKE_IN_PROGRESS / PILOT_MEMBERSHIP_NOT_SELECTED / ANNOTATION_NOT_STARTED** ไม่มี dataset-review worker อื่นใน process snapshot ตอนเริ่ม จึงต่อ ledger เดิม ไม่เปิด controller หรือ GPU job และไม่แตะงาน benchmark ที่อาจกำลังทำงานอยู่
+
+| รายการ | ค่าจาก canonical review DB/checkpoint | ขอบเขตคำอ้าง |
+| --- | --- | --- |
+| Source metadata records | 9,328 | ไม่ใช่จำนวนภาพไม่ซ้ำหรือคน |
+| Strict readable / unreadable | 9,322 / 6 | ใช้ file audit เดิม ไม่ retry ตัวเสียหรือ decode ทั้งชุดซ้ำ |
+| Readable byte-unique / pixel-unique | 9,254 / 9,221 | คนละนิยาม ไม่รวม alternate-decoder diagnostics เป็น canonical |
+| รวมเปิดดูจริงก่อนรอบนี้ | 1,048 pixel groups | รวมประวัติเดิมที่ reconciliation ผ่านแล้ว |
+| เปิด overview เพิ่มรอบนี้ | 64 pixel groups | S0065–S0068 เปิดผ่าน viewer จริง มี notes ครบทุก record |
+| รวมเปิดดูจริงล่าสุด | 1,112 pixel groups | ไม่เท่ากับตรวจขอบ mask ทุกภาพ |
+| Native full-frame detail เพิ่ม / รวม detail | 4 / 58 pixel groups | สี่ภาพอยู่ใน overview ชุดนี้ ไม่บวกซ้ำเป็นภาพเปิดใหม่อีกสี่ภาพ |
+| ยังไม่เปิดดู | 8,109 pixel groups | visual screening ทั้งชุดยังไม่จบ |
+| Sheets generated / reviewed | 577 / 68 | generated ไม่ใช่ reviewed |
+| ชุด candidate 2,400 / pilot24 / release300 | ยังไม่มี membership ที่ freeze | ไม่อ้างว่าเลือกหรือ annotate ครบจากจำนวนเป้าหมาย |
+
+ตรวจ source scope ด้วย loader เดิม: private manifest SHA256, metadata CSV hash และ archive-piece size/mtime bindings ผ่าน; ตรวจ hash ของ 4 contact sheets และ 4 cached full frames ที่เปิดเทียบ ledger ผ่าน ไม่ full rehash ZIP ทั้งชุด source read-only ไม่มีการติดตั้ง/ดาวน์โหลด/เปลี่ยน environment
+
+ข้อสังเกตจาก native full frames: ผมบังบางส่วนของใบหน้า, พืชและราวบังส่วนคน, คนขี่รถที่รายละเอียดพร่า และปื้นพร่าบนภาพ ต้องบันทึก visibility/uncertainty เป็นรายส่วน ไม่ถือว่า missing part เป็น background หรือวาดเติม การเห็นปื้นพร่าไม่ยืนยันสาเหตุทางกายภาพ ภาพตัวอย่างเหล่านี้ไม่ยืนยันสัดส่วนหรือความยากของทั้ง export และยังไม่เป็น GT
+
+หลักฐาน private work unit: `pilot-preparation-intake-20261104T100937Z` มี DB backup ก่อนทำงาน, checkpoint before/after, session และ native review evidence; parent `dataset-design-full-review-20261027T022912320042Z` เก็บ canonical SQLite, display logs, observations และ checkpoint history ต่อเนื่อง ข้อมูลจริง/IDs/ภาพไม่ขึ้น Git รายงาน private เก่าที่เป็น snapshot ไม่ถูกเขียนทับให้ดูเป็นสถานะใหม่
+
+อัปเดต [design ฉบับเดิม](../docs/DATASET_DESIGN_V0_1_TH.md#revision-งานปัจจุบัน--4-พฤศจิกายน-2026), requirements, dictionary, guideline และ QA ให้แยกเป้าหมาย 4 targets + clothing color ออกจากข้อเสนอ 6 คลาส/pilot8 เดิม กติกาละเอียดยัง PROPOSED_NOT_FROZEN ขนาด workflow24→300/ผู้ใช้ตรวจทุกภาพยืนยันตามบทสนทนา ไม่ใช่การรับรอง schema/annotation quality
+
+**Next action:** ต่อ overview S0069 ตาม sheet order เดิม เก็บ coverage ของ small person/occlusion/blur/light/viewpoint และ targeted native observations แล้วจัด private candidate/pilot membership จากภาพที่ตรวจต้นฉบับจริง ก่อน annotation ต้องปิด label/unknown/color/export contract และตรวจเครื่องมือจริง ไม่เริ่ม SAM3/annotation ใน work unit นี้ ไม่มี background screening ที่จะเดินต่อเองหลังจบ turn

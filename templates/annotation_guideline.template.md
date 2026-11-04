@@ -1,5 +1,9 @@
 # คู่มือ annotation ทดลอง v0.1 — PROPOSED
 
+> **Current draft — 4 พฤศจิกายน 2026:** ใช้ Hair/Face/Upper/Lower + clothing color ตาม [revision ปัจจุบัน](../docs/DATASET_DESIGN_V0_1_TH.md#revision-งานปัจจุบัน--4-พฤศจิกายน-2026) แยก Neck/Cross-zone/Person-other เป็น auxiliary ร่าง; ไม่ตัด dress ตามเอวสมมติ ไม่เติมส่วนที่ถูกบัง ไม่บังคับขอบ part ติดกัน และไม่ใช้ชื่อสี overlay เป็นคำตอบสี หลัก R01–R12 ด้านล่างเก็บเป็นคำถามและทางเลือกเดิม ทุกจุดที่ขัด revision ปัจจุบันยังไม่ใช้สร้าง GT ต้องแก้ schema/ตรวจ roundtrip ก่อน pilot
+
+## คู่มือและทางเลือก v0.1 เดิม — ยังไม่ใช่ frozen labeling contract
+
 ปรับใช้ annotation guideline template เดิมหลัง visual exploration commit c5139f4 ทุกกฎด้านล่างเป็นข้อเสนอรอมนุษย์ทบทวน การเขียนเอกสารไม่ใช่การอนุมัติ ontology/วิธีทำ mask/เกณฑ์คุณภาพ และรอบนี้ยังไม่ทำ annotation จริง
 
 เป้าหมายที่ผู้ใช้ยืนยันคือ End-to-End หลัก, Oracle แยก, person/upper/lower/footwear masks พร้อม owner, สีบน–ล่างเมื่อภาพเอื้อ และ structured output/คำบรรยาย Attributes อื่นไม่ mandatory ดู [requirements](../docs/BENCHMARK_REQUIREMENTS_DRAFT_TH.md)

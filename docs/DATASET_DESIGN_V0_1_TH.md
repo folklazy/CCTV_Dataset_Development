@@ -1,5 +1,44 @@
 # Dataset Design v0.1 — ข้อเสนอของโครงการ (PROPOSED)
 
+## Revision งานปัจจุบัน — 4 พฤศจิกายน 2026
+
+ส่วนนี้ใช้ต่อจากเอกสารเดิม ไม่สร้าง master plan อีกชุด ข้อเสนอ 6 core classes ในหัวข้อเดิมด้านล่างเป็น **HISTORICAL_PROPOSAL** สำหรับการออกแบบก่อนหน้า เป้าหมายรอบใหม่คือ **Hair / Face / Upper / Lower และสีเสื้อผ้าบน–ล่าง** ตามคำยืนยันในบทสนทนา ยังไม่มี taxonomy IDs หรือ annotation รุ่นใหม่ที่รับรองแล้ว
+
+### สิ่งที่เลือกแล้วและสิ่งที่ยังเป็นร่าง
+
+| เรื่อง | สถานะปัจจุบัน | ความหมายในการดำเนินงาน |
+| --- | --- | --- |
+| ข้อมูลต้นทาง | USER_CONFIRMED | ใช้ current export 9,328 records; เก็บไฟล์และ curation เดิม ไม่ใช้ชุด 90 ภาพเดิมเป็นแหล่งหลัก |
+| เป้าหมายและผู้ตรวจ | USER_CONFIRMED | 4 targets พร้อมสีเสื้อผ้า ผู้ใช้ตรวจแก้ทุกภาพก่อนรับเป็น GT |
+| เครื่องมือ | WORKFLOW_SELECTED_NOT_VERIFIED | ใช้ X-AnyLabeling และเสนอ SAM3 สร้างร่างด้วยสคริปต์ ต้องตรวจ loading/export/roundtrip จริงก่อน annotation; ไม่มี inference ในรอบ intake นี้ |
+| ขนาดการเริ่มงาน | USER_SELECTED_WORKFLOW | pilot 24 ภาพ → release แรก 300 ภาพ โดย 300 รวม pilot; candidate pool ประมาณ 2,400 ยังไม่ใช่ final membership |
+| หกภาพไม่เห็นร่าง AI ก่อน | USER_SELECTED_WORKFLOW | ผู้ใช้ทำจาก RGB ก่อนดู AI draft แล้วเปรียบเทียบ class/boundary/owner/color ไม่ใช่เทียบคะแนนกับข้อความแผน และไม่ถือเป็นผู้ทำอิสระสองคน |
+| กฎละเอียดและ thresholds | PROPOSED_NOT_FROZEN | ต้องทดลองการใช้งานและบันทึก revision ก่อนรับ GT; ไม่ถือเกณฑ์ในไฟล์แนบเป็นมาตรฐานโดยอัตโนมัติ |
+| แบ่ง dev/evaluation | PROPOSED_NOT_ASSIGNED | เสนอ 24 ภาพพัฒนากติกาและ 276 ภาพประเมินหลัง freeze; ไม่จัด split จริงในรอบนี้ และต้องตรวจกลุ่มใกล้ซ้ำ/ประวัติเห็นข้อมูลก่อน |
+
+### งานแรกและหลักฐานจบแต่ละขั้น
+
+| ขั้น | งาน | เงื่อนไขตรวจรับ/หลักฐาน |
+| --- | --- | --- |
+| Intake ต่อจากเดิม | ตรวจ HEAD/working tree, source bindings, ledger และคิวภาพคงเหลือ ใช้ decode/duplicate audits เดิมที่ bindings ตรง | source guard ผ่าน; checkpoint จาก DB จริง; ระบุ unchecked/unreadable ไม่ใช้ generated sheets เป็น reviewed |
+| คัดกรองภาพ | เปิด sheets ตาม order/seed เดิม บันทึกทุก record ที่เปิดจริง ตรวจ full frame เฉพาะความกำกวมที่ระบุได้ | display events + overview/native observations + จุดทำต่อ; ไม่เดา absent/color/owner จากภาพย่อ |
+| คัด candidate | ใช้วิธี coverage และ sqrt(camera count) เดิม พร้อม seed และเหตุผลรายภาพ ตรวจใกล้ซ้ำด้วยคน | membership ร่างเก็บ private; ประมาณ 2,400 ไม่ใช่ random prevalence sample หรือ 2,000+400 ที่ยืนยันแล้ว |
+| เตรียม pilot 24 | เสนอ 6 calibration + 18 workflow; ใน 18 มี 6 ภาพผู้ใช้ทำก่อนเห็น AI draft เลือกจาก coverage ที่อ่านจริง | เปิดต้นฉบับครบทั้ง 24 ก่อน freeze membership; บันทึกเหตุผล/สิ่งที่ขาด ไม่เลือกจากคะแนนโมเดล |
+| ตรวจเครื่องมือก่อน annotate | ตรวจ schema, holes, disjoint regions, owner, orientation และ export/import ใน GUI/API จริง | independent synthetic expected masks + roundtrip; ยังไม่เริ่มในรอบ intake นี้ |
+| ทดลองและขยาย | SAM3 draft → ผู้ใช้แก้ → QA → ACCEPTED; เก็บของเดิมทุก revision ก่อนทำ batch ถัดไป | วัด model calls/เวลาเครื่อง/เวลาคนจริง; หลังแก้กติกาจึง freeze และขยายทีละ 20 จนครบ 300 ไม่มี auto-accept |
+
+**Coverage ที่ต้องตรวจจากภาพ:** คนเล็ก การบดบัง ความเบลอ แสง และมุมกล้อง รวมท่าก้ม/นั่ง/นอน/ขี่รถเมื่อมีจริง แยก camera viewpoint (ระดับใกล้สายตา / มุมก้ม / เกือบจากด้านบน / ไม่ทราบ) ออกจากท่าทางและทิศหน้าของคน ไม่มีการอ้างมุมเป็นองศาหรือ prevalence จากตัวอย่างไม่กี่ภาพ ภาพชุด S0065–S0068 ที่เปิดรอบนี้ยังไม่ครอบคลุมทุกกรณี เช่น ไม่ยืนยันเคสคนนอนหรือ dress จากชุดนี้
+
+**กฎร่างที่จะใช้เตรียม pilot:** Hair แยก Face; คอแยก auxiliary Neck ไม่บังคับเป็นหน้า; Upper/Lower ใช้ผ้าที่ระบุช่วงได้ ส่วนเสื้อชิ้นเดียวข้ามช่วงตัวเก็บ Cross-zone garment ไม่ตัดเอวสมมติ; ส่วนคนอื่นเก็บ Person-other และ visible person extent แยก owner โดยไม่ใช้ YOLO เป็นผู้ตัดสินว่าคนใดต้องมี GT คนที่ detector พลาดยังต้องมี record เมื่อผู้ทำระบุได้
+
+เก็บเฉพาะส่วนที่เห็นจริง ไม่เติมส่วนที่บัง/หลุดขอบ พื้นหลังที่มองผ่านช่องแขนหรือช่องขาคงเป็นรู ไม่บังคับทุกขอบคลาสติดกัน แยก absent / unobservable / unannotated / outside vocabulary และ owner unknown; สถานะเหล่านี้ไม่กลายเป็น background อัตโนมัติ valid domain ต้องมาจาก GT เดียวกันทุกระบบ ห้าม per-model ignore
+
+สีเป็น **สีที่ปรากฏใน RGB ต้นฉบับ** ของเสื้อผ้าบน–ล่าง ไม่ใช่สี overlay หรือสีแท้ภายใต้แสงมาตรฐาน เสนอ 12 กลุ่มสีพื้นฐานพร้อม OTHER และ UNKNOWN แยกกัน เก็บหลายสีได้เมื่อเห็นพอ แต่ไม่สร้างสัดส่วนจากการมองด้วยตาหรือใช้สีดำแทน unknown ไม่ annotate สีผิว/ผมเป็นข้อบังคับ ไม่มีเกณฑ์ pixel ขั้นต่ำหรือ IoU/agreement ผ่านที่รับรองแล้ว การตัดสิน threshold ต้องบันทึกเหตุผลจาก pilot และทบทวนผลกระทบต่อคนไกล/ท่านอน
+
+กติกาปัจจุบันเป็น **PROPOSED_NOT_FROZEN** การเลือก workflow ไม่ใช่การรับรอง GT/ขอบเขตคลาส/เครื่องมือ รายชื่อ pilot ยัง NOT_SELECTED จนตรวจ coverage และต้นฉบับ ไม่จัด unseen test ให้ภาพที่เห็นหรือใช้พัฒนากฎแล้ว ขั้นต่อทันทีคือคัดกรอง S0069 เป็นต้นไปโดยใช้ checkpoint เดิม ดูผลรอบล่าสุดใน [รายงานสถานะ](../reports/README.md)
+
+## ประวัติข้อเสนอ v0.1 — 27 ตุลาคม 2026
+
 ร่าง 27 ตุลาคม 2026 จาก requirements ที่ยืนยันแล้ว การตรวจไฟล์ทั้ง export และข้อสังเกตภาพจริงที่มี provenance ไม่ใช่ taxonomy ของ CCIHP/โมเดล และไม่ใช่ specification ที่ผู้ใช้อนุมัติแล้ว **การคัดกรองภาพทั้งชุดยังไม่เสร็จ** ดูจำนวนล่าสุดใน [รายงานสถานะ](../reports/README.md) และ private checkpoint ห้ามตีความการตรวจ decode ครบว่าเปิดดูครบ
 
 เอกสารนี้เสนอคำตอบด้านโครงสร้างที่นำไปวางแผนได้ทันที โดยไม่รอผล annotation agreement หรือเวลาทำ mask ซึ่งยังไม่ได้วัด หลักฐานภาพ/IDs และความไม่แน่ใจรายกรณีอยู่ใน private evidence binding ไม่เผยแพร่ภาพ/metadata/paths บริษัท
