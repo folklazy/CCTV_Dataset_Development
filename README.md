@@ -2,7 +2,7 @@
 
 **สถานะล่าสุด 4 พฤศจิกายน 2026: INTAKE_IN_PROGRESS / ANNOTATION_NOT_STARTED**
 
-**ส่งต่องานคัดเลือกให้อีกแชทตามคำขอผู้ใช้แล้ว** ดู [บันทึก handoff](reports/README.md#data-selection-handoff) ไฟล์ส่งต่อที่มีpathsจริงเก็บprivate; ไม่มีการตรวจภาพเพิ่มหรือbackground workerในรอบส่งต่อ ยอดreviewด้านล่างยังคงเดิม
+**ส่งต่อเฉพาะงานคัดเลือกภาพให้อีกแชท (SELECTION ONLY)** ดู [บันทึก handoff](reports/README.md#data-selection-handoff) ไฟล์ส่งต่อที่มีpathsจริงเก็บprivate; ไม่มีการตรวจภาพเพิ่มหรือbackground workerในรอบส่งต่อ ยอดreviewด้านล่างยังคงเดิม
 
 เป้าหมายปัจจุบันคือ Hair / Face / Upper / Lower พร้อมสีเสื้อผ้าบน–ล่าง ใช้ X-AnyLabeling และเตรียม SAM3 pre-annotation โดยผู้ใช้ตรวจแก้ทุกภาพ เริ่ม pilot 24 → release แรก 300 ภาพ ส่วนประมาณ 2,400 เป็น candidate pool ที่ยังไม่เลือกสมาชิกครบ
 

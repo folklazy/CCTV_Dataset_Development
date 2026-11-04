@@ -215,3 +215,10 @@ Private work unit `visual-review-fast-batch-20261104T120354Z` เก็บSESSIO
 ตรวจsource guard/checkpoint binding, existenceของเอกสาร/metadataที่อ้าง, syntaxของPythonตัวอย่าง และquerystrict readable pixel representativesได้9,221 ตรงcanonical ผลเป็นdocument/intake consistency ไม่ใช่selection membership/annotation/execution acceptance
 
 สถานะ HANDOFF_PREPARED / SELECTION_NOT_FROZEN / ANNOTATION_NOT_STARTED ข้อเสนอจากsqrt(camera count)/seedหรือการเริ่มcandidateก่อนvisualทั้งชุดจบต้องเปิดเผยวิธีและส่วนยังไม่ตรวจ ไม่ยกระดับเป็นaccepted/unseen testโดยไม่มีหลักฐาน แชทรับงานต้องตรวจHEAD/treeและrecordsล่าสุดก่อนทำ หลีกเลี่ยงเขียนsharedledgerพร้อมกัน เก็บสมาชิก/ภาพ/metadataจริงprivate และบันทึกงานใหม่แยกจากhistorical runs
+
+
+### Selection-only clarification
+
+ผู้ใช้ชี้แจง 2026-11-04T21:37:46.781766+07:00 (Asia/Bangkok): อีกแชทคัดเลือกภาพเท่านั้น ส่งcandidateประมาณ2,400พร้อมmanifest/metadata/reasons/duplicateและcoverage แล้วหยุด ไม่ทำpilot24/release300/annotation/pseudo-label/inference/training/split/GTschemaหรือพัฒนาระบบannotation การเปิดดูภาพและสคริปต์ที่ไม่รันโมเดลใช้เท่าที่จำเป็นต่อselection; ไม่อ้างvisual reviewครบสำหรับภาพที่ไม่ได้เปิดดู
+
+ไฟล์privateฉบับปรับขอบเขต `DATA_SELECTION_ONLY_HANDOFF_TH.md` ในwork unit `selection-only-handoff-20261104T143746Z` แทนscopeของhandoffเดิม เก็บต้นฉบับและhashprovenanceครบ ไม่มีภาพ/โมเดลหรือการคัดเลือกจริงเพิ่มจากรอบนี้

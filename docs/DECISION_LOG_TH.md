@@ -72,3 +72,6 @@
 | HANDOFF-20261104-01 / USER_REQUESTED + PREPARED | ผู้ใช้จะให้อีกแชทคัดเลือกdata จัดรายละเอียดส่งต่อแทนตรวจภาพเพิ่ม ไม่สร้างtaskหรือส่งข้อความแทนผู้ใช้ | HEAD3e80425 + current checkpoint/sourceguard/docs/DB; private `dataset-selection-handoff-20261104T143007Z/DATA_SELECTION_HANDOFF_TH.md`; ตรวจpaths/metadata fields/query9221/Python example/checkpointhashตรง ไม่มีภาพหรือinferenceเพิ่ม | ผู้ใช้ส่งไฟล์privateให้อีกแชท; แชทรับงานตรวจactualHEADและเลือกfresh selection run รักษาสถานะunreviewed/unknownและscope |
 
 ยอดreviewคง1,683/detail67 เหลือ7,538; candidate2400/pilot24/release300ยังไม่freeze ไม่มีbackground screening. Internal pathsและmembershipไม่ขึ้นpublicGit; Git historyเก็บcommit identity
+
+
+| HANDOFF-20261104-02 / USER_CLARIFIED | 2026-11-04T21:37:46.781766+07:00 (Asia/Bangkok): แชทรับงานทำselection only; ตัดpilot shortlistออกจากdeliverables ไม่มีannotation/inference/splitหรือGTschema/release work | private `selection-only-handoff-20261104T143746Z/DATA_SELECTION_ONLY_HANDOFF_TH.md` พร้อมparent hashes; เก็บhandoffเดิม ไม่เปลี่ยนreview counts | ผู้ใช้ส่งฉบับselection-onlyให้อีกแชท คัดเสร็จส่งmanifest/reasons/coverageแล้วหยุด |
