@@ -75,3 +75,13 @@
 
 
 | HANDOFF-20261104-02 / USER_CLARIFIED | 2026-11-04T21:37:46.781766+07:00 (Asia/Bangkok): แชทรับงานทำselection only; ตัดpilot shortlistออกจากdeliverables ไม่มีannotation/inference/splitหรือGTschema/release work | private `selection-only-handoff-20261104T143746Z/DATA_SELECTION_ONLY_HANDOFF_TH.md` พร้อมparent hashes; เก็บhandoffเดิม ไม่เปลี่ยนreview counts | ผู้ใช้ส่งฉบับselection-onlyให้อีกแชท คัดเสร็จส่งmanifest/reasons/coverageแล้วหยุด |
+
+
+## Work log — 2026-11-05T01:15:34.066091+07:00 (Asia/Bangkok)
+
+| Work/decision ID | การกระทำและเหตุผล | Inputs / outputs / verification | Blockers / next action |
+| --- | --- | --- | --- |
+| TARGET-20261105-01 / USER_CONFIRMED | เปลี่ยนcandidate target2,400→2,200ตามผู้ใช้ ไม่เปลี่ยนGT/split/annotation protocol | Uploadedselectiononly package; เก็บรายงาน/manifestเดิมและsourcebindings | ยังไม่freezeหรือเริ่มpilot |
+| INTAKE-20261105-01 / COMPLETED_CHECK_NEEDS_CORRECTION | ตรวจactualfiles2200,manifestCSV/JSON,hashes/metadata/sourcejoin/strictdecode; ใช้auditsourceเดิมหลังguardผ่าน | private `selected-2200-intake-20261104T180758Z`; uniqueIDs/filenames2200,missing/orphan0; allMD5+sourceSHA2200ตรง; strict2198pass/2failเดิม; canonicalpixels2198ไม่ซ้ำ; spotcheck3แยกจากwhole-exportledger | ขอreplacement2+manifestrevisionและselectionmethod/dHash/visualclaimclarification; ยังไม่มีinference/annotation |
+
+รายงานหลัก reports/SELECTED_2200_INTAKE_REVIEW_TH.md; rawattempt summaryเก็บเดิมและใช้reconciledsummaryที่แยกsourcejoinจากdecodeเป็นauthoritative ไม่ถือnot-checkedเป็นmismatch ไม่แก้incoming/rawsource/curation. Git historyเก็บcommitidentity

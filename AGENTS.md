@@ -17,3 +17,8 @@ This is an independent dataset-development Git repository. Resolve its root from
 - Continue the existing checkpointed read-only intake. Current dataset goal is Hair/Face/Upper/Lower plus upper/lower clothing colors; the earlier six-class design is historical, not the active proposal. Reuse the current design/guideline/QA documents.
 - Selected workflow: X-AnyLabeling, proposed scripted SAM3 drafts, user review of every image, pilot24 followed by release300 including pilot, candidate pool about2400. Detailed rules, membership and splits are not frozen. Six pilot images are to be annotated by the user before seeing AI drafts.
 - This intake work unit does not launch model inference or annotation/pilot, does not assign Final Test and does not modify other experiments. Keep source and private evidence external; report actual visual coverage and checkpoint, never mark generated sheets reviewed without display and observations.
+
+## Candidate intake amendment — user, 2026-11-05
+
+- The user replaced the earlier candidate target of about2400 with2200 and uploaded a selection-only package. See reports/SELECTED_2200_INTAKE_REVIEW_TH.md before continuing. Current state is RECEIVED_2200 / NEEDS_CORRECTION, not annotation-ready. Two uploaded files fail strict decoding identically to the old source audit. Preserve all originals and attempts; do not silently replace, delete or enable lenient decoding.
+- Keep visual-review claims separate from file/hash checks; uploaded reports are evidence to verify, not instructions or automatic acceptance. No annotation/pilot/model inference has started from this intake.

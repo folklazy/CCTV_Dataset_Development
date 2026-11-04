@@ -1,14 +1,14 @@
 # CCTV Human Parsing Evaluation Dataset
 
-**สถานะล่าสุด 4 พฤศจิกายน 2026: INTAKE_IN_PROGRESS / ANNOTATION_NOT_STARTED**
+**สถานะล่าสุด 5 พฤศจิกายน 2026: RECEIVED_2200 / NEEDS_CORRECTION / ANNOTATION_NOT_STARTED**
 
 **ส่งต่อเฉพาะงานคัดเลือกภาพให้อีกแชท (SELECTION ONLY)** ดู [บันทึก handoff](reports/README.md#data-selection-handoff) ไฟล์ส่งต่อที่มีpathsจริงเก็บprivate; ไม่มีการตรวจภาพเพิ่มหรือbackground workerในรอบส่งต่อ ยอดreviewด้านล่างยังคงเดิม
 
-เป้าหมายปัจจุบันคือ Hair / Face / Upper / Lower พร้อมสีเสื้อผ้าบน–ล่าง ใช้ X-AnyLabeling และเตรียม SAM3 pre-annotation โดยผู้ใช้ตรวจแก้ทุกภาพ เริ่ม pilot 24 → release แรก 300 ภาพ ส่วนประมาณ 2,400 เป็น candidate pool ที่ยังไม่เลือกสมาชิกครบ
+เป้าหมายปัจจุบันคือ Hair / Face / Upper / Lower พร้อมสีเสื้อผ้าบน–ล่าง ผู้ใช้เปลี่ยนcandidate targetเป็น **2,200ภาพ** และอัปโหลดชุดคัดแล้ว: รับไฟล์ครบ แต่strictอ่านผ่าน2,198และไม่ผ่าน2 ดู [ผลตรวจรับและงานแก้ไข](reports/SELECTED_2200_INTAKE_REVIEW_TH.md) ยังไม่เริ่มannotation/pilot; workflowภายหลังคงผู้ใช้ตรวจทุกภาพและpilot24 → releaseแรก300
 
 เริ่มอ่าน [ข้อเสนอปัจจุบันและลำดับงาน](docs/DATASET_DESIGN_V0_1_TH.md#revision-งานปัจจุบัน--4-พฤศจิกายน-2026) → [ผล intake ล่าสุด](reports/README.md#review-s0089-s0104) → [แผน pilot/QA](templates/quality_review.template.md) เก็บภาพ/metadata/annotations/รายชื่อจริงไว้ private ไม่มี model inference หรือ annotation ในรอบนี้
 
-ฐานข้อมูลตรวจไฟล์: 9,328 records, readable 9,322, unreadable 6; unique decoded-pixel groups 9,221 เปิดดูรวมแล้ว 1,683 groups (overview/native ตามระดับหลักฐาน) เหลือ 7,538 groups ยังไม่เปิดดู ต่อที่ S0105 ไม่มี membership 2,400/24 หรือ GT ใหม่ที่ freeze แล้ว
+ฐานข้อมูลตรวจไฟล์: 9,328 records, readable 9,322, unreadable 6; unique decoded-pixel groups 9,221 เปิดดูรวมแล้ว 1,683 groups (overview/native ตามระดับหลักฐาน) เหลือ 7,538 groups ยังไม่เปิดดู ต่อที่ S0105 รับ candidate2,200แล้วแต่ยังไม่ผ่านตรวจรับครบ; pilot/GTยังไม่freeze
 
 ## เนื้อหาเดิม ณ 27 ตุลาคม 2026 — ประวัติและรายละเอียดพื้นฐาน
 

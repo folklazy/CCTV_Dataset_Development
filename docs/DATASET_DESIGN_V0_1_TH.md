@@ -1,5 +1,9 @@
 # Dataset Design v0.1 — ข้อเสนอของโครงการ (PROPOSED)
 
+## Current intake update — 5 พฤศจิกายน 2026
+
+ผู้ใช้ยืนยันเปลี่ยนcandidate targetจากประมาณ2,400เป็น **2,200ภาพ** และส่งชุดคัดกลับมาแล้ว รับ2,200ไฟล์/manifestครบ แต่strictอ่านผ่าน2,198ไม่ผ่าน2 สถานะ NEEDS_CORRECTION; ยังไม่เริ่มannotation/inference/pilot ดู [รายงานตรวจรับ](../reports/SELECTED_2200_INTAKE_REVIEW_TH.md) ข้อความ2,400หรือNOT_SELECTEDในrevisionก่อนหน้าด้านล่างเป็นsnapshotก่อนรับชุดนี้ ไม่ใช่จำนวนเป้าหมายปัจจุบัน
+
 ## Revision งานปัจจุบัน — 4 พฤศจิกายน 2026
 
 ส่วนนี้ใช้ต่อจากเอกสารเดิม ไม่สร้าง master plan อีกชุด ข้อเสนอ 6 core classes ในหัวข้อเดิมด้านล่างเป็น **HISTORICAL_PROPOSAL** สำหรับการออกแบบก่อนหน้า เป้าหมายรอบใหม่คือ **Hair / Face / Upper / Lower และสีเสื้อผ้าบน–ล่าง** ตามคำยืนยันในบทสนทนา ยังไม่มี taxonomy IDs หรือ annotation รุ่นใหม่ที่รับรองแล้ว

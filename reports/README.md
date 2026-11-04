@@ -222,3 +222,8 @@ Private work unit `visual-review-fast-batch-20261104T120354Z` เก็บSESSIO
 ผู้ใช้ชี้แจง 2026-11-04T21:37:46.781766+07:00 (Asia/Bangkok): อีกแชทคัดเลือกภาพเท่านั้น ส่งcandidateประมาณ2,400พร้อมmanifest/metadata/reasons/duplicateและcoverage แล้วหยุด ไม่ทำpilot24/release300/annotation/pseudo-label/inference/training/split/GTschemaหรือพัฒนาระบบannotation การเปิดดูภาพและสคริปต์ที่ไม่รันโมเดลใช้เท่าที่จำเป็นต่อselection; ไม่อ้างvisual reviewครบสำหรับภาพที่ไม่ได้เปิดดู
 
 ไฟล์privateฉบับปรับขอบเขต `DATA_SELECTION_ONLY_HANDOFF_TH.md` ในwork unit `selection-only-handoff-20261104T143746Z` แทนscopeของhandoffเดิม เก็บต้นฉบับและhashprovenanceครบ ไม่มีภาพ/โมเดลหรือการคัดเลือกจริงเพิ่มจากรอบนี้
+
+
+## Selected 2200 intake — 5 พฤศจิกายน 2026
+
+ตรวจ 2026-11-05T01:15:34.066091+07:00: ผู้ใช้เปลี่ยนcandidate targetเป็น2,200และอัปโหลดชุดคัด รับ2,200files/CSV/JSONครบ, hashes+metadataตรงsourceเดิม, strictอ่านผ่าน2,198ไม่ผ่าน2 ไม่ลบหรือแทนผลเดิม สถานะ NEEDS_CORRECTION / ANNOTATION_NOT_STARTED อ่าน [รายงานตรวจรับฉบับหลัก](SELECTED_2200_INTAKE_REVIEW_TH.md) สำหรับหลักฐาน การแก้สองภาพ และข้อจำกัดvisual/dHash/pixelhash claims Private run `selected-2200-intake-20261104T180758Z` เก็บไฟล์ตรวจและรายการแก้ไขจริง ไม่เปิดinference/annotation/pilot และไม่ตรวจsourceทั้งชุดซ้ำ
