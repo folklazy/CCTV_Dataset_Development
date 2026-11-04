@@ -204,3 +204,14 @@ Private work unit `visual-review-continuation-20261104T104316Z` เก็บ BEF
 Private work unit `visual-review-fast-batch-20261104T120354Z` เก็บSESSION/BEFORE.sqlite3/checkpoint before-after/compact codesพร้อมlegend/display events/RECONCILIATION ระดับfine boundariesและสีที่ไม่ได้ตรวจต้นฉบับยังNOT_ASSESSED; uncertainไม่ใช่confirmed negative ภาพnativeหนึ่งเคสยังไม่ยืนยันว่าเสื้อผ้าเป็นชิ้นเดียวหรือแยกชิ้น จึงไม่ใช้สีต่อเนื่องเป็นหลักฐานcross-zone
 
 ไม่มีinference/annotation/ติดตั้ง/ดาวน์โหลดหรือแก้raw data/benchmark เก็บcandidate2400/pilot24/release300เป็นเป้าหมายที่ยังไม่มีmembershipfreeze รหัสบันทึกสั้นไม่ใช่GT; สรุป/commitครั้งเดียวต่อwork unit ไม่อ้างspeedupหรือETAที่ไม่ได้วัดแบบควบคุม
+
+
+## Data selection handoff
+
+จัดเตรียมส่งต่อ **2026-11-04T21:31:24.943016+07:00 (Asia/Bangkok)** ตามคำขอผู้ใช้ให้อีกแชทรับงานคัดเลือกข้อมูล รอบนี้ไม่เปิดภาพเพิ่ม/ไม่ inference และไม่เปิดcontroller ส่วนการคัดกรองทั้งชุดยังไม่เสร็จ: ตรวจแล้ว1,683จาก9,221pixel groups เหลือ7,538 จุดเดิมS0105
+
+ผลส่งมอบหลักเป็น private `DATA_SELECTION_HANDOFF_TH.md` ในwork unit `dataset-selection-handoff-20261104T143007Z` ซึ่งresolveจาก`work_root/runs`ในignored local config มีpathsจริงของrepo/source/metadata/cache/DB/checkpoint, นิยาม8metadata fields, วิธีอ่านDBแบบread-only, ข้อจำกัดduplicates/event/time, coverageและวิธีคัดร่างcandidate2400, ความต่างจากpilot24/release300, outputsและข้อห้ามครบ ไฟล์นี้ไม่เผยแพร่publicเพราะมีinternal paths ผู้ใช้ส่งเอกสารให้อีกแชทเอง ไม่มีการส่งข้อความหรือสร้างtaskอื่นอัตโนมัติ
+
+ตรวจsource guard/checkpoint binding, existenceของเอกสาร/metadataที่อ้าง, syntaxของPythonตัวอย่าง และquerystrict readable pixel representativesได้9,221 ตรงcanonical ผลเป็นdocument/intake consistency ไม่ใช่selection membership/annotation/execution acceptance
+
+สถานะ HANDOFF_PREPARED / SELECTION_NOT_FROZEN / ANNOTATION_NOT_STARTED ข้อเสนอจากsqrt(camera count)/seedหรือการเริ่มcandidateก่อนvisualทั้งชุดจบต้องเปิดเผยวิธีและส่วนยังไม่ตรวจ ไม่ยกระดับเป็นaccepted/unseen testโดยไม่มีหลักฐาน แชทรับงานต้องตรวจHEAD/treeและrecordsล่าสุดก่อนทำ หลีกเลี่ยงเขียนsharedledgerพร้อมกัน เก็บสมาชิก/ภาพ/metadataจริงprivate และบันทึกงานใหม่แยกจากhistorical runs

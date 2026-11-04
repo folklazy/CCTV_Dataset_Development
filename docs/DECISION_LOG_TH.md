@@ -63,3 +63,12 @@
 | --- | --- | --- | --- |
 | SPEED-20261104-01 / USER_CLARIFIED + IMPLEMENTED_WORKFLOW | ผู้ใช้ต้องการให้Codexตรวจเร็วขึ้น คงwhole-export scope; ใช้16sheets/batch, compact notesรายภาพ และnativeเฉพาะเคสจำเป็น ลดการอธิบาย/แก้เอกสารซ้ำ | ไม่เปลี่ยนmodel/GT/ระดับหลักฐาน; codes+legend private; ไม่เปิดsubagents/SAM3 | ไม่มีการรับรองspeedupจากmodelหรือETA; ทำต่อS0105ด้วยวิธีนี้ |
 | INTAKE-20261104-04 / COMPLETED_WORK_UNIT | ตรวจS0089–S0104จริงครบ256records มีใหม่254และซ้ำประวัติ2; native1ไม่เพิ่มภาพซ้ำ | HEAD38db43a + existing guard/DB; private `visual-review-fast-batch-20261104T120354Z`; hashes17, notes/membership, prior-prefix, arithmeticผ่าน; รวม1,683/detail67 เหลือ7,538 | Whole-exportยังไม่จบ ไม่มีbackground worker; source/annotation/inferenceเดิมไม่เปลี่ยน |
+
+
+## Work log — 2026-11-04T21:31:24.943016+07:00 (Asia/Bangkok)
+
+| Work/decision ID | การกระทำและเหตุผล | Inputs / outputs / verification | Next action |
+| --- | --- | --- | --- |
+| HANDOFF-20261104-01 / USER_REQUESTED + PREPARED | ผู้ใช้จะให้อีกแชทคัดเลือกdata จัดรายละเอียดส่งต่อแทนตรวจภาพเพิ่ม ไม่สร้างtaskหรือส่งข้อความแทนผู้ใช้ | HEAD3e80425 + current checkpoint/sourceguard/docs/DB; private `dataset-selection-handoff-20261104T143007Z/DATA_SELECTION_HANDOFF_TH.md`; ตรวจpaths/metadata fields/query9221/Python example/checkpointhashตรง ไม่มีภาพหรือinferenceเพิ่ม | ผู้ใช้ส่งไฟล์privateให้อีกแชท; แชทรับงานตรวจactualHEADและเลือกfresh selection run รักษาสถานะunreviewed/unknownและscope |
+
+ยอดreviewคง1,683/detail67 เหลือ7,538; candidate2400/pilot24/release300ยังไม่freeze ไม่มีbackground screening. Internal pathsและmembershipไม่ขึ้นpublicGit; Git historyเก็บcommit identity
