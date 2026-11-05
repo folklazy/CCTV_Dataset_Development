@@ -96,16 +96,17 @@ class AssistedCoverage(unittest.TestCase):
 
     def test_operator_review_requires_loaded_source_and_records_revisions(self):
         self.init()
-        p={'id':'C0','actor':'fixture-reviewer','view_token':'loaded-fixture',
+        p={'id':'C0','actor':'fixture-reviewer','view_token':'loaded-fixture','base_revision':0,
            'confirmed_image_loaded':True,
            'fields':{k:{'state':'uncertain','note':'Synthetic boundary intentionally not provided'} for k in m.AXES+m.TARGETS}}
         with self.assertRaisesRegex(ValueError,'Load source'):m.save_review(self.run,p)
         with m.connect(self.run) as db:
             actual_sha=m.sha((self.images/'0.png').read_bytes())
             db.execute('INSERT INTO views VALUES(?,?,?,?)',('loaded-fixture','C0',actual_sha,m.now()))
-        m.save_review(self.run,p)
+        result=m.save_review(self.run,p)
         self.assertEqual(m.summary(self.run)['operator_coverage_complete'],1)
         p['fields']['Face']={'state':'not_assessed','note':''}
+        p['base_revision']=result['revision']
         m.save_review(self.run,p)
         s=m.summary(self.run)
         self.assertEqual(s['operator_coverage_records'],1)
@@ -116,9 +117,37 @@ class AssistedCoverage(unittest.TestCase):
     def test_malformed_partial_and_unsupported_fields_fail(self):
         self.init()
         for fields in ({}, {'Face':{'state':'observed','note':'face'}}):
-            with self.assertRaises(ValueError):m.save_review(self.run,{'actor':'fixture','fields':fields})
+            with self.assertRaises(ValueError):m.save_review(self.run,{'actor':'fixture','fields':fields,'base_revision':0})
         fields={k:{'state':'observed','note':''} for k in m.AXES+m.TARGETS}
-        with self.assertRaisesRegex(ValueError,'concrete observation'):m.save_review(self.run,{'actor':'fixture','fields':fields})
+        with self.assertRaisesRegex(ValueError,'concrete observation'):m.save_review(self.run,{'actor':'fixture','fields':fields,'base_revision':0})
+
+    def test_two_editors_conflict_preserves_first_revision(self):
+        self.init()
+        fields={k:{'state':'uncertain','note':'Known synthetic fixture limitation'} for k in m.AXES+m.TARGETS}
+        p={'id':'C0','actor':'first','view_token':'fixture','base_revision':0,'confirmed_image_loaded':True,'fields':fields}
+        with m.connect(self.run) as db:
+            db.execute('INSERT INTO views VALUES(?,?,?,?)',('fixture','C0',m.sha((self.images/'0.png').read_bytes()),m.now()))
+        result=m.save_review(self.run,p)
+        p['actor']='second'
+        with self.assertRaises(m.ReviewConflict):m.save_review(self.run,p)
+        items={x['id']:x for x in m.snapshot(self.run)}
+        self.assertEqual(items['C0']['review']['actor'],'first')
+        self.assertEqual(items['C0']['review_revision'],result['revision'])
+        with m.connect(self.run) as db:self.assertEqual(db.execute('SELECT COUNT(*) FROM reviews').fetchone()[0],1)
+
+    def test_incremental_sync_empty_then_changes_then_no_duplicates(self):
+        self.init()
+        initial=m.sync_state(self.run,0)
+        self.assertEqual(initial['revision'],0);self.assertEqual(initial['changes'],[])
+        with m.connect(self.run) as db:
+            fields={k:{'state':'not_assessed','note':''} for k in m.AXES+m.TARGETS}
+            db.execute('INSERT INTO reviews(id,content,at) VALUES(?,?,?)',('C0',json.dumps({'actor':'synthetic','fields':fields}),m.now()))
+        update=m.sync_state(self.run,0)
+        self.assertEqual(len(update['changes']),1)
+        self.assertEqual(update['counts']['operator_coverage_records'],1)
+        self.assertEqual(update['counts']['operator_coverage_complete'],0)
+        self.assertEqual(m.sync_state(self.run,update['revision'])['changes'],[])
+        with self.assertRaises(m.ReviewConflict):m.sync_state(self.run,update['revision']+1)
 
 
 if __name__ == '__main__':

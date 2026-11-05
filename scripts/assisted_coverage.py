@@ -19,7 +19,7 @@ from pathlib import Path
 import secrets
 import sqlite3
 import tempfile
-from urllib.parse import urlsplit
+from urllib.parse import parse_qs, urlsplit
 
 REPO = Path(__file__).resolve().parents[1]
 VERSION = "assisted-coverage-1"
@@ -27,6 +27,10 @@ AXES = ('people', 'scale', 'occlusion', 'blur', 'lighting', 'view',
         'garments', 'color', 'source_artifacts', 'task_support')
 TARGETS = ('Hair', 'Face', 'Upper', 'Lower')
 STATES = {'observed', 'uncertain', 'unobservable', 'not_assessed'}
+
+
+class ReviewConflict(ValueError):
+    """Caller edited an older revision; preserve both the draft and stored row."""
 
 
 def now():
@@ -224,7 +228,7 @@ def snapshot(run):
     with connect(run) as db:
         rows = [dict(r) for r in db.execute('SELECT * FROM inventory ORDER BY id')]
         measured = {r['id']: json.loads(r['content']) for r in db.execute('SELECT * FROM measurements')}
-        reviews = {r['id']: json.loads(r['content']) for r in db.execute('SELECT * FROM reviews ORDER BY seq')}
+        reviews = {r['id']: (r['seq'], json.loads(r['content'])) for r in db.execute('SELECT * FROM reviews ORDER BY seq')}
     edge = sorted((m['edge_mean'], rid) for rid, m in measured.items() if m['edge_mean'] is not None)
     # Queue order only. Bottom decile is not a blur label or exclusion rule.
     edge_tail = {rid for _, rid in edge[:math.ceil(len(edge)*.1)]}
@@ -241,7 +245,8 @@ def snapshot(run):
             if m['bright_fraction'] >= .5:
                 flags.append('mostly_bright_pixels_queue_only')
         items.append({'id': row['id'], 'metadata': metadata, 'measurement': m,
-                      'queue_hints': flags, 'review': reviews.get(row['id'])})
+                      'queue_hints': flags, 'review': reviews[row['id']][1] if row['id'] in reviews else None,
+                      'review_revision': reviews[row['id']][0] if row['id'] in reviews else 0})
     return sorted(items, key=lambda x: (x['review'] is not None, -len(x['queue_hints']), x['id']))
 
 
@@ -283,6 +288,8 @@ def save_review(run, payload):
     config = verify_config(run)
     if not isinstance(payload, dict) or not isinstance(payload.get('actor'), str) or not payload['actor'].strip():
         raise ValueError('Named operator required')
+    if type(payload.get('base_revision')) is not int or payload['base_revision'] < 0:
+        raise ValueError('A nonnegative base_revision is required')
     fields = payload.get('fields', {})
     if set(fields) != set(AXES + TARGETS):
         raise ValueError('All ten axes and four target slots required')
@@ -292,6 +299,10 @@ def save_review(run, payload):
         if value['state'] != 'not_assessed' and not value['note'].strip():
             raise ValueError('Every assessment needs a concrete observation/reason')
     with connect(run) as db:
+        db.execute('BEGIN IMMEDIATE')
+        revision = db.execute('SELECT COALESCE(MAX(seq),0) FROM reviews WHERE id=?', (payload.get('id'),)).fetchone()[0]
+        if revision != payload['base_revision']:
+            raise ReviewConflict('รายการนี้ถูกแก้จากอีกหน้าต่างแล้ว กรุณาตรวจข้อมูลล่าสุดก่อนบันทึก ร่างของคุณยังอยู่ในหน้านี้')
         view = db.execute('SELECT * FROM views WHERE token=? AND id=?', (payload.get('view_token'), payload.get('id'))).fetchone()
         if view is None or payload.get('confirmed_image_loaded') is not True:
             raise ValueError('Load source image and explicitly confirm review first')
@@ -304,9 +315,32 @@ def save_review(run, payload):
                    'evidence': 'OPERATOR_DECLARED_VISUAL_REVIEW', 'native_boundary_acceptance': False,
                    'annotation_accepted': False, 'recorded_at': now()}
         with db:
-            db.execute('INSERT INTO reviews(id,content,at) VALUES(?,?,?)', (payload['id'], packed(content), now()))
+            cursor = db.execute('INSERT INTO reviews(id,content,at) VALUES(?,?,?)', (payload['id'], packed(content), now()))
+            new_revision = cursor.lastrowid
     summary(run)
-    return {'saved': True, 'annotation_accepted': False}
+    return {'saved': True, 'revision': new_revision, 'annotation_accepted': False}
+
+
+def sync_state(run, after):
+    """Small incremental payload from a single SQLite read transaction."""
+    if type(after) is not int or after < 0:
+        raise ValueError('Invalid synchronization cursor')
+    with connect(run) as db:
+        db.execute('BEGIN')
+        revision = db.execute('SELECT COALESCE(MAX(seq),0) FROM reviews').fetchone()[0]
+        if after > revision:
+            raise ReviewConflict('Server history differs; reload the page without discarding unsaved notes')
+        rows = db.execute('''SELECT r.* FROM reviews r JOIN
+            (SELECT id,MAX(seq) seq FROM reviews GROUP BY id) x
+            ON r.id=x.id AND r.seq=x.seq ORDER BY r.seq''').fetchall()
+        changes = [{'id':r['id'],'review_revision':r['seq'],'review':json.loads(r['content'])}
+                   for r in rows if r['seq'] > after]
+        complete = sum(all(v['state'] != 'not_assessed' for v in json.loads(r['content'])['fields'].values()) for r in rows)
+        counts = {'expected':db.execute('SELECT COUNT(*) FROM inventory').fetchone()[0],
+                  'cpu_measured':db.execute('SELECT COUNT(*) FROM measurements').fetchone()[0],
+                  'operator_coverage_records':len(rows),'operator_coverage_complete':complete,
+                  'annotation_accepted':0}
+    return {'revision':revision,'changes':changes,'counts':counts,'server_time':now()}
 
 
 def serve(run, port):
@@ -342,6 +376,9 @@ def serve(run, port):
                         return self.reply(snapshot(run))
                     if route == '/api/status':
                         return self.reply(summary(run))
+                    if route == '/api/sync':
+                        after = int(parse_qs(urlsplit(self.path).query).get('after',['0'])[0])
+                        return self.reply(sync_state(run, after))
                     if route.startswith('/api/image/'):
                         rid = route.removeprefix('/api/image/')
                         with connect(run) as db:
@@ -365,6 +402,8 @@ def serve(run, port):
                             image.save(buf, format='PNG')
                         return self.reply({'view_token': view, 'data_url': 'data:image/png;base64,' + __import__('base64').b64encode(buf.getvalue()).decode()})
                     return self.reply({'error': 'Not found'}, code=404)
+                except ReviewConflict as error:
+                    return self.reply({'error':str(error)},code=409)
                 except Exception as error:
                     return self.reply({'error': str(error)}, code=400)
 
@@ -379,6 +418,8 @@ def serve(run, port):
                         raise ValueError('Invalid request size')
                     result = save_review(run, json.loads(self.rfile.read(size)))
                     return self.reply(result)
+                except ReviewConflict as error:
+                    return self.reply({'error':str(error)},code=409)
                 except Exception as error:
                     return self.reply({'error': str(error)}, code=400)
 

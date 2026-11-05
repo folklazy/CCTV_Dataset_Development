@@ -254,3 +254,16 @@ Private work unit `visual-review-fast-batch-20261104T120354Z` เก็บSESSIO
 Private run ปัจจุบัน `assisted-coverage-20261105T093306Z` เก็บ CONFIG, REUSE_COMPATIBILITY_PRIVATE, STATUS, MEASUREMENT_SUMMARY_PRIVATE, SQLite, browser receipts และ private handoff Parent `assisted-coverage-20261105T092753Z` คง measurements/logs เดิม ภาพจริงและรายชื่อไม่เผยแพร่บน Git
 
 **Next action:** ผู้ใช้เปิดหน้าตรวจได้แล้ว → ตรวจเคสจำเป็นต่อกฎและปิด bridge readiness → pilot24 เมื่อขอบเขตขั้นนั้นพร้อม → ยืนยัน coverage พร้อมตรวจ annotation เป็น batches ก่อนรับรองรุ่น ไม่ต้องให้ Codex เปิดทุกรูปล่วงหน้า การเลือก High/Extra High เป็นการตั้งค่าของ client ซึ่งงานนี้ไม่ได้เปลี่ยนให้
+
+
+## Local web sync
+
+อัปเดต 2026-11-05T17:07:37.546025+07:00 (Asia/Bangkok): ผู้ใช้ต้องการเปิดผ่านเว็บโดยข้อมูลยังอยู่localและซิงค์กัน ใช้browserผ่านSSHเข้าบริการloopbackบนserver ไม่มีcloudหรือฐานข้อมูลสำเนาบนแต่ละเครื่อง อ่าน [คู่มือ](../docs/ASSISTED_COVERAGE_WORKFLOW_TH.md#ใช้ผ่านเว็บและซิงค์ข้อมูลในระบบ-local)
+
+- **IMPLEMENTED:** incremental syncทุก5วินาทีจากSQLiteชุดเดียว; optimistic concurrencyด้วยbase_revisionและwrite transaction; stale saveตอบ409และไม่ทับร่าง; offline/connected status; เตือนก่อนทิ้งร่างที่ยังไม่บันทึก
+- **VERIFIED:** targeted CPU tests9กรณีผ่าน; two-browser synthetic sync, dirty draft preservation,409,explicit reconciliation,refresh,viewerrestart,disconnect/reconnectผ่าน ไม่มีJS exception; หลักฐานสังเคราะห์อยู่privateไม่เพิ่มsemantic reviewของชุดจริง
+- **REUSED:** measurements2,200/2,200,failure0 จากparentตามintakeและsourcebindingsเดิม; ASTของmeasure/analyze/source_pathเหมือนเดิม ไม่อ่านประมวลผลทั้งชุดใหม่ ไม่ใช้GPU/model; review/attempt historyเก็บครบ
+- **CURRENT:** เว็บเปิดในtmux `cctv-coverage-assisted` port8041; privatepointerชี้run `assisted-coverage-web-sync-20261105T100528Z` parent `assisted-coverage-20261105T093306Z` คงไว้; operator reviews0,acceptedGT0
+- **LIMITS:** กดบันทึกจึงส่งเข้าserver ไม่ใช่autosave/offlinequeue; clientต้องเชื่อมserverจึงอ่านภาพ/บันทึก; ไม่ซิงค์polygonกับX-AnyLabeling; tokenเปลี่ยนเมื่อเปิดviewerprocessใหม่ ต้องใช้URLส่วนตัวล่าสุด
+
+Checkpointในหัวข้อAssisted coverageข้างบนเป็นประวัติ เครื่องมือใหม่นี้ไม่รับรองว่าดู/annotateครบทั้งชุด **Next:** เปิดURLผ่านtunnelและตรวจได้จากหลายหน้าต่างบนฐานเดียว ปิดกติกาและbridge readinessก่อนpilotตามworkflowเดิม

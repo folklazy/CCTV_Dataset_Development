@@ -1,29 +1,96 @@
 <!doctype html>
-<html lang="th"><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<html lang="th">
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>ตรวจความพร้อมภาพ CCTV</title>
 <style>
-*{box-sizing:border-box}body{margin:0;background:#f1f5f9;color:#172b3a;font:16px system-ui,sans-serif}header{padding:18px 24px;background:#086b78;color:white}h1{font-size:22px;margin:0 0 8px}main{display:grid;grid-template-columns:240px minmax(350px,1fr) 420px;gap:16px;padding:16px}.panel{background:white;border-radius:12px;padding:16px}button,input,select,textarea{font:inherit;padding:8px;border:1px solid #b5c9d1;border-radius:6px}button{cursor:pointer;background:#eef7f8}button:disabled{opacity:.5;cursor:wait}input,textarea{width:100%}#list{max-height:75vh;overflow:auto}#list button{width:100%;text-align:left;margin:3px 0}#image{width:100%;height:auto;cursor:zoom-in}#viewer{overflow:auto;max-height:78vh}#viewer.zoom #image{width:auto;max-width:none;cursor:zoom-out}#fields{max-height:67vh;overflow:auto}.field{border-bottom:1px solid #dce7eb;padding:10px 0}.field select{width:100%;margin:6px 0}.note{font-size:14px;color:#526978}.warning{background:#fff4d9;padding:10px;border-radius:6px}.error{color:#b42318}#save{background:#086b78;color:white;width:100%;margin-top:12px}label.confirm{display:block;padding:12px 0}.confirm input{width:auto}textarea{min-height:55px}#status{font-size:14px}a{color:#086b78}@media(max-width:1100px){main{grid-template-columns:180px 1fr}.review{grid-column:1/-1}}
+*{box-sizing:border-box}body{margin:0;background:#f1f5f9;color:#172b3a;font:16px system-ui,sans-serif}header{padding:18px 24px;background:#086b78;color:white}h1{font-size:22px;margin:0 0 8px}main{display:grid;grid-template-columns:230px minmax(350px,1fr) 420px;gap:16px;padding:16px}.panel{background:white;border-radius:12px;padding:16px;min-width:0}button,input,select,textarea{font:inherit;padding:8px;border:1px solid #b5c9d1;border-radius:6px}button{cursor:pointer;background:#eef7f8}button:disabled{opacity:.5;cursor:wait}input,textarea{width:100%}#list{max-height:75vh;overflow:auto}#list button{width:100%;text-align:left;margin:3px 0}#list button.active{border:2px solid #086b78;background:#d9f1f0}#image{width:100%;height:auto;cursor:zoom-in}#viewer{overflow:auto;max-height:72vh}#viewer.zoom #image{width:auto;max-width:none;cursor:zoom-out}#fields{max-height:62vh;overflow:auto}.field{border-bottom:1px solid #dce7eb;padding:10px 0}.field select{width:100%;margin:6px 0}.note{font-size:14px;color:#526978}.warning{background:#fff4d9;padding:10px;border-radius:6px}.error{color:#b42318}#save{background:#086b78;color:white;width:100%;margin-top:12px}label.confirm{display:block;padding:12px 0}.confirm input{width:auto}textarea{min-height:55px}#status,#connection{font-size:14px}#connection{margin-top:8px;color:#d3ffed}.offline{color:#ffdfb5!important}#reload{margin:8px 0;background:#fff1cc}.tag{display:inline-block;background:#edf5f6;border-radius:6px;padding:4px 8px;margin:3px;font-size:13px}summary{cursor:pointer}#measure{line-height:1.7}a{color:#086b78}@media(max-width:1100px){main{grid-template-columns:180px 1fr}.review{grid-column:1/-1}}@media(max-width:650px){main{display:block}.panel{margin-bottom:12px}#list{max-height:180px}}
 </style>
-<header><h1>ตรวจความพร้อมภาพ CCTV</h1><div id="status">กำลังเชื่อมต่อ…</div></header>
+<header><h1>ตรวจความพร้อมภาพ CCTV</h1><div id="status">กำลังเชื่อมต่อ…</div><div id="connection" role="status">ข้อมูลอยู่บน server ของคุณ • กดบันทึกเพื่อส่งผลเข้าฐานข้อมูล</div></header>
 <main>
-<aside class="panel"><b>คิวภาพ</b><p class="note">ภาพที่มีสัญญาณให้ตรวจเพิ่มอยู่ก่อน ไม่ใช่อันดับคุณภาพหรือคำสั่งคัดทิ้ง</p><input id="filter" placeholder="ค้นหารหัสภาพ"><label class="confirm"><input id="pending" type="checkbox" checked> เฉพาะยังไม่บันทึก</label><div id="list"></div></aside>
-<section class="panel"><h2 id="title">เลือกภาพ</h2><div id="info" class="note"></div><p class="note">คลิกภาพเพื่อสลับขนาดพอดีจอ / พิกเซลต้นฉบับ ตรวจคนเล็กและขอบภาพด้วย</p><div id="viewer"><img id="image" alt="ภาพต้นฉบับที่เลือก"></div><pre id="measure" class="note" style="white-space:pre-wrap"></pre></section>
-<section class="panel review"><b>บันทึกสิ่งที่คุณตรวจเห็น</b><p class="warning">สถิติและคิวไม่ใช่ผลตรวจสี่คลาส ข้อมูลที่บันทึกหน้านี้เป็น coverage ไม่ใช่การรับรอง mask หรือ GT</p><label>ชื่อผู้ตรวจ<input id="actor" placeholder="ระบุชื่อหรือรหัสผู้ตรวจ"></label><div id="fields"></div><label class="confirm"><input id="confirm" type="checkbox"> เปิดดูภาพและตรวจรายการที่บันทึกแล้ว</label><button id="save" disabled>บันทึกและไปภาพถัดไป</button><p id="message" role="status"></p></section>
+<aside class="panel"><b>คิวภาพ</b><p class="note">สัญญาณจากสถิติช่วยจัดคิว ไม่ใช่คำสั่งคัดภาพทิ้ง</p><input id="filter" placeholder="ค้นหารหัสภาพ"><label class="confirm"><input id="pending" type="checkbox" checked> เฉพาะยังไม่บันทึก</label><div id="list"></div></aside>
+<section class="panel"><h2 id="title">เลือกภาพ</h2><div id="info" class="note"></div><p class="note">คลิกภาพเพื่อสลับขนาดพอดีจอ / พิกเซลต้นฉบับ</p><div id="viewer"><img id="image" alt="ภาพต้นฉบับที่เลือก"></div><details><summary>สถิติช่วยจัดคิว</summary><div id="measure" class="note"></div></details></section>
+<section class="panel review"><b>บันทึกสิ่งที่คุณตรวจเห็น</b><p class="warning">ข้อมูลหน้านี้เป็น coverage ไม่ใช่การรับรอง mask หรือ GT สถิติไม่เติมคำตอบแทนคุณ</p><label>ชื่อผู้ตรวจ<input id="actor" placeholder="ระบุชื่อหรือรหัสผู้ตรวจ"></label><button id="reload" hidden>โหลดผลล่าสุดของภาพนี้</button><div id="fields"></div><label class="confirm"><input id="confirm" type="checkbox"> เปิดดูภาพและตรวจรายการที่บันทึกแล้ว</label><button id="save" disabled>บันทึกและไปภาพถัดไป</button><p id="message" role="status"></p></section>
 </main>
 <script>
-const token=location.hash.slice(1)||sessionStorage.getItem('coverageAccess')||'';if(token)sessionStorage.setItem('coverageAccess',token);history.replaceState(null,'',location.pathname);
+const token=location.hash.slice(1)||sessionStorage.getItem('coverageAccess')||'';
+if(token)sessionStorage.setItem('coverageAccess',token);
+history.replaceState(null,'',location.pathname);
 const names={people:'บุคคลที่มองเห็น',scale:'ขนาดคนในภาพ',occlusion:'การบดบัง / หลุดขอบ',blur:'ความเบลอ',lighting:'สภาพแสง',view:'มุมมอง',garments:'เสื้อผ้า / เดรส / เสื้อซ้อน',color:'ความพร้อมระบุสี',source_artifacts:'กรอบ ข้อความ หรือบริเวณดำฝังในภาพ',task_support:'งานที่ภาพนี้รองรับและข้อจำกัด',Hair:'Hair — ผม',Face:'Face — ใบหน้า',Upper:'Upper — เสื้อผ้าส่วนบน',Lower:'Lower — เสื้อผ้าส่วนล่าง'};
 const stateNames={not_assessed:'ยังไม่ได้ประเมิน',observed:'เห็นหลักฐานตามที่ระบุ',uncertain:'ไม่แน่ใจ — ระบุสิ่งที่แยกไม่ได้',unobservable:'มองเห็นไม่พอประเมิน — ระบุสาเหตุ'};
-let items=[],current=null,viewToken=null,serial=0,loaded=false;
+const hintNames={low_edge_signal_queue_only:'สัญญาณขอบภาพค่อนข้างต่ำ',mostly_dark_pixels_queue_only:'มีพิกเซลมืดมาก',mostly_bright_pixels_queue_only:'มีพิกเซลสว่างมาก'};
+let items=[],current=null,currentBase=0,viewToken=null,serial=0,loaded=false,dirty=false,cursor=0,syncing=false,saving=false;
 const el=id=>document.getElementById(id);
-async function api(path,body){const r=await fetch(path,{method:body?'POST':'GET',headers:{Authorization:'Bearer '+token,...(body?{'Content-Type':'application/json'}:{})},body:body?JSON.stringify(body):undefined});const d=await r.json();if(!r.ok)throw Error(d.error||r.statusText);return d}
+el('actor').value=sessionStorage.getItem('coverageActor')||'';
+el('actor').onchange=()=>sessionStorage.setItem('coverageActor',el('actor').value);
+async function api(path,body){
+ const r=await fetch(path,{method:body?'POST':'GET',headers:{Authorization:'Bearer '+token,...(body?{'Content-Type':'application/json'}:{})},body:body?JSON.stringify(body):undefined});
+ const d=await r.json();if(!r.ok){const e=Error(d.error||r.statusText);e.status=r.status;throw e}return d;
+}
 function message(text,error=false){el('message').textContent=text;el('message').className=error?'error':''}
-function renderFields(review){el('fields').replaceChildren();for(const [key,label] of Object.entries(names)){const row=document.createElement('div');row.className='field';const name=document.createElement('b');name.textContent=label;const select=document.createElement('select');select.id='state-'+key;for(const [value,text] of Object.entries(stateNames)){const o=document.createElement('option');o.value=value;o.textContent=text;select.append(o)}const note=document.createElement('textarea');note.id='note-'+key;note.placeholder='สิ่งที่เห็น ตำแหน่ง หรือเหตุผลที่ประเมินไม่ได้';select.value=review?.fields[key]?.state||'not_assessed';note.value=review?.fields[key]?.note||'';row.append(name,select,note);el('fields').append(row)}}
+function counts(s){el('status').textContent=`ภาพ ${s.expected} · วัดสถิติ ${s.cpu_measured} · บันทึก coverage ${s.operator_coverage_records} · ประเมินครบ 14 รายการ ${s.operator_coverage_complete} · GT ที่รับรองจากเครื่องมือนี้ 0`}
+function renderFields(review){
+ el('fields').replaceChildren();
+ for(const [key,label] of Object.entries(names)){
+  const row=document.createElement('div');row.className='field';const name=document.createElement('b');name.textContent=label;
+  const select=document.createElement('select');select.id='state-'+key;
+  for(const [value,text] of Object.entries(stateNames)){const o=document.createElement('option');o.value=value;o.textContent=text;select.append(o)}
+  const note=document.createElement('textarea');note.id='note-'+key;note.placeholder='สิ่งที่เห็น ตำแหน่ง หรือเหตุผลที่ประเมินไม่ได้';
+  select.value=review?.fields[key]?.state||'not_assessed';note.value=review?.fields[key]?.note||'';
+  const edited=()=>{dirty=true;message('มีการแก้ไขที่ยังไม่ได้บันทึก')};select.onchange=edited;note.oninput=edited;
+  row.append(name,select,note);el('fields').append(row);
+ }
+}
 function filtered(){const text=el('filter').value.trim().toLowerCase();return items.filter(x=>(!el('pending').checked||!x.review)&&x.id.toLowerCase().includes(text))}
-function list(){el('list').replaceChildren();for(const item of filtered()){const b=document.createElement('button');b.textContent=item.id+(item.review?' · บันทึกแล้ว':'')+(item.queue_hints.length?' · ตรวจเพิ่ม':'');b.onclick=()=>select(item);el('list').append(b)}}
-async function refresh(){const [all,s]=await Promise.all([api('/api/items'),api('/api/status')]);items=all;el('status').textContent=`ภาพ ${s.expected} · วัดสถิติ ${s.cpu_measured} · บันทึก coverage ${s.operator_coverage_records} · ประเมินครบ 14 รายการ ${s.operator_coverage_complete} · GT ที่รับรองจากเครื่องมือนี้ 0`;list()}
-async function select(item){const ticket=++serial;current=item;viewToken=null;loaded=false;el('confirm').checked=false;el('save').disabled=true;el('image').removeAttribute('src');el('viewer').classList.remove('zoom');el('title').textContent=item.id;el('info').textContent=[item.metadata.site,item.metadata.camera_name,item.metadata.incident_timestamp].join(' · ');el('measure').textContent=JSON.stringify({สถิติช่วยจัดคิว:item.measurement,ข้อสังเกตอัตโนมัติ:item.queue_hints},null,2);renderFields(item.review);message('กำลังโหลดภาพ…');try{const d=await api('/api/image/'+encodeURIComponent(item.id));if(ticket!==serial)return;el('image').onload=()=>{if(ticket!==serial)return;loaded=true;viewToken=d.view_token;el('save').disabled=false;message('โหลดภาพแล้ว — สถิติไม่ได้เติมคำตอบแทนคุณ')};el('image').onerror=()=>{loaded=false;message('เปิดภาพไม่ได้ ห้ามบันทึกว่าได้ตรวจแล้ว',true)};el('image').src=d.data_url}catch(e){if(ticket===serial)message(e.message,true)}}
-el('save').onclick=async()=>{if(!loaded||!current)return;const fields={};for(const key of Object.keys(names))fields[key]={state:el('state-'+key).value,note:el('note-'+key).value};const payload={id:current.id,actor:el('actor').value,view_token:viewToken,confirmed_image_loaded:el('confirm').checked,fields};el('save').disabled=true;try{await api('/api/review',payload);await refresh();const next=filtered().find(x=>!x.review);if(next)await select(next);else{message('บันทึกแล้ว — ไม่มีรายการที่ยังไม่บันทึกในตัวกรองนี้');el('save').disabled=false}}catch(e){message(e.message,true);el('save').disabled=false}};
+function list(){
+ el('list').replaceChildren();
+ for(const item of filtered()){const b=document.createElement('button');b.textContent=item.id+(item.review?' · บันทึกแล้ว':'')+(item.queue_hints.length?' · ตรวจเพิ่ม':'');if(current?.id===item.id)b.className='active';b.onclick=()=>select(item);el('list').append(b)}
+}
+function metrics(item){
+ const box=el('measure');box.replaceChildren();const m=item.measurement;
+ for(const key of item.queue_hints){const tag=document.createElement('span');tag.className='tag';tag.textContent=hintNames[key]||key;box.append(tag)}
+ const text=document.createElement('p');text.textContent=m?`ความเข้มเฉลี่ย ${m.luma_mean.toFixed(1)} / 255 · พิกเซลมืด ${(m.dark_fraction*100).toFixed(1)}% · พิกเซลสว่าง ${(m.bright_fraction*100).toFixed(1)}% · สัญญาณขอบ ${m.edge_mean===null?'ไม่มีข้อมูล':m.edge_mean.toFixed(2)}`:'ยังไม่มีสถิติ';box.append(text);
+ const caveat=document.createElement('p');caveat.textContent='วัดจากภาพย่อเพื่อช่วยจัดคิว ไม่ยืนยันว่าคนเบลอหรือส่วนร่างกายมองเห็นเพียงพอ';box.append(caveat);
+}
+async function sync(){
+ if(syncing||saving)return;syncing=true;
+ try{
+  const s=await api('/api/sync?after='+cursor);
+  for(const change of s.changes){
+   const item=items.find(x=>x.id===change.id);if(!item)continue;
+   item.review=change.review;item.review_revision=change.review_revision;
+   if(current?.id===item.id&&currentBase!==change.review_revision){
+    if(dirty){el('reload').hidden=false;message('มีผลใหม่จากอีกหน้าต่าง ร่างของคุณยังอยู่ กรุณาตรวจผลล่าสุดก่อนบันทึก',true)}
+    else{currentBase=change.review_revision;renderFields(item.review);el('confirm').checked=false;message('แสดงผลล่าสุดจากฐานข้อมูลแล้ว')}
+   }
+  }
+  cursor=s.revision;counts(s.counts);list();el('connection').className='';el('connection').textContent='เชื่อมต่อฐานข้อมูลบน server แล้ว · ตรวจการเปลี่ยนแปลงทุก 5 วินาที · ล่าสุด '+new Date().toLocaleTimeString('th-TH');
+ }catch(e){el('connection').className='offline';el('connection').textContent='ยังซิงค์ไม่ได้: '+e.message+' · การแก้ไขที่ยังไม่กดบันทึกยังไม่ได้ส่งเข้า server'}
+ finally{syncing=false}
+}
+async function select(item){
+ if(dirty&&!confirm('มีการแก้ไขที่ยังไม่บันทึก ต้องการเปลี่ยนภาพและทิ้งร่างนี้หรือไม่?'))return;
+ const ticket=++serial;current=item;currentBase=item.review_revision;dirty=false;viewToken=null;loaded=false;el('reload').hidden=true;el('confirm').checked=false;el('save').disabled=true;
+ el('image').removeAttribute('src');el('viewer').classList.remove('zoom');el('title').textContent=item.id;el('info').textContent=[item.metadata.site,item.metadata.camera_name,item.metadata.incident_timestamp].join(' · ');metrics(item);renderFields(item.review);list();message('กำลังโหลดภาพ…');
+ try{
+  const d=await api('/api/image/'+encodeURIComponent(item.id));if(ticket!==serial)return;
+  el('image').onload=()=>{if(ticket!==serial)return;loaded=true;viewToken=d.view_token;el('save').disabled=false;message('โหลดภาพแล้ว — กดบันทึกเมื่อคุณตรวจรายการแล้ว')};
+  el('image').onerror=()=>{loaded=false;message('เปิดภาพไม่ได้ ห้ามบันทึกว่าได้ตรวจแล้ว',true)};el('image').src=d.data_url;
+ }catch(e){if(ticket===serial)message(e.message,true)}
+}
+el('save').onclick=async()=>{
+ if(!loaded||!current||saving)return;
+ const fields={};for(const key of Object.keys(names))fields[key]={state:el('state-'+key).value,note:el('note-'+key).value};
+ const payload={id:current.id,actor:el('actor').value,base_revision:currentBase,view_token:viewToken,confirmed_image_loaded:el('confirm').checked,fields};
+ saving=true;el('save').disabled=true;
+ try{
+  const result=await api('/api/review',payload);dirty=false;currentBase=result.revision;current.review={fields,actor:payload.actor};current.review_revision=result.revision;saving=false;
+  await sync();const next=filtered().find(x=>!x.review);
+  if(next)await select(next);else{message('บันทึกลงฐานข้อมูลแล้ว — ไม่มีรายการที่ยังไม่บันทึกในตัวกรองนี้');el('save').disabled=false}
+ }catch(e){saving=false;message(e.message,true);if(e.status===409)el('reload').hidden=false;el('save').disabled=false}
+};
+el('reload').onclick=async()=>{await sync();if(current&&(!dirty||confirm('โหลดผลล่าสุดและแทนที่ร่างที่ยังไม่บันทึกของคุณหรือไม่?'))){dirty=false;currentBase=current.review_revision;renderFields(current.review);el('confirm').checked=false;el('reload').hidden=true;message('โหลดผลล่าสุดแล้ว กรุณาตรวจและยืนยันก่อนบันทึก')}};
 el('filter').oninput=list;el('pending').onchange=list;el('image').onclick=()=>el('viewer').classList.toggle('zoom');
-refresh().then(()=>{if(items.length)select(items[0])}).catch(e=>{el('status').textContent='เปิดไม่ได้: '+e.message+' — ใช้ URL พร้อม access token จาก SERVER_PRIVATE.json'});
+window.addEventListener('beforeunload',e=>{if(dirty){e.preventDefault();e.returnValue=''}});
+document.addEventListener('visibilitychange',()=>{if(!document.hidden)sync()});
+(async()=>{try{items=await api('/api/items');await sync();if(items.length)await select(items[0]);setInterval(sync,5000)}catch(e){el('status').textContent='เปิดไม่ได้: '+e.message+' — ใช้ URL ส่วนตัวจาก server'}})();
 </script></html>

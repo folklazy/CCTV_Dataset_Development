@@ -1,3 +1,5 @@
+> **เว็บ local พร้อมซิงค์:** เปิดหน้าตรวจผ่านเบราว์เซอร์บนคอมผู้ใช้ โดยภาพและฐานข้อมูลอยู่บน server ชุดเดียว หน้าต่างอื่นรับผลใหม่ทุก5วินาทีหลังบันทึก มีการป้องกันบันทึกทับ revision ที่ใหม่กว่า ดู [วิธีเปิดและข้อจำกัด](docs/ASSISTED_COVERAGE_WORKFLOW_TH.md#ใช้ผ่านเว็บและซิงค์ข้อมูลในระบบ-local) ยังไม่รองรับ offline queue หรือซิงค์ polygon อัตโนมัติ
+
 > **อัปเดตล่าสุด — 5 พฤศจิกายน 2026:** ใช้ workflow สคริปต์ช่วยตรวจและยืนยัน coverage ระหว่างตรวจ annotation ตามที่ผู้ใช้รับรอง วัดสถิติ CPU ครบ **2,200/2,200 ภาพ** ไม่พบ failure; ยังไม่มี semantic review/GT acceptance จากเครื่องมือใหม่นี้ เริ่มที่ [คู่มือและวิธีเปิดหน้าตรวจภาพ](docs/ASSISTED_COVERAGE_WORKFLOW_TH.md) และ [สถานะรอบล่าสุด](reports/README.md#assisted-coverage) ข้อความ NEEDS_CORRECTION และข้อเสนอให้ Codex ตรวจทุกภาพล่วงหน้าด้านล่างเป็นประวัติ ซึ่ง intake revision2 และ workflow รอบนี้แทนที่แล้ว ไม่ได้เริ่ม pilot หรือ model inference
 
 # CCTV Human Parsing Evaluation Dataset
