@@ -120,3 +120,15 @@ Next/blockers:เปิดผ่านSSH tunnelแล้วกดบันท�
 ## SCALE-PSEUDOLABEL-20261105 / REVIEWED_PROPOSAL + CPU_HELPER_IMPLEMENTED
 
 เวลา 2026-11-05T17:49:05.455322+07:00; inputs: current2200intake, existingguideline/contract/pilot24, localSAM3adapterrevision8330c45, officialCOCOevaluation/SAM3README. แยกvisiblepixelscaleจากmetricdistance,เลือกSAM3draft+humanreviewโดยไม่อ้างzero bias,คง6blindfirst-pass,คงpilot24reuseกับrelease300. Outputs:คู่มือเดิมฉบับอ่านสั้นพร้อมภาคผนวก,annotation_scale.py/tests,แก้population2400เก่าในcurrentpilotrow. Verification:4independentfixturesผ่าน; sourceoutputsไม่เปลี่ยน. Blockers:Faceboundaryworkingrules/exporttopology/desktopreadinessยังไม่ปิด; no actualpilot/inference. Backupdraftเดิมและsourcebindingsเก็บprivate. Commit/pushเฉพาะงานนี้; ไม่รวมpendingcoverage/webfiles
+
+
+## ANNOTATION-EVIDENCE-20261105 / REVIEWED_PROPOSAL
+
+เวลา 2026-11-05T18:02:49+07:00 (Asia/Bangkok). ผู้ใช้ขอค้น paper/แนวทางให้ละเอียดขึ้นและทำให้ขั้นทำจริงเรียบง่าย ใช้ HEAD08294ac, คู่มือเดิม, registry S03–S11, intake revision2 และ local SAM3 adapter เป็น inputs
+
+- อ่าน CrowdHuman official, RAP §III-B, Cityscapes policy, COCO evaluation, SAM3 README และ Benenson2019 v2 §4–5; CVF403 ใช้ author arXiv แทน บันทึก locator/ข้อจำกัดและหยุดเมื่อพอตัดสิน workflow ไม่ทำ literature review ไม่สิ้นสุด
+- Outputs: แก้คู่มือเดิมเป็น 4 คำถามพร้อมกติกา6ข้อ, factor/action table, proposed Face boundaries/cross-zone/valid domains, pilotQA และ reuse; เพิ่ม evidence section และสถานะบน reports/README เดิม ไม่มี master plan ใหม่
+- Status: เอกสาร REVIEWED_PROPOSAL 0.2-R1 ไม่ใช่ accepted GT/annotation-ready; กฎ Face และ evaluator domains เป็นข้อเสนอ ไม่แก้ frozen benchmark; ภาพ2,200ไม่ได้ถูกตรวจ semantic ใหม่
+- Verification: ตรวจ local Markdown links, table columns, diff/privacy และ appendix preservation ตาม receipt ภายนอก; ไม่รัน full tests เพราะเปลี่ยนเอกสาร ไม่มี inference/weights/environment/dataset changes
+- Blockers/next: ทดสอบ lossless raw masks + desktop roundtrip และ effective SAM3 device/precision; ผูกตัวอย่างกับกฎก่อน pilot24 คง6human-first ไม่เปิด pilot ในรอบนี้
+- Git: รักษา workingchanges เดิม; stageเฉพาะเอกสารรอบนี้ Git historyเป็นcommitidentity ไม่ใส่hashของcommitตัวเองลงlog

@@ -1,5 +1,38 @@
 # ทะเบียนหลักฐานและสมมติฐาน — inherited DRAFT
 
+<a id="targeted-review-20261105"></a>
+## Targeted review — 5 พฤศจิกายน 2026: ครอบคลุมปัจจัย แต่ทำงานง่าย
+
+สถานะ **REVIEWED_PROPOSAL / 0.2-R1-PROPOSED**; เป็นการค้นเพื่อปิดคำถามเรื่อง scale, observability, การใช้เครื่องช่วย และ QA ไม่ใช่ systematic review ใหม่ทั้งวงการ ไม่มี model inference หรือ visual audit ใหม่ทั้ง 2,200 ภาพ ใช้หลักฐาน intake/adapter เดิมประกอบ แหล่ง S03–S11 ด้านล่างรักษาประวัติการตรวจไว้ ไม่เรียกว่าตรวจ PDF ทุกเล่มซ้ำในรอบนี้
+
+| แหล่ง / ตำแหน่งที่อ่าน | สิ่งที่ต้นทางรองรับ | ใช้ / ปรับ / ไม่ยืม |
+| --- | --- | --- |
+| S12 [CrowdHuman official](https://www.crowdhuman.org/), introduction + visible ratio; paper 1805.00123 | มี head, visible-region และ full-body boxes แยกกัน | ใช้แยก visible/amodal; ไม่สร้าง full-body mask หรือ occlusion percentage จาก visible mask เพียงอย่างเดียว |
+| S13 [Benenson et al., CVPR 2019, v2](https://arxiv.org/html/1903.10830v2), §4.1, §4.3–4.4, §5.1 | interactive corrections; general/class-specific policies; qualification; manual bitmap reference และ double annotation | ใช้เครื่องร่าง–คนแก้ + คู่มือสั้น/ข้อยกเว้น + ทดลองความเข้าใจ; ไม่คัดลอกจำนวน clicks, size cutoff, เวลาหรือ agreement มาเป็นเกณฑ์เรา ไม่รับประกันความเร็วตาม paper |
+| S08 [RAP, TIP 2019](https://zhangzhang80.github.io/RAP.pdf), §III-B, PDF p.5 | viewpoint และ occlusion แยกกัน การบังหลายแบบพร้อมกันได้; เลือก coarse parts เพราะ CCTV เล็ก/เบลอ | ใช้ validity รายส่วนและเหตุผลหลายข้อได้; ไม่ใช้ coarse boxes ของ RAP เป็น dense masks ของเรา ไม่ถ่ายค่าผลทดลองมาทำนายชุดเรา |
+| S11 [Cityscapes official labeling policy](https://www.cityscapes-dataset.com/dataset-overview/), Labeling Policy + Class Definitions | มีนโยบาย no-holes และแยก group เมื่อ instance boundaries ไม่ชัด | ไม่ยืม no-holes สำหรับเสื้อผ้า/สี; กลุ่มแยกคนไม่ได้ให้คง unknown ไม่เดา individual owners ชื่อว่า segmentation เหมือนกันไม่ทำให้ topology เท่ากัน |
+| S14 [COCO official evaluation](https://cocodataset.org/dataset/detection-eval.htm), §2 note 4 | scale ใช้จำนวนพิกเซลใน segmentation mask | ใช้รายงานพื้นที่จริง; ไม่ใช้เกณฑ์ COCO ตัดคนทิ้งหรือแทนระยะเมตร |
+| S15 [SAM3 official README](https://github.com/facebookresearch/sam3), image examples / model description, main ที่อ่าน 2026-11-05 | promptable segmentation และคืน masks/boxes/scores | เป็นตัวช่วยร่าง ไม่รับรองสี่คลาสหรือ GT; README main ไม่ใช่ local runtime revision และไม่ใช่อนุญาต upgrade |
+| S03/S04/S05/S07: ทบทวนห้าแหล่งเดิมในหัวข้อถัดไป | provenance; CIHP/MHP ตรวจ annotations และแยก parts/owners; CCIHP แยก characteristics | reuse หลักฐานที่ระบุ locator เดิม ไม่อ้างว่า sources กำหนด Face/สี/ขนาด pilot ของโครงการ |
+
+CVF PDF/HTML ของ S13 เรียกตรงพบ HTTP403 จึงอ่าน author arXiv HTML **v2** แทน ไม่อ้างว่าอ่าน supplement แล้ว S12/S14/S15 และ Cityscapes official เป็นหน้าเว็บที่เปลี่ยนได้ จึงระบุวันที่เข้าถึง ไม่อ้างเป็น revision ของ local source
+
+### ผลตัดสินสำหรับโครงการ
+
+- ลดงานผู้ทำเป็น 4 คำถาม: คนครบ / ส่วนไหนวาดได้ / สีไหนบอกได้ / ตรวจแล้วผ่านไหม ตัวเลขและ provenance ให้โปรแกรมเก็บ ไม่ลดความละเอียดของ mask เพื่อให้กรอกเร็ว
+- แยกคนเล็กจากระยะจริง แยก visible/amodal แยก mask validity/color validity และแยก unknown/negative/workflow states
+- แนะนำ Face region ไม่รวมคอ/หู รวม facial hair ในขอบใบหน้า; แยก cross-zone garment และเสนอ domain ที่คงที่ข้ามโมเดล รายละเอียดใน [คู่มือ](ANNOTATION_GUIDELINE_V0_2_TH.md) เป็น project decision ที่ต้องทดลองก่อน freeze ไม่ใช่ semantic equivalence กับ CIHP/Sapiens
+- หลักฐานรองรับ human-assisted segmentation แต่ยังไม่พิสูจน์ local SAM3 speed/quality, training independence หรือ annotation bias ต่ำ การคง human-first6 เป็นการควบคุมของโครงการ ไม่ใช่ power analysis หรือ independent human agreement
+- หลายปัจจัยไม่จำเป็นต้องเป็นทุก combination ใน pilot24; ต้องแสดงกรณีที่พบ/ยังไม่พบจริง และไม่เรียกการเลือกแบบครอบคลุมเคสว่า random representative sample
+- คงหลักฐานส่วนที่ผิดเงื่อนไขและกฎ revision; immutable source และ lossless roundtrip เป็นประตูรับงาน ไม่ใช่คะแนนความคล้ายกับร่างโมเดล
+
+### อะไรยังตอบไม่ได้ และหยุดค้นตรงไหน
+
+หลักฐานพอตัดสิน workflow เริ่มต้นแล้ว จึงหยุดค้น paper เพิ่มในรอบนี้ ยังไม่ทราบ distribution ขนาดคน/target ที่ยืนยันครบชุด, ความสม่ำเสมอการลากขอบ/บอกสีจริง, เวลาที่ผู้ใช้ใช้แก้ SAM3, และเหตุการณ์ซ้ำข้ามภาพ สิ่งเหล่านี้ต้องได้จาก annotation/pilot หรือ source provenance ไม่ใช่หา paper มาตอบแทน
+
+Local adapter ที่ตรวจแบบ read-only ยังใช้ RETR_EXTERNAL + largest contour (segment_anything_3.py บริเวณ393–405) และ global BF16 autocast (บริเวณ59) ที่ revision 8330c45f4d47f62588122e462ac3eb7e0a2e6f46 จึงยังมีงาน lossless raw mask/export และ effective precision/device readiness ก่อน pilot; รอบนี้ไม่แก้ adapter หรือโหลดโมเดล
+
+
 คงเนื้อหาหลักจาก foundation เดิม P1 หมายถึงเอกสารโครงการเดิมที่เก็บภายนอก Git; รายการที่ตรวจซ้ำรอบนี้ระบุเฉพาะในตารางทบทวนห้าแหล่งด้านล่าง แหล่งอื่นยังเป็นประวัติเดิม ไม่มี visual observations หรือผล pilot ใหม่ในรอบนี้
 
 ### ขอบเขตการตรวจต้นฉบับสำหรับหน้าโครงการ — 22 ตุลาคม 2026
