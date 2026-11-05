@@ -1,5 +1,7 @@
 # ตรวจรับชุดคัดเลือก CCTV 2,200 ภาพ
 
+**อัปเดตฉบับแก้ไข 5 พฤศจิกายน2026: active files2,200ผ่านตรวจไฟล์และสร้างderived manifestแก้bindingแล้ว — FILE_INTEGRITY_VERIFIED / VISUAL_COVERAGE_PENDING** อ่าน [ผลrevision2ด้านล่าง](#revision2-intake) ผล2,198ผ่าน/2เสียในส่วนก่อนหน้าเก็บเป็นhistorical snapshot ไม่ใช่สถานะชุดactiveปัจจุบัน
+
 ตรวจ 2026-11-05T01:15:34.066091+07:00 — Asia/Bangkok
 **RECEIVED_2200 / NEEDS_CORRECTION / NOT_ANNOTATION_READY**
 ผู้ใช้เปลี่ยนcandidate targetจาก2,400เป็น2,200และอัปโหลดชุดที่คัดจากอีกแชท การตรวจรับนี้ไม่เปิดmodel inference/annotation/pilot และไม่เปลี่ยนbenchmarkเดิม
@@ -56,3 +58,30 @@ Whole-export visualcheckpointเดิมคง1,683/detail67/remaining7,538; sp
 | candidate_2200_manifest.json | `44ec91dd30174f822429340b15fcd29ce4252ef05c0f4709a925969f1e96e8af` |
 | CANDIDATE_2200_SELECTION_REPORT_TH.md | `444c3008434349a92934cd94ad25fc3ff0d33e0e25b0ed0620df2c33c443331e` |
 | CODEX_HANDOVER_README.md | `8280824cfa48e78d073b9f1c47c2497f48d961d7c13268c2b140c3819c99cba8` |
+
+
+## Revision2 intake
+
+ตรวจ 2026-11-05T11:33:29.201123+07:00 (Asia/Bangkok) ผู้ใช้อัปโหลดฉบับแก้ไขใหม่ เก็บincoming/ชุดเก่า/archiveโดยไม่เปลี่ยนแปลง **รับตรวจไฟล์active2,200ผ่าน** และสร้างserver-reconciled manifestแยกจากต้นฉบับ ไม่ใช่GT/annotation acceptance
+
+| ส่วนตรวจ | ผลจริง |
+| --- | --- |
+| Active members / missing / orphanในimages | 2,200 / 0 / 0; batchละ550 |
+| Archived images | 3ภาพ ตรงกับไฟล์เก่าที่ถูกแทน ไม่นับเป็นactive population |
+| CSV–JSON / uniqueIDs / uniqueactualpixels | ตรงกัน / 2,200 / 2,200 |
+| Strict decode | ผ่านครบ2,200; reuse2197ภาพตามSHA256เดิม และtargeteddecode3ภาพเปลี่ยน ด้วยPillow12.3.0 ไม่เปิดlenient decoding |
+| Source binding | SHA256ครบ2,200ตรงoriginalsourceที่อ่านผ่าน; geometry/pixel hashesของ3ภาพใหม่ตรงsource |
+| Submitted manifest | MD5ผิด1ค่า,pixel hashผิด1ค่า,remarkภาษาไทยเพี้ยน3ค่า |
+| Derived manifest | แก้5fieldsจากactual bytes/raw metadataที่joinด้วยfilename+sourceSHA โดยคงmembership2,200และinputเดิม มีfield-by-fieldprovenance |
+| Time/camera | minimumgap1,807วินาที,67site-camera groups,สูงสุด115ภาพต่อกลุ่ม |
+| Current coverage snapshot | ภาพ2199ยังbytesตรง; ภาพแทนmodel-overlayหนึ่งภาพเปลี่ยนhash/filename ต้องไม่reuseobservationจากcandidate IDอย่างเดียว |
+
+ภาพที่เคยbroken2ถูกแทนและอ่านผ่าน มีภาพmodel-overlayเดิมอีกหนึ่งภาพถูกแทนด้วย รายการarchive3ครบ ประเด็นMD5/pixelhashของหนึ่งรายการที่snapshotก่อนหน้าพบยังปรากฏในmanifestฉบับอัปโหลด จึงแก้เป็น **derived version** อ้างsourceได้ ไม่ถือว่าแก้checksumให้ผ่านโดยเปลี่ยนรูปหรือเดาค่า อีก3fieldเป็นrawThai remarksที่อ้างต้นทางได้ ไม่มีการเดาrole/classจากรูป
+
+Private run `selected-2200-revision2-delta-20261105T043032Z` เก็บSUMMARY,FILE_RECONCILIATION,FIELD_CORRECTIONS,SCIENTIFIC_INPUT_BINDING,server-reconciled CSV/JSON และREVISION2_INTAKE_HANDOFF_TH.md ภาพ/IDs/private pathsไม่ขึ้นGit ใช้manifest SHA256 `69d8cd2fd24f52a9d52c6e17b327cde2a46ae0bbc4def792d42a7666456b54b9` สำหรับฉบับderived ไม่แก้fingerprintฉบับรับมาหรือcoverage DBย้อนหลัง
+
+เปิดดูnativeเฉพาะ3ภาพทดแทน ไม่พบกรอบตรวจจับเขียวใน3ตัวอย่าง ยังมีtimestamp/camera textและบางภาพมีblack source regions จึงไม่ยืนยันsensor-original/zerooverlaysทั้ง2,200 การนับgreen pixelsอย่างเดียวไม่ครอบคลุมกรอบสีอื่นหรือภาพที่สีเปลี่ยนจากencoding นิยามdHash/coverage claimsและfallback rulesต้องรายงานตามหลักฐาน ไม่ใช้ใบรับไฟล์แทนvisual review
+
+พบงานcoverageมีไฟล์กำลังแก้ในworking tree: คงงานนั้นครบ ไม่แก้README/AGENTSหรือsourceconfig/DBของงานอื่น รายงาน/manifestของsnapshotเก่ายังตรวจย้อนกลับได้ ก่อนรับผลcoverageต่อให้rebind/freshrunด้วยsourcehashใหม่และรักษาreviewhistoryของรูปก่อนแทน มีhandoffระบุรายการที่เปลี่ยนอย่างชัดเจน
+
+**Next action:** ใช้derived manifestและimage-rootฉบับใหม่เป็นinputversionของขั้นตรวจcoverage/tool readiness โดยตรวจreuse compatibilityเฉพาะที่เกี่ยวข้อง ยังไม่เปิดannotation/SAM3/pilot/inferenceในรอบรับไฟล์นี้ ไม่ต้องอัปโหลดชุดภาพเดิมซ้ำเพื่อแก้metadataห้าค่าที่ตรวจยืนยันได้แล้ว

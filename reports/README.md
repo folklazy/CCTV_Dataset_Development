@@ -227,3 +227,8 @@ Private work unit `visual-review-fast-batch-20261104T120354Z` เก็บSESSIO
 ## Selected 2200 intake — 5 พฤศจิกายน 2026
 
 ตรวจ 2026-11-05T01:15:34.066091+07:00: ผู้ใช้เปลี่ยนcandidate targetเป็น2,200และอัปโหลดชุดคัด รับ2,200files/CSV/JSONครบ, hashes+metadataตรงsourceเดิม, strictอ่านผ่าน2,198ไม่ผ่าน2 ไม่ลบหรือแทนผลเดิม สถานะ NEEDS_CORRECTION / ANNOTATION_NOT_STARTED อ่าน [รายงานตรวจรับฉบับหลัก](SELECTED_2200_INTAKE_REVIEW_TH.md) สำหรับหลักฐาน การแก้สองภาพ และข้อจำกัดvisual/dHash/pixelhash claims Private run `selected-2200-intake-20261104T180758Z` เก็บไฟล์ตรวจและรายการแก้ไขจริง ไม่เปิดinference/annotation/pilot และไม่ตรวจsourceทั้งชุดซ้ำ
+
+
+## Selected 2200 revision2 reconciliation
+
+ตรวจ 2026-11-05T11:33:29.201123+07:00: active2,200ผ่านfile checks,archive3แยกจากactive; reuse2197SHAเดิม+decode3เปลี่ยน สร้างderived manifestแก้MD5/pixelhash/Thai remarks5fieldsโดยเก็บincomingเดิมครบ อ่าน [รายงานหลักฉบับอัปเดต](SELECTED_2200_INTAKE_REVIEW_TH.md#revision2-intake) สถานะFILE_INTEGRITY_VERIFIED / VISUAL_COVERAGE_PENDING ไม่ใช่GTready พบcoverage snapshotเก่ายังอ้างภาพoverlayที่ถูกแทนหนึ่งรายการ จัดprivatehandoffให้rebindตามhashโดยไม่แก้config/DBของงานนั้น ไม่มีinference/annotationเพิ่ม

@@ -85,3 +85,12 @@
 | INTAKE-20261105-01 / COMPLETED_CHECK_NEEDS_CORRECTION | ตรวจactualfiles2200,manifestCSV/JSON,hashes/metadata/sourcejoin/strictdecode; ใช้auditsourceเดิมหลังguardผ่าน | private `selected-2200-intake-20261104T180758Z`; uniqueIDs/filenames2200,missing/orphan0; allMD5+sourceSHA2200ตรง; strict2198pass/2failเดิม; canonicalpixels2198ไม่ซ้ำ; spotcheck3แยกจากwhole-exportledger | ขอreplacement2+manifestrevisionและselectionmethod/dHash/visualclaimclarification; ยังไม่มีinference/annotation |
 
 รายงานหลัก reports/SELECTED_2200_INTAKE_REVIEW_TH.md; rawattempt summaryเก็บเดิมและใช้reconciledsummaryที่แยกsourcejoinจากdecodeเป็นauthoritative ไม่ถือnot-checkedเป็นmismatch ไม่แก้incoming/rawsource/curation. Git historyเก็บcommitidentity
+
+
+## Work log — 2026-11-05T11:33:29.201123+07:00 (Asia/Bangkok)
+
+| Work ID | การกระทำ/เหตุผล | Inputs / outputs / verification | Next action |
+| --- | --- | --- | --- |
+| INTAKE-20261105-02 / FILE_VERIFIED_DERIVED_MANIFEST | รับrevision2ตามผู้ใช้ ตรวจdeltaไม่ทำdecodeทั้งชุดซ้ำ; active2200+archive3,sourceSHAตรง2200,uniqueactualpixels2200; reuse2197+decode3 | private `selected-2200-revision2-delta-20261105T043032Z`; derivedCSV/JSON+5field correctionsจากsourcebytes/rawmetadata+inputbindings; spotcheck3แยกจากGT | ใช้derived inputversion ตรวจcoverageต่อ; snapshotก่อนหน้าต้องrebindภาพที่เปลี่ยนหนึ่งรายการ ไม่แก้workingfiles/coverageDBของอีกงาน |
+
+ต้นฉบับอัปโหลด/legacy audit/workingchangesของงานอื่นคงอยู่ ไม่มีinference/annotation/pilot สถานะfile checksไม่ใช่visual/GT acceptance; checksums/reviewclaimsที่แก้มีprovenance ไม่overwriteรายงานจากผู้ส่ง
