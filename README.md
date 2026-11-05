@@ -1,3 +1,5 @@
+> **อัปเดตล่าสุด — 5 พฤศจิกายน 2026:** ใช้ workflow สคริปต์ช่วยตรวจและยืนยัน coverage ระหว่างตรวจ annotation ตามที่ผู้ใช้รับรอง วัดสถิติ CPU ครบ **2,200/2,200 ภาพ** ไม่พบ failure; ยังไม่มี semantic review/GT acceptance จากเครื่องมือใหม่นี้ เริ่มที่ [คู่มือและวิธีเปิดหน้าตรวจภาพ](docs/ASSISTED_COVERAGE_WORKFLOW_TH.md) และ [สถานะรอบล่าสุด](reports/README.md#assisted-coverage) ข้อความ NEEDS_CORRECTION และข้อเสนอให้ Codex ตรวจทุกภาพล่วงหน้าด้านล่างเป็นประวัติ ซึ่ง intake revision2 และ workflow รอบนี้แทนที่แล้ว ไม่ได้เริ่ม pilot หรือ model inference
+
 # CCTV Human Parsing Evaluation Dataset
 
 **สถานะล่าสุด 5 พฤศจิกายน 2026: RECEIVED_2200 / NEEDS_CORRECTION / ANNOTATION_NOT_STARTED**

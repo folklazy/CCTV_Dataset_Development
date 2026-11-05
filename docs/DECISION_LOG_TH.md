@@ -94,3 +94,15 @@
 | INTAKE-20261105-02 / FILE_VERIFIED_DERIVED_MANIFEST | รับrevision2ตามผู้ใช้ ตรวจdeltaไม่ทำdecodeทั้งชุดซ้ำ; active2200+archive3,sourceSHAตรง2200,uniqueactualpixels2200; reuse2197+decode3 | private `selected-2200-revision2-delta-20261105T043032Z`; derivedCSV/JSON+5field correctionsจากsourcebytes/rawmetadata+inputbindings; spotcheck3แยกจากGT | ใช้derived inputversion ตรวจcoverageต่อ; snapshotก่อนหน้าต้องrebindภาพที่เปลี่ยนหนึ่งรายการ ไม่แก้workingfiles/coverageDBของอีกงาน |
 
 ต้นฉบับอัปโหลด/legacy audit/workingchangesของงานอื่นคงอยู่ ไม่มีinference/annotation/pilot สถานะfile checksไม่ใช่visual/GT acceptance; checksums/reviewclaimsที่แก้มีprovenance ไม่overwriteรายงานจากผู้ส่ง
+
+
+## ASSISTED-COVERAGE-20261105 — USER_ACCEPTED / IMPLEMENTED / CPU_MEASURED
+
+- เวลา 2026-11-05T16:35:47.104221+07:00 (Asia/Bangkok); ผู้ใช้รับแนวทาง scripts + human review during annotation + Codex exceptions และให้เริ่มทำ ไม่ใช่คำสั่ง inference/pilot
+- Inputs: revision2 SCIENTIFIC_INPUT_BINDING + derived manifest SHA256 `69d8cd2fd24f52a9d52c6e17b327cde2a46ae0bbc4def792d42a7666456b54b9` และ pinned intake ledger; source read-only,2200สมาชิก
+- Actions: เพิ่ม standalone CPU measurement/queue/local reviewer; ten axes + four targets; source/SHA/geometry/path guards, persisted append-only review revisions, token-gated loopback data access; ไม่แก้ pending coverage files/DB หรือ active benchmark
+- Outputs: assisted_coverage.py/html, targeted requirement fixtures, ASSISTED_COVERAGE_WORKFLOW_TH.md; private measurements2200/failure0, semantic reviews0/GT0; tmux viewer8041
+- Verification: 7fixture tests, JS syntax, synthetic save+refresh, real-image load/zoom+refresh และ unauthenticated401; browser checksไม่ใช่ semantic coverage acceptance; headlessThai glyph limitationบันทึกไว้
+- Recovery: UI session-token correctionมีchild-run compatibility record; reuse CPU measurements2200ตามsource+measurement bindingsเดิม ไม่เขียนทับparent ไม่ทำmodel calls
+- Blockers/next: ยังต้อง rule-critical visual checks + lossless bridge readiness ก่อนpilot; full semantic coverageยืนยันระหว่างตรวจannotation ผู้ใช้ยังต้องตรวจทุกภาพก่อนacceptedGT
+- Git scope: stageเฉพาะ source/tests/guide/report/log และ prefixREADME/AGENTSของรอบนี้ รักษาuncommittedงานเก่าที่เหลือครบ ไม่บันทึกprivateimages/metadata/tokens/DB

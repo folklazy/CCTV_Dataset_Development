@@ -1,3 +1,7 @@
+## Latest user-approved assisted workflow — 2026-11-05
+
+The user accepted scripted CPU screening plus operator coverage confirmation during annotation review, with Codex reserved for ambiguous cases. This supersedes the requirement to finish exhaustive Codex visual screening before annotation. Preliminary coverage and rule-critical examples still precede pilot; guideline and lossless bridge readiness remain required. Do not equate numeric measurements, generated previews, or model suggestions with semantic review, annotation acceptance, or GT. The corrected revision2 intake and derived manifest supersede earlier NEEDS_CORRECTION text below. No model inference/annotation/pilot is launched in this implementation unit. See docs/ASSISTED_COVERAGE_WORKFLOW_TH.md. Preserve existing uncommitted coverage work and its history.
+
 # CCTV Human Parsing Evaluation Dataset
 
 This is an independent dataset-development Git repository. Resolve its root from the script or checkout location; never assume the former workspace is its parent.

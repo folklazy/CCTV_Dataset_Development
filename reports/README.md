@@ -232,3 +232,25 @@ Private work unit `visual-review-fast-batch-20261104T120354Z` เก็บSESSIO
 ## Selected 2200 revision2 reconciliation
 
 ตรวจ 2026-11-05T11:33:29.201123+07:00: active2,200ผ่านfile checks,archive3แยกจากactive; reuse2197SHAเดิม+decode3เปลี่ยน สร้างderived manifestแก้MD5/pixelhash/Thai remarks5fieldsโดยเก็บincomingเดิมครบ อ่าน [รายงานหลักฉบับอัปเดต](SELECTED_2200_INTAKE_REVIEW_TH.md#revision2-intake) สถานะFILE_INTEGRITY_VERIFIED / VISUAL_COVERAGE_PENDING ไม่ใช่GTready พบcoverage snapshotเก่ายังอ้างภาพoverlayที่ถูกแทนหนึ่งรายการ จัดprivatehandoffให้rebindตามhashโดยไม่แก้config/DBของงานนั้น ไม่มีinference/annotationเพิ่ม
+
+
+## Assisted coverage
+
+ตรวจปิด work unit เมื่อ 2026-11-05T16:35:47.104221+07:00 (Asia/Bangkok) ผู้ใช้เลือกใช้สคริปต์วัดสถิติและจัดคิว แล้วตรวจ coverage รายละเอียดพร้อมตรวจ annotation โดย Codex ช่วยเคสยาก แทนการเปิดทุกภาพแล้วเขียนรายละเอียดล่วงหน้าซ้ำ เริ่มอ่าน [คู่มือใช้งานและขอบเขต](../docs/ASSISTED_COVERAGE_WORKFLOW_TH.md)
+
+| ส่วนงาน | ผลที่ตรวจจริง |
+| --- | --- |
+| Intake/source version | ใช้ derived manifest ของ revision2 และ ledger ที่ pin hashes แล้ว ไม่เปลี่ยนสมาชิก/ภาพ/metadata ต้นฉบับ |
+| CPU measurements | 2,200/2,200; missing0, failure0; 67site-camera groups; อ่าน SHA256 พร้อมรอบวัดสถิติ ไม่รัน audit ต้นทางซ้ำ |
+| Semantic coverage ของเครื่องมือใหม่ | operator records0; targets ยังไม่ประเมิน; ไม่ยกยอดงานเก่าเป็นการเปิดดูรอบนี้ |
+| GT / model calls | accepted GT0; model inference0; ไม่ใช้ GPU ไม่เริ่ม pilot/SAM3 |
+| Checks | 7 targeted fixture tests ผ่าน; JS syntax ผ่าน; synthetic browser โหลด/กรอก14ช่อง/บันทึก/refresh ผ่าน ไม่มี JS errors; actual-source browser โหลด/zoom/refresh ผ่านและ data API ปฏิเสธ request ที่ไม่มี token |
+| กระบวนการ | วัดด้วย CPU process เดียวแล้วเปิด loopback viewer ใน tmux; artifacts/private token อยู่ภายนอก Git; process logs/launch receipt ใน private run |
+| UI revision | พบและแก้การคง token เมื่อ refresh ก่อนส่งมอบ สร้าง child run ที่ reuse2200 measurements ตาม source/measurement bindings เดิม ไม่วัดซ้ำ ไม่แก้ config/DB รุ่น parent; มี explicit reuse receipt |
+| ข้อจำกัด | สถิติไม่ยืนยันเบลอ/คนเล็ก/บดบัง/targets/กรอบฝังทั้งหมด; server headless ไม่มี Thai fonts จึงมี glyph ขาดใน screenshot แต่ Unicode/controls ตรวจผ่าน; browser ผู้ใช้ต้องมี Thai font |
+
+สถานะ **MEASUREMENTS_COMPLETE_HUMAN_REVIEW_PENDING** ไม่ใช่ annotation-ready/GT-ready และไม่ใช่การรับรองว่าชุดสะอาดทั้งหมด หน้าเว็บเก็บ coverage แยกจาก X-AnyLabeling ยังไม่ได้รับรอง bridge/import annotation ระดับ lossless
+
+Private run ปัจจุบัน `assisted-coverage-20261105T093306Z` เก็บ CONFIG, REUSE_COMPATIBILITY_PRIVATE, STATUS, MEASUREMENT_SUMMARY_PRIVATE, SQLite, browser receipts และ private handoff Parent `assisted-coverage-20261105T092753Z` คง measurements/logs เดิม ภาพจริงและรายชื่อไม่เผยแพร่บน Git
+
+**Next action:** ผู้ใช้เปิดหน้าตรวจได้แล้ว → ตรวจเคสจำเป็นต่อกฎและปิด bridge readiness → pilot24 เมื่อขอบเขตขั้นนั้นพร้อม → ยืนยัน coverage พร้อมตรวจ annotation เป็น batches ก่อนรับรองรุ่น ไม่ต้องให้ Codex เปิดทุกรูปล่วงหน้า การเลือก High/Extra High เป็นการตั้งค่าของ client ซึ่งงานนี้ไม่ได้เปลี่ยนให้
