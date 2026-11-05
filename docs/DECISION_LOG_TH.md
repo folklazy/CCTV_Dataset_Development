@@ -115,3 +115,8 @@
 เพิ่มincremental API,client sync5s,revision-based409,dirty draft protectionและconnectionstatus; ไม่เปลี่ยนmembership/ภาพ/measurement/annotation policy ใช้childrunพร้อมhashes/AST reuse receiptและpreserveparentDB. Outputs:แก้source/UI/tests/guide/README/report; viewerเฉพาะloopbackในtmux; privatehandoffเก็บURL/token/logs. Verification:9 targeted tests + synthetic two-browser/restart/offline cases; realpopulation/API2,200,sourcebindingsตรง,review0. No model inference/GPU/newmeasurements. งานเก่าที่ค้างในworkingtreeคงเดิม ไม่stageร่วม
 
 Next/blockers:เปิดผ่านSSH tunnelแล้วกดบันทึกเพื่อซิงค์; offlineworkingและpolygonbridgeยังไม่implemented; annotation/pilotยังต้องreadinessขั้นเดิม. Routinecommit/pushเฉพาะงานนี้และตรวจremotematchก่อนส่งมอบ
+
+
+## SCALE-PSEUDOLABEL-20261105 / REVIEWED_PROPOSAL + CPU_HELPER_IMPLEMENTED
+
+เวลา 2026-11-05T17:49:05.455322+07:00; inputs: current2200intake, existingguideline/contract/pilot24, localSAM3adapterrevision8330c45, officialCOCOevaluation/SAM3README. แยกvisiblepixelscaleจากmetricdistance,เลือกSAM3draft+humanreviewโดยไม่อ้างzero bias,คง6blindfirst-pass,คงpilot24reuseกับrelease300. Outputs:คู่มือเดิมฉบับอ่านสั้นพร้อมภาคผนวก,annotation_scale.py/tests,แก้population2400เก่าในcurrentpilotrow. Verification:4independentfixturesผ่าน; sourceoutputsไม่เปลี่ยน. Blockers:Faceboundaryworkingrules/exporttopology/desktopreadinessยังไม่ปิด; no actualpilot/inference. Backupdraftเดิมและsourcebindingsเก็บprivate. Commit/pushเฉพาะงานนี้; ไม่รวมpendingcoverage/webfiles

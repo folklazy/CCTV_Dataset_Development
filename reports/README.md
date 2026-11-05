@@ -267,3 +267,12 @@ Private run ปัจจุบัน `assisted-coverage-20261105T093306Z` เก
 - **LIMITS:** กดบันทึกจึงส่งเข้าserver ไม่ใช่autosave/offlinequeue; clientต้องเชื่อมserverจึงอ่านภาพ/บันทึก; ไม่ซิงค์polygonกับX-AnyLabeling; tokenเปลี่ยนเมื่อเปิดviewerprocessใหม่ ต้องใช้URLส่วนตัวล่าสุด
 
 Checkpointในหัวข้อAssisted coverageข้างบนเป็นประวัติ เครื่องมือใหม่นี้ไม่รับรองว่าดู/annotateครบทั้งชุด **Next:** เปิดURLผ่านtunnelและตรวจได้จากหลายหน้าต่างบนฐานเดียว ปิดกติกาและbridge readinessก่อนpilotตามworkflowเดิม
+
+
+## Annotation scale and practical pilot — 2026-11-05T17:49:05.455322+07:00
+
+ผู้ใช้ขอให้ครอบคลุมระยะ/คนเล็ก ใช้pseudo-labelsที่แยกจากผู้เข้าสอบได้ และกติกาสั้นใช้งานจริงได้ ปรับ [คู่มือหลัก](../docs/ANNOTATION_GUIDELINE_V0_2_TH.md) เป็น6ข้อ+ตารางcoverage โดยเก็บรายละเอียดเดิมเป็นภาคผนวก
+
+ตรวจพบ: datasetยังไม่มีขนาดคน/targetsที่รับรองครบชุด; ภาพเล็กไม่ใช่หลักฐานระยะเมตร. เสนอSAM3ที่มีอยู่เป็นdraft helper ไม่รับรองarchitecture/training independenceหรือautoGT. Localadapterยังlargest-contourและglobalBF16/fallback ต้องปิดก่อนpilot. Pilot24ต้องได้masks/owners/validity/colors/revisionsที่ใช้ต่อได้ใน2,200/300 พร้อมdevelopment exposure
+
+IMPLEMENTED: annotation_scale.py คำนวณvisible bboxสองแกน,mask area,normalized extentsจากbinarymask โดยdistance=nullเมื่อไม่calibrate. Tests4กรณีผ่าน: disjoint,holes,empty,invalidgeometry/labels; ไม่ใช่ผลannotationจริง. ไม่มีnewinference/weights/downloadหรือเว็บเพิ่ม. Next:ปิดกติกาขอบFaceที่ค้างและlosslessbridgeก่อนสร้างpilot; ไม่แอบใช้polygonlossyเป็นGT
