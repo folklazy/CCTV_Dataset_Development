@@ -1,3 +1,6 @@
+> **สถานะล่าสุด 6 พฤศจิกายน 2026: เตรียม script pseudo-label person + 4 parts แล้ว; CPU checks ผ่าน14กรณี; GPU inference0ครั้ง**
+> [คู่มือหลักและเหตุผลเลือก helper/ขนาดขั้นต่ำ](../docs/ANNOTATION_GUIDELINE_V0_2_TH.md#person-part-pseudolabel) · candidate queue24จาก2,200เตรียมแล้ว แยก6calibration/6human-first/12workflow แต่ยังไม่รับรองvisualcoverageหรือGT Precheckจริงผ่านimports/input/checkpointbindings; ยังไม่ได้โหลดSAM3บนGPU/วัดความแม่น4parts ต้องcalibrationจริงก่อนpilot; งานSapiensเดิมไม่ถูกแก้ ไม่มีGUIใหม่ ข้อความถัดไปเป็นประวัติตามวันที่
+
 > **สถานะล่าสุด: ทบทวนหลักฐานและคู่มือ 0.2-R1-PROPOSED — 5 พฤศจิกายน 2026**
 > ใช้ผู้ทำตอบ 4 เรื่อง พร้อมกฎ Face/cross-zone, validity และ QA ที่ตรวจได้ อ่าน [คู่มือปัจจุบัน](../docs/ANNOTATION_GUIDELINE_V0_2_TH.md) และ [แหล่งอ้างอิง/การดัดแปลง](../docs/EVIDENCE_AND_HYPOTHESES_TH.md#targeted-review-20261105) งานรอบนี้เป็นเอกสาร ไม่ได้เริ่ม pilot/model inference หรือยืนยัน coverage ครบชุด ยังต้องปิด lossless export/desktop roundtrip และทดลองกฎกับ pilot24 ไม่ทำเว็บเพิ่ม ข้อความถัดไปเป็นประวัติตามวันที่
 

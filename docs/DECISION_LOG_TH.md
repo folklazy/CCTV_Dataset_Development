@@ -132,3 +132,16 @@ Next/blockers:เปิดผ่านSSH tunnelแล้วกดบันท�
 - Verification: ตรวจ local Markdown links, table columns, diff/privacy และ appendix preservation ตาม receipt ภายนอก; ไม่รัน full tests เพราะเปลี่ยนเอกสาร ไม่มี inference/weights/environment/dataset changes
 - Blockers/next: ทดสอบ lossless raw masks + desktop roundtrip และ effective SAM3 device/precision; ผูกตัวอย่างกับกฎก่อน pilot24 คง6human-first ไม่เปิด pilot ในรอบนี้
 - Git: รักษา workingchanges เดิม; stageเฉพาะเอกสารรอบนี้ Git historyเป็นcommitidentity ไม่ใส่hashของcommitตัวเองลงlog
+
+
+## PERSON-PARTS-PSEUDO-20261106 / SCRIPT_IMPLEMENTED_CPU_CHECKED
+
+เวลา 2026-11-06T13:29:28+07:00 (Asia/Bangkok). ผู้ใช้ขอเกณฑ์คนเล็ก/จำนวนseedและscriptsทำbboxคน/personmask/4partsด้วยpseudo-labels ก่อนตรวจแก้ ยืนยันไม่ต้องการGUIใหม่ ไม่อ้างarchitectureที่ไม่มีส่วนร่วมกับผู้เข้าสอบทั้งหมดหรือปราศจากbias
+
+- Inputs: HEAD49e9432, accepted2200revision2binding+manifest/ledger, คู่มือ0.2-R1, localSAM3checkout8330c45พร้อมweights3,450,062,241bytesและsource/environmenthashes; เพิ่มprimarysourcesCityPersons/SAM3paper/GroundingDINO/graphcutreadinessrationale
+- Outputs: person_pseudolabel.py, sam3_person_draft.py, requirementfixtures; อัปเดตคู่มือ/evidence/QA/reportstatusเดิม ไม่มีเว็บ/แผนใหม่ Sourceimagesreadonly; queue24metadata-diverseจาก24camera groupsแต่coverageNOT_CONFIRMED มี6calib/6human-first/12workflow
+- Behavior: nohardpixeldeletion; longestside20/50/100reviewtags; nativePNGplanesทุกcandidate/target+raw/ownedproposal/conflicts, exactmapback, prompt/box/source/modelprovenance, explicitone-IDexecution/callbudget/attemptlock/atomicpacket/readback, noautomaticGT/negative/ignore/fallback/retry
+- Verification: CPU14requirementfixturesผ่าน + realinput/hash/env/SAM3CPUimportprecheckผ่าน, modelcalls0; syntheticpacket+previewเก็บprivate. systempythonไม่มีPillowจึงใช้existingvenvโดยตรง ไม่ติดตั้งแพ็กเกจ. พบmanifestpixelhashencodingต่างservercanonicalhash จึงแก้importerให้reuseacceptedfilename+byteMD5+ledgerbindingsและactualSHAที่readไม่แก้data/หลักฐานเดิม
+- Limitations: SAM3person/partqualityและGPUpeakยังไม่ทดสอบ, queueยังไม่visualaccepted, มีSapiens1Bใช้T4อยู่จึงไม่แทรกGPUcallในงานสร้างscript/researchนี้ ไม่ประกาศว่าGPUรันไม่ได้เพียงเพราะexternalPID. PromptFace/garmentsไม่รับรองtaxonomyagreement; ownedintersectionไม่ใช่GT; ไม่มีautoaccept/exportevaluation
+- Next: ยืนยันcoverage/6human-first; boundedcalibrationหนึ่งภาพด้วยactualresourcechecksและดูrawoutputsก่อนpilot24; ขยาย300ตามกฎที่freezeและreviewทุกภาพโดยไม่ใช้คะแนนผู้เข้าสอบตั้งGT
+- Git: stageเฉพาะscripts/tests/docsรอบนี้ คงpendingworkเดิม; metadata/IDs/images/weights/rawrunอยู่นอกGit ไม่มีnativebenchmark/environment/sourceadapterchanges

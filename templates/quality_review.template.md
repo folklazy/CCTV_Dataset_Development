@@ -1,5 +1,9 @@
 # แผน annotation pilot และ QA ทดลอง v0.1 — PROPOSED
 
+## เพิ่มเติม 6 พฤศจิกายน 2026 — เตรียม scripts แล้ว ยังไม่เปิด pilot
+
+ใช้ [scripts person + 4 parts](../docs/ANNOTATION_GUIDELINE_V0_2_TH.md#person-part-pseudolabel) ตามคำชี้แจงผู้ใช้ ไม่พัฒนาGUIใหม่ มีcandidatequeue24ตามกล้องแต่ยังต้องยืนยันvisualcoverage/human-firstก่อนfreeze; nohardpixeldeletion, helperSAM3แยกจากผู้เข้าสอบแต่ไม่รับรองarchitecture/trainingindependence CPUfixtures14ผ่านและprecheckจริงผ่านimports/inputs/weightsbindings ไม่มีGPUmodelcalls ไม่ถือว่าnativeSAM3personหรือpartqualityผ่านแล้ว ข้อความประวัติด้านล่างที่บอกยังไม่มีtoolsต้องอ่านคู่กับสถานะนี้
+
 ## แผน pilot ปัจจุบัน — 4 พฤศจิกายน 2026
 
 อ่าน [คู่มือสั้นและกฎขนาดคน/การใช้pseudo-labels](../docs/ANNOTATION_GUIDELINE_V0_2_TH.md) ประกอบ: pilotต้องได้maskที่ใช้ต่อได้, เก็บขนาดจริงจากmask, ไม่ตีความขนาดเป็นระยะเมตร และไม่จำกัดGTตามคนที่detectorพบ

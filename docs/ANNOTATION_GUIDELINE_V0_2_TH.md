@@ -1,6 +1,6 @@
 # ทำ annotation CCTV: คู่มือสั้นสำหรับผู้ทำ
 
-อัปเดต 5 พฤศจิกายน 2026 — **ข้อเสนอปฏิบัติสำหรับ pilot24 ยังไม่ freeze GT** ใช้ภาพที่คัดไว้2,200ภาพ ขั้นที่ทำเสร็จคือรับไฟล์และวัดสถิติภาพ; ยังไม่ได้วัดระยะ/ขนาดคนครบชุดหรือสร้าง annotationจริง
+อัปเดต 6 พฤศจิกายน 2026 — **ข้อเสนอปฏิบัติสำหรับ pilot24 ยังไม่ freeze GT** ใช้ภาพที่คัดไว้2,200ภาพ ขั้นที่ทำเสร็จคือรับไฟล์และวัดสถิติภาพ; ยังไม่ได้วัดระยะ/ขนาดคนครบชุดหรือสร้าง annotationจริง
 
 ## ผู้ทำตอบ 4 เรื่อง ส่วนตัวเลขให้สคริปต์เก็บ
 
@@ -116,6 +116,96 @@ Cityscapes มี policy เติมรูภายใน foreground จริ�
 ป้องกันการตามร่างโมเดลโดยคง6ภาพที่ผู้ใช้ทำก่อนเห็นAI draftไว้ตามแผนเดิม ตรวจmissed personsและพื้นที่ที่โมเดลไม่เสนอด้วย ทุกภาพต้องผู้ใช้ตรวจรับ ไม่เรียกAIตรวจซ้ำว่าindependent human agreement
 
 **ความพร้อมจริง:** local X-AnyLabeling-Server revision `8330c45f4d47f62588122e462ac3eb7e0a2e6f46` มีweights SAM3 แต่adapterยังใช้external contour+largest component; ต้องเก็บraw masksก่อนแปลง ตรวจholes/disconnected components และdesktoproundtripก่อนpilot พบglobal BF16 autocast/CPU fallbackในloader จึงยังต้องปิดeffective precision/device readinessบนT4 ไม่รับรองว่ารันพร้อมจากไฟล์weightsอย่างเดียว รอบนี้ไม่ได้รันโมเดลเพิ่มหรือดาวน์โหลด
+
+<a id="person-part-pseudolabel"></a>
+## ขนาดขั้นต่ำและสคริปต์สร้างร่าง person + 4 parts — 6 พฤศจิกายน 2026
+
+สถานะ **SCRIPT_IMPLEMENTED_CPU_CHECKED / MODEL_QUALITY_NOT_YET_VALIDATED** ผู้ใช้ยืนยันว่าต้องการ script ไม่ใช่หน้าตรวจใหม่ ใช้ SAM3 ช่วยร่าง bbox คน, mask คน และ Hair/Face/Upper/Lower แล้วผู้ใช้ตรวจแก้; ไม่สร้างเว็บและไม่ใช้ outputs ของ YOLO/parser ที่เป็นผู้เข้าสอบมาเป็นเฉลย
+
+### ควรกำหนดขั้นต่ำกี่ pixels
+
+**ข้อเสนอหลัก: ไม่ใช้ตัวเลขเดียวลบคนออกจาก GT ตอนเก็บ annotation** ยืนยันว่าเป็นคนและลาก bbox ได้ให้เก็บ ส่วน mask คน, mask แต่ละ target และสีมี validity แยกกัน หากไม่รู้ว่าเป็นคนจริงให้เก็บ uncertainty region แทนเดา instance ถ้าขอบ mask ไม่พอให้เก็บ bbox ที่ตรวจได้และเหตุผล mask ไม่พร้อม ห้ามสร้าง mask สี่เหลี่ยมเต็ม bbox ทดแทน
+
+| การใช้งาน | เกณฑ์ที่แนะนำตอนนี้ | เหตุผล |
+| --- | --- | --- |
+| บันทึกว่ามีคน / bbox | คนยืนยันได้และขอบ bbox รองรับจากภาพ; ยังไม่มี hard minimum | คนเล็กยังอาจเป็นโจทย์ที่ YOLO ต้องตรวจ การไม่ label จะทำให้ผู้ตรวจพบจริงกลายเป็น FP |
+| person mask | ลาก visible boundary ที่ภาพรองรับได้ เก็บทุกชิ้นและรู; ไม่เดาตัวเต็มใต้สิ่งบัง | bbox ใช้ได้ไม่ได้แปลว่า pixel GT แม่นพอ |
+| Hair/Face/Upper/Lower | พิจารณาความชัดของแต่ละส่วน ไม่ตัดสินจาก bbox คนรวม | คนใหญ่แต่หันหลังอาจไม่มี Face ที่เห็น; คนเล็กอาจเห็นเสื้อแต่ไม่มีรายละเอียดหน้า |
+| สีบน/ล่าง | เห็น apparent color เพียงพอและ region ไม่ปนเปื้อน | mask ถูกแต่ภาพขาวดำยังบอก hue ของเสื้อจริงไม่ได้ |
+| จัดคิวตรวจขนาด | ยาวสุดของ visible bbox `<20`, `20–49`, `50–99`, `≥100 px` พร้อม width/height/area จริง | เป็น **review bins ที่เสนอ** ไม่ใช่เกณฑ์คัดคนหรือมาตรฐานสากล; ใช้ทั้งสองแกนเพื่อรองรับคนนอน |
+
+ตัวเลข 20/50 มีตัวอย่างใน pedestrian evaluation แต่มีนิยามต่างกัน: [CityPersons evaluator, Params และ _prepare](https://github.com/cvgroup-njust/CityPersons/blob/master/evaluation/eval_script/eval_MR_multisetup.py) ใช้ **ความสูง** 50 px/visibility0.65 สำหรับ Reasonable และ 20 px/visibility0.2 สำหรับ All ของเขา เราไม่ได้วัด amodal height/visibility แบบนั้นและมีคนนอน จึงไม่อ้างว่าการใช้ longest side20 ของเราเป็น CityPersons protocol ส่วน100เป็นเพียงเส้นแบ่งคิวอ่านง่ายของโครงการ [COCO](https://cocodataset.org/dataset/detection-eval.htm) รายงานกลุ่มจาก mask area อีกนิยามหนึ่ง
+
+ตัวอย่างคำนวณเพื่ออธิบายความไวของ IoU: ถ้า GT เป็นสี่เหลี่ยม10×10 แต่ขอบทำนายหดเข้าทุกด้าน1px เหลือ8×8 จะได้IoU0.64; GT20×20เหลือ18×18ได้0.81 ตัวอย่างสมมตินี้อธิบายว่าความผิด1pxกระทบคนเล็กมาก ไม่ใช่ผลทดลองหรือเหตุผลให้ตั้ง20pxเป็นเส้นตัดสากล
+
+หลัง pilot ให้รายงานจำนวนคนและความพร้อม bbox/mask/target/color ตามขนาดก่อนเลือก evaluation subsets; ถ้าจำเป็นต้องมี minimum สำหรับคะแนนหลัก ต้อง freeze ก่อนดูผลผู้เข้าสอบและมี tiny-person diagnostic/ignore treatment ที่ประกาศเหมือนกันทุกระบบ คนต่ำกว่าเส้นตัดห้ามหายจาก annotation หรือกลายเป็น background เงียบ ๆ ยังไม่มี final benchmark cutoff ในรอบนี้
+
+### โมเดลช่วยร่างและเรื่อง bias
+
+**แนะนำ SAM3 ที่มีอยู่เป็นตัวช่วยหลัก พร้อม human-box crop สำหรับคนที่ตกหล่น** ไม่เพิ่ม Grounding DINO หรือ weights อื่นก่อนเห็นข้อผิดพลาดจริงใน pilot นี่คือการเลือกเครื่องมือที่เหมาะเริ่มงานจากหลักฐานและทรัพยากร ไม่ใช่การรับรองว่าแม่นที่สุดบน CCTV ชุดนี้
+
+| ทางเลือก | หลักฐาน / ความต่าง | ข้อสรุป |
+| --- | --- | --- |
+| SAM3 | [paper v2 §3](https://arxiv.org/html/2511.16719v2) ระบุ DETR-like detector, PE backbone และ mask head; ใช้ text/visual prompts ได้ | ทำ person boxes/masks และ part proposals ด้วยตัวเดียวที่มีอยู่; เลือกใช้เป็น drafts ต้องตรวจ class/owner/boundary เอง |
+| Grounding DINO + SAM3 | [official implementation](https://github.com/IDEA-Research/GroundingDINO) เป็น Transformer-based grounded detector; ยังต้องมี mask model | เป็น fallback candidate หาก person recall ของ SAM3 ไม่พอ ไม่รับรองว่าแม่นกว่าหรือเป็น architecture ที่เป็นอิสระจากทุกผู้เข้าสอบ; รอบนี้ไม่ติดตั้ง/ดาวน์โหลด |
+| ผู้เข้าสอบ YOLO/parser เดิมช่วยสร้างเฉลย | checkpoint และข้อผิดพลาดเกี่ยวข้องกับสิ่งที่กำลังจะวัดโดยตรง | ไม่เลือกเป็น draft generator หรือ person gate ของ GT |
+| คนวาดเอง / classical interactive segmentation | [Microsoft Research review](https://www.microsoft.com/en-us/research/publication/interactive-foreground-extraction-using-graph-cut/) อธิบาย graph-cut/GrabCut ซึ่งไม่ใช่ pretrained neural parser | ใช้ช่วยเคสกำกวมหรือ first pass ได้ แต่ยังต้องมีคนระบุความหมายและไม่รับรองขอบจาก algorithm โดยอัตโนมัติ; ยังไม่ได้เพิ่ม GrabCut execution |
+
+เก้าผู้เข้าสอบเดิมมีทั้ง CNN และ Transformer/ViT อยู่แล้ว การกำหนดว่า helper ต้องไม่มี architecture component ซ้ำกับทุกตัวจึงยังทำให้เป็นจริงไม่ได้ด้วยตัวเลือกข้างต้น **SAM3 ต่างตระกูลและ checkpoint จากผู้เข้าสอบ แต่ยังเป็น Transformer เช่นบางผู้เข้าสอบ** ไม่อ้างว่าข้อมูลฝึกไม่ทับกันหรือไม่มี annotation bias การควบคุมที่ใช้จริงคือไม่อ่าน predictions/คะแนนของผู้เข้าสอบ, เก็บ human-first6ก่อนเห็นAI, ตรวจ missed persons ทั้งภาพ, เก็บ raw→แก้→รับรอง และให้กฎ GT เป็นอิสระจากชื่อโมเดล
+
+สำหรับ 4 parts SAM3 เป็น promptable segmenter ไม่มี native semantic IDs สี่คลาสของเรา แต่ละชื่อไฟล์จึงเป็นกลุ่มตาม prompt ที่เรียก ไม่ใช่การรับรอง class ID จาก head ของ parser และยังไม่ใช่ parser 4 คลาสที่พิสูจน์แล้ว prompt `face` อาจไม่ตรงขอบ Face ของเรา และ `upper body clothing`/`lower body clothing` อาจตอบคลุมเครือ กรณีนี้ต้องแก้ semantic labels ไม่แปลว่าชื่อ prompt รับรองคลาสถูกทั้งหมด
+
+### Script ทำอะไรจริง
+
+- [person_pseudolabel.py](../scripts/person_pseudolabel.py): จัด candidate queue ตามกล้อง/seed จาก intake ที่ผูก hashes, เก็บ geometry, export native binary PNG ทุก instance/ทุก target, ตรวจ readback และสร้าง preview; มี COCO uncompressed RLE utility ที่รักษารู/ชิ้นส่วน แต่ยังไม่มี GT evaluation/export ที่อนุมัติเอง
+- [sam3_person_draft.py](../scripts/sam3_person_draft.py): เรียก local SAM3 โดยตรง ไม่ผ่าน server adapter ที่ทำ largest-contour ใช้ FP32/batch1/resolution1008/noAMP/noTF32 และไฟล์weightsเดิม ไม่มี download/fallback/auto-retry รองรับหนึ่ง image ID ต่อ invocation พร้อม call budget และ immutable attempt claim
+- เส้นทางอัตโนมัติ: original RGB → SAM3 `person` → เก็บ native person masks/model boxes/visible mask envelope → cropรายคนพร้อมcontext15% → ร่าง Hair/Face/Upper/Lower และ auxiliary `dress` probe → map-backบนgridเดิม `dress` probe ไม่เท่ากับ Apparel และไม่ถูกแบ่งเป็น Upper/Lower
+- เส้นทางคนแก้ bbox: `--person-boxes` ใช้กรอบที่คนวาดก่อนเห็นร่าง พร้อม source SHA/reviewer → cropพิกเซลต้นฉบับพร้อมcontext → SAM3 positive-box prompt → parts routeเดิม ช่วยคนเล็ก/ตกหล่นโดยไม่ให้ text detector เป็นgate ไม่เอากรอบYOLOมาแทน human inventory
+- เก็บ raw candidate planes และ raw unions ก่อน intersection แยกจาก `owned_proposal` ที่ตัดด้วย person maskเพื่อช่วยตรวจ พร้อม outside-person pixels และ target-conflict map **intersection นี้เป็น draft ที่แก้ได้** ไม่ใช่ขอบเขต GT; person maskผิดอาจตัด Hair/เสื้อที่ถูกออก จึงต้องดูrawประกอบ
+- ยังไม่ compose เป็นเฉลย4classแบบบังคับชนะทับกัน หาก Face/Hairซ้อนหรือ Upper/Lowerชนกันให้เก็บไว้ตรวจ ไม่ใช้คะแนนสูงสุดแปลเป็น GT ไม่มี proposalคือ “โมเดลไม่เสนอ” ไม่ใช่ absent หรือ verified negative
+- ทุก mask อยู่ original grid; person support ไม่เท่ากับ union4parts เพราะยังมีผิวกาย รองเท้า/ส่วนอื่น person masks ที่รวมกระเป๋าหรือคนข้างเคียงต้องแก้ตามกฎ
+
+โมเดลมี learned bbox ของตนเอง และ script มี bboxที่คำนวณจาก visible mask เก็บแยกกัน หลังคนแก้ mask จึงคำนวณ envelopeใหม่ได้ สำหรับทดสอบ YOLO ให้ประกาศ visible-person GT และใช้ขอบจากงานที่ตรวจแล้ว ไม่ใช้ draft model box เป็น GT โดยอัตโนมัติ และไม่เรียกผลว่า official amodal pedestrian benchmark
+
+### จำนวนภาพและลำดับที่ใช้
+
+คง **pilot24 → release300รวม24 → ทำต่อใน2,200** ไม่สร้างจำนวน seed ใหม่ที่ไม่มีเหตุผล 24ภาพมี6calibration+18workflow โดย6ในworkflowเป็นhuman-firstตามแผนเดิม จำนวน24เพื่อพิสูจน์เครื่องมือ/กฎ/ภาระงาน ไม่ใช่จำนวนที่ให้ statistical precision ของทั้งdatasetและไม่ใช่ชุด train โมเดล SAM3 ในวิธีนี้เป็นpretrainedzero-shot ไม่มี training/fine-tuningจาก24ภาพ
+
+เตรียม queue candidate24 จาก24กลุ่มกล้องแล้วด้วย deterministic camera round-robin; **ยังไม่ใช่ membership ที่รับรอง coverage** ต้องเปิดตรวจคนเล็ก/มืด/บัง/ท่าทางก่อนfreezepilot รายชื่อและภาพอยู่private ไม่เผยแพร่กล้องจริงขึ้นGit การเห็นแต่24กล้องยังไม่รับรอง coverageครบ67กลุ่มหรือทุกเหตุการณ์ เปลี่ยนสมาชิกต้องสร้างqueueใหม่พร้อมเหตุผล ไม่แก้queuehashย้อนหลัง
+
+### วิธีใช้และการตรวจรับ
+
+ใช้ Python environmentเดิมที่มีPillow/PyTorch; system `python3` ของเครื่องนี้ไม่มีPillowจึงใช้ interpreterของ environmentตรง ๆ ตัวอย่างต่อไปนี้เป็น placeholders; คำสั่งpathsจริงและqueueอยู่private work run
+
+```bash
+# สร้างคิวอย่างเดียว ไม่เรียกโมเดล
+/path/to/existing-env/bin/python scripts/person_pseudolabel.py prepare \
+  --binding /private/intake/SCIENTIFIC_INPUT_BINDING.json \
+  --output /private/work/runs/new-pilot24
+
+# ตรวจ binding/imports/input เท่านั้น ยังไม่โหลด weights เข้า GPU
+/path/to/existing-env/bin/python scripts/sam3_person_draft.py \
+  --queue /private/work/runs/new-pilot24 --id CAND_EXAMPLE \
+  --source-checkout /path/to/X-AnyLabeling-Server \
+  --checkpoint /path/to/existing/sam3.pt --output /private/work/runs/precheck-example
+
+# เมื่อตรวจ readinessและภาพที่อนุญาตแล้ว เพิ่ม --execute และใช้ outputใหม่
+# ใช้ --max-calls 64 เป็นเพดานชัดเจน ไม่เพิ่มอัตโนมัติเมื่อคนมาก
+```
+
+`--execute` มีสิทธิ์เรียกโมเดลจริง การไม่มีflagนี้เป็นprecheckเท่านั้น คำสั่งหนึ่ง IDไม่เปิดbatch2,200เอง max64นับทั้ง image encodesและprompt forwards; routeอัตโนมัติใช้2+6P callsต่อภาพเมื่อPคือจำนวนpersonproposalsและทำครบทุกขั้น ไม่รวมmodel loading หากคนมากจนเกินbudgetจะหยุดพร้อมpartialartifacts ไม่แอบเพิ่มงบ One attemptต่อID; failure/partialต้องreconcileก่อนสร้างcontinuationเอง ไม่ลบATTEMPTSเพื่อretry
+
+`--person-boxes` JSON มี `image_id`, `source_sha256`, `provenance: human_drawn_before_model_draft`, `reviewer`, `boxes_xyxy_exclusive` เป็นlistของกรอบoriginalpixels ส่วนhuman-first6ต้องมี `--human-first-receipt` ซึ่งผูกsource,reviewer,timeและhashesของไฟล์annotationที่มีอยู่จริงก่อนAI Scriptตรวจreceiptได้แต่ไม่พิสูจน์ว่ามนุษย์ไม่เคยเห็นAIจากช่องทางอื่น
+
+กรณีimageแตก/EXIFrotationไม่ปกติ/geometryผิด/labelsไม่binary/nonfinite/OOM/CUDA/callbudget/diskguard ให้เก็บSTATUS/TRACEBACK/CALLSและpartialหยุด ไม่ลดresolution/precisionหรือเปลี่ยนpromptเพราะอยากให้ผ่าน เพดานdiskfree50GiBคงเป็นoperationalguard ส่วน `--min-free-gib` เป็นreserveที่ผู้เรียกประกาศ ไม่ใช่ค่าคาดการณ์peak ห้ามใช้freeVRAMจุดเดียวรับรองว่าโมเดลรันได้หรือรันร่วมปลอดภัย
+
+**ตรวจแล้วในรอบนี้:** CPU requirement fixtures14กรณีผ่าน ครอบคลุมhole/components, original-grid map-back, class conflicts/raw-versus-owned, empty outputs, tiny/lying geometry, RLE, bindings/changedsource, human-box rescue, budget/failurehistory และhuman-firstguards; ใช้fakebackendที่ระบุชัด ไม่ใช่ผลSAM3จริง Precheckจริงอ่านภาพcalibrationหนึ่งภาพ/hashweights/importsผ่านด้วยenvironmentเดิม ไม่มีmodelโหลดหรือGPUforward
+
+ตรวจฮาร์ดแวร์จริงพบTeslaT4และงานSapiens1Bกำลังใช้GPUอยู่; precheckเห็นfreeประมาณ7.56GiB แต่ยังไม่มีmeasuredpeakของSAM3FP32+partsrouteนี้ จึงยังไม่อ้างว่ารันร่วมพอหรือไม่พอ ไม่เปิดGPUงานใหม่ในรอบสร้างscript/ทบทวนนี้ สถานะGPUreadiness/ความแม่น4partsยังต้องตรวจด้วยcalibrationจริงที่มีbudgetก่อนเปิดpilotdraftsหรือbatch
+
+ตัวสร้าง draft ข้าม largest-contour ของ server เดิมได้แล้ว แต่ **การเปิดแก้และส่งกลับจาก desktop editor แบบไม่ทำ mask เสียรูปยังต้องตรวจ** ก่อน accepted GT สคริปต์นี้ยังไม่มีปุ่ม/คำสั่งรับรอง GT จากโมเดลหรือ exporter สำหรับคะแนน benchmark สี confidence ที่เก็บคือ model proposal score ไม่ใช่ความมั่นใจว่ามนุษย์รับรองแล้ว
+
+**ขั้นถัดไปที่ชัดเจน:** ยืนยันตัวอย่างcoverageและ6human-first → ทดสอบSAM3หนึ่งภาพcalibrationเมื่อจัดresourceได้ โดยเก็บactualpeak/geometry/raw4partsและดูภาพจริง → แก้implementationเฉพาะbugพร้อมhistory → ทำpilot24ตามงบ → คนตรวจแก้/รับรองและfreezeกฎ → ขยาย300/2,200เป็นbatches ไม่เปลี่ยนกฎจากคะแนนYOLO/parser
 
 ## Pilot เป็นงานจริงที่นำไปใช้ต่อได้
 

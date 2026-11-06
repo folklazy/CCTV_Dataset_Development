@@ -1,5 +1,23 @@
 # ทะเบียนหลักฐานและสมมติฐาน — inherited DRAFT
 
+## Person/parts pseudo-label review — 6 พฤศจิกายน 2026
+
+ผู้ใช้ชี้แจงว่าต้องการ scripts สำหรับbboxคน/personmask/4parts ไม่ใช่GUI และอยากแยกannotationhelperจากผู้เข้าสอบ ข้อสรุปเป็นprojectproposalและCPUimplementation ไม่ใช่การพิสูจน์helperดีที่สุดหรือGTปราศจากbias
+
+| Source / locator ที่อ่าน | ข้อเท็จจริงที่ใช้ | สิ่งที่เราเลือกและข้อจำกัด |
+| --- | --- | --- |
+| S16 [CityPersons evaluator](https://github.com/cvgroup-njust/CityPersons/blob/master/evaluation/eval_script/eval_MR_multisetup.py), `Params.setDetParams`, `_prepare`; master อ่าน2026-11-06 | Reasonableใช้height≥50และvisibility≥0.65; Allใช้height≥20และvisibility≥0.2 | แยกannotationinventoryจากevaluationsubsets ไม่ถ่ายamodalheightเป็นlongestsideหรืออ้าง20pxเป็นมาตรฐานmask/สี |
+| S15 ต่อ: [SAM3 paper v2](https://arxiv.org/html/2511.16719v2), §3 detector architecture; §D.3–D.5 data engine; AppendixB | DETR-like detector/PE/maskhead, conceptกับvisualprompts; dataengineมีmask/exhaustivityverificationและhuman correction; domain limitations | เลือกSAM3ที่มีอยู่และเก็บrawnativeplanes; 4partpromptเป็นdraft ไม่รับรองsemanticboundariesหรือความแม่นCCTV; ไม่คัดลอกAIverificationเป็นGTacceptance |
+| S17 [Grounding DINO official](https://github.com/IDEA-Research/GroundingDINO), Model/Checkpoints; [paper abstract](https://arxiv.org/abs/2303.05499) | groundedTransformerdetectorและSwinvariants; ต้องต่อsegmenterหากต้องการmasks | ทางเลือกสำรองด้านproposal ไม่ช่วยให้architectureไม่ซ้ำTransformerทุกตัว; ไม่มีlocalweights/readinessที่ยืนยัน จึงไม่เพิ่มdownloadsในรอบนี้ |
+| S18 [Microsoft Research, Interactive Foreground Extraction using graph cut](https://www.microsoft.com/en-us/research/publication/interactive-foreground-extraction-using-graph-cut/), 2011chapter abstract | ทบทวนinteractive discreteoptimization/GrabCut | ทางเลือกไม่ใช้pretrainedneuralparserสำหรับคนช่วยแก้ แต่ไม่ได้แก้semanticclass/คนตกหล่นอัตโนมัติ ไม่ได้implementหรือวัดเทียบในรอบนี้ |
+
+S16/S17เป็นmutablebranchesจึงใช้สำหรับdocumentaryrationale ไม่ใช่codebindingของงานรัน SAM3localcheckoutผูกHEAD8330c45f4d47f62588122e462ac3eb7e0a2e6f46พร้อมhashesของไฟล์Python/vocabularyจริงและweightsSHA256ในprivateprecheckแยกจากofficialpaper source treeอาจต่างmainที่paperอ้าง ห้ามยกผลpaperมาเป็นlocalacceptance
+
+**การตัดสิน:** คงpilot24แล้วขยาย300ตามแผนเดิม เก็บคนยืนยันได้โดยไม่มีhardpixeldeletion ใช้20/50/100longestsideเป็นreviewbinsเท่านั้น เสนอhuman-first6และfull-framehumaninventoryเพื่อควบคุมdraftbias; model-familyต่างไม่พิสูจน์trainingหรือerrorindependence ตัวอย่างIoUสี่เหลี่ยม10→8และ20→18เป็นการคำนวณสมมติของโครงการ ไม่ใช่ผลpaper ไม่มีงานใดรับรองจำนวน24/300สำหรับstatisticalpower
+
+**Residualunknown:** ความแม่นperson/4partsและเวลาที่คนแก้บนCCTVนี้, actualSAM3FP32peak, ความครอบคลุมpilotที่ยืนยันด้วยภาพ และfinalsizeeligibilityต้องได้จากcalibration/pilot ไม่ใช่เพิ่มliteratureจนเหมือนมีคำตอบแล้ว รายละเอียดวิธีใช้/acceptanceใน[คู่มือหลัก](ANNOTATION_GUIDELINE_V0_2_TH.md#person-part-pseudolabel)
+
+
 <a id="targeted-review-20261105"></a>
 ## Targeted review — 5 พฤศจิกายน 2026: ครอบคลุมปัจจัย แต่ทำงานง่าย
 

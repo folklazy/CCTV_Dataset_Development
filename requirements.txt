@@ -1,5 +1,7 @@
 # Python >=3.10; standard library only for setup, metadata audit and synthetic tests.
 # No packages are installed or model environments changed by this setup.
 # Authorized private visual decode used pre-existing Pillow; not needed for metadata/guard tests.
-# No automatic installation or model execution is provided.
+# No automatic installation. Optional SAM3 draft execution requires explicit --execute,
+# existing compatible PyTorch/torchvision/SAM3 dependencies and local weights.
+# person_pseudolabel CPU helpers/tests require existing Pillow; see the main guideline.
 # The optional synthetic PNG roundtrip test also uses existing Pillow; no auto-install.
