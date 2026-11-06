@@ -1,5 +1,8 @@
 # แผน annotation pilot และ QA ทดลอง v0.1 — PROPOSED
 
+**Master plan review — 6 พฤศจิกายน 2026:** ผู้ใช้เลือกhelperfine-tuningหลังverifiedseed, primarypersonlongside≥50pxโดยเก็บคนเล็กไว้ และseparatedetectorstudy4familiesแล้ว [รายละเอียด/ประเด็นค้าง](../reports/PSEUDO_LABELING_MASTER_PLAN_REVIEW_TH.md) Pilot24เป็นsubsetของseedเป้าหมาย300 ไม่ข้ามtoolreadiness; ผู้ใช้เลือกsame-camera held-out events/timeblocksแล้ว ต้องmaterializegroupingก่อนfreeze seed ไม่ใช้trainedseedเป็นunseenconfirmatorytest
+
+
 **GT scope รับรองแล้ว 6 พฤศจิกายน 2026:** [GT-SCOPE-20261106-USER-ACCEPTED](../docs/ANNOTATION_GUIDELINE_V0_2_TH.md#accepted-gt-scope) บังคับ bbox คน + person ID + masks4parts/validity; full-person GT mask ไม่บังคับ SAM3/YOLO person masks เป็น helper/predictions ข้อกำหนดด้าน pixel accuracy/holes ของ gate ด้านล่างใช้กับ GT masks4parts ที่ต้องตรวจ และกับ helper export ตามหน้าที่ ไม่บังคับให้ผู้ใช้รับรอง mask คนทั้งตัว กฎละเอียดและ pilot closure ยังรอตรวจ
 
 

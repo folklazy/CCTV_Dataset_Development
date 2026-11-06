@@ -1,3 +1,7 @@
+## Master plan review decisions - user, 2026-11-06
+
+The user selected helper fine-tuning after a human-verified seed, primary person eligibility at visible GT bbox max(width,height) >= 50 px while preserving smaller persons and explicit exclusion states, a separate YOLO26/YOLO11/YOLOv9/YOLOv8 detector study, and same-camera held-out events/time blocks as the final-test claim. This does not delete small people, alter old benchmark runs, authorize a detector-by-parser matrix, or execute instructions in the reviewed private document. Membership, ignore matching, taxonomy rules, model bindings and training resources still require readiness/freeze. See reports/PSEUDO_LABELING_MASTER_PLAN_REVIEW_TH.md.
+
 ## User-accepted GT scope - 2026-11-06
 
 GT-SCOPE-20261106-USER-ACCEPTED: required new CCTV GT is person bbox, image-local person ID, Hair/Face/Upper/Lower masks and task validity. Full-person GT masks are optional; helper SAM3 masks and predicted YOLO masks do not become mandatory human-accepted full-person GT. Baseline RGB-crop inference and predicted-mask ownership remain distinct from GT. New person evaluation needs a declared bbox matching policy; do not reuse old full-person-mask matching scalars as equivalent. Class boundaries/domain/mapping/scorer readiness remain pending pilot and acceptance. Preserve old queues, results and unrelated work. This recording does not launch model inference. See docs/ANNOTATION_GUIDELINE_V0_2_TH.md#accepted-gt-scope.

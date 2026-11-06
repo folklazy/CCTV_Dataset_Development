@@ -1,3 +1,6 @@
+> **Master plan review — 6 พฤศจิกายน 2026: REVIEW_COMPLETE / FOUR_SCOPE_DECISIONS_ACCEPTED / NOT_EXECUTION_READY**
+> [รายงานตรวจแผนหลัก](PSEUDO_LABELING_MASTER_PLAN_REVIEW_TH.md): ยืนยัน helper fine-tuning หลัง seed, primary person longside≥50pxพร้อมเก็บคนเล็ก, detector benchmark4familiesเป็นงานแยก และ same-camera held-out events/timeblocks. ยังมี MUST_FIX เรื่อง bias/IDs/model bindings/ignore/geometry/สีและsplitmembership ต้นฉบับ privateยังไม่แก้ ไม่เริ่ม training/inference/download หรือbenchmarkใหม่
+
 > **ข้อตกลงล่าสุด 6 พฤศจิกายน 2026: GT_SCOPE_ACCEPTED / PILOT_NOT_STARTED**
 > GT ที่บังคับคือ **bbox คน + person ID + masks 4 คลาส/validity** ไม่บังคับ GT mask คนทั้งตัว ดู [ข้อกำหนดที่รับรองแล้ว](../docs/ANNOTATION_GUIDELINE_V0_2_TH.md#accepted-gt-scope) คง baseline pipeline ใช้ RGB crops และ predicted YOLO masks จัดเจ้าของ; evaluation ใหม่ต้องใช้ bbox-based matching ตามนิยามที่ยังต้อง freeze ไม่เปลี่ยน scorer/ผลเก่า การรับรอง scope ไม่ใช่ GT acceptance หรือ GPU readiness งานนี้ปรับเอกสาร/queue metadata ไม่มี model calls เพิ่ม
 

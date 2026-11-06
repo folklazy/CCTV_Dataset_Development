@@ -157,3 +157,16 @@ Next/blockers:เปิดผ่านSSH tunnelแล้วกดบันท�
 - Verification: document/table/link consistency, stagedscope, existingCPUfixtures14เพื่อยืนยันqueueadditionไม่เปลี่ยนpacketgeometry/ownership/budgetguards; ไม่modelcalls ไม่มีbulkdataaudit
 - History: queue24เดิมและprechecksรักษาไว้; amendmentreceiptในprivateworkrunผูกparentQUEUEhashและdecision ไม่แก้queuefingerprintย้อนหลัง ข้อมูลยังเป็นcandidateไม่ใช่visualaccepted
 - Next: ยืนยันcoverage/rulecases + losslesseditroundtrip; boundedcalibration/pilot24และ6human-firstก่อนfreeze/ขยาย300. Newbboxmatcher/evaluatorยังต้องimplementation/acceptanceที่ประกาศ ไม่รายงานfull-personmaskmetricsหรือใช้Qเก่าแทน
+
+
+## MASTER-PLAN-REVIEW-20261106 / REVIEW_COMPLETE_FOUR_SCOPE_DECISIONS_ACCEPTED
+
+เวลา 2026-11-06T18:02:31+07:00 (Asia/Bangkok). อ่านprivate PSEUDO_LABELING_MASTER_PLAN_2200_TH.mdครบ249linesพร้อมSHAในprivateinputreceipt; ผู้ใช้ขอreviewไม่ใช่executionคำสั่งในไฟล์ ผู้ตรวจไม่แก้ต้นฉบับ พบconcurrentrevisionต่างเฉพาะlines52/54/97เรื่องsmallpersonsexcludedและตรวจล่าสุดแล้ว รักษาsnapshotsสองรุ่นprivate
+
+- Inputs: HEAD34d2dd8/acceptedGTscope/scripts+prechecksเดิม, accepted2200manifest/ledger, SQLitereadonly, native-label/color-source และprimaryofficialCityPersons/NightOwls/CrowdHuman/SAM3.1/CoDETR/RFDETR/SegFormer
+- Review: 15MUST_FIX rowsและmetadata/resourcechecksในreports/PSEUDO_LABELING_MASTER_PLAN_REVIEW_TH.md. พบno-bias100%claimผิด,50pxไม่ใช่กฎร่วมสากล,polygonloss/ignore/validity/FaceDressIDs,autoIR/distance/OSD/MLPcategoryสมมติฐาน และไม่มีsplit/freeze. SourceSAM3.1weightsพบจริงโดยstat ไม่claimload/readiness
+- User decisions: (FT) helperfine-tuneหลังverifiedseed; (SIZE) primaryGTbboxlongside≥50pxและเก็บsmallpeople/excludedstates; (DET) separatebenchmarkYOLO26/11/v9/v8ไม่ขยายparserroutes; (SPLIT) same-cameraคนละevent/timeblocksไม่ใช่unseencamera. Counts/IDsของsplit/seed/modelweightsและscorerpolicyยังต้องปิดก่อนlaunch
+- Outputs: reviewreportใหม่หนึ่งฉบับ, updatedguide/QA/status/README/AGENTS+queuepolicy metadata; ไม่สร้างmasterplanซ้ำ ไม่แก้benchmarkinference/scoring/configเดิม. metadataใหม่ไม่มีผลfilterคนเล็กหรือรันtraining
+- Verification: counts2200/67cameras/93dates/17fields;269suppliedvisualclaimsไม่เท่ากับhumanGTreceipt;remark16ไม่ใช่18;minsamecameragap1807sและ655adjacentgaps<14400s. Reusefileaudit ไม่newdecode/bulkhash. ExistingCPU14casesสำหรับqueueadditionและdoclinks/tables/inputimmutabilitychecksตามreceipt
+- Blockers/next: ปรับmasterplanตามreviewโดยรักษาประวัติ; กันevent/timegroups+sourceidentityก่อนseed, ตรวจmodelcheckpoint/task/resourceและlosslesseditroundtrip, pilot24ภายในseedเป้าหมาย300ก่อนFT; GTfullpersonmaskยังoptionalและกฎละเอียดNOT_FROZEN
+- Git/private: นำเฉพาะpublic-safereview/docs/codeขึ้นrepo; originalplan/metadata/รายชื่อกล้อง/DB/weights/rawevidenceอยู่นอกGit ไม่มีmodelcalls/training/download/installในรอบนี้

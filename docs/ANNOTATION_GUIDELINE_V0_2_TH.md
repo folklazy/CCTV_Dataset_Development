@@ -22,6 +22,14 @@
 
 **ลำดับงาน:** ยืนยัน coverage/rule-critical examples และ lossless edit roundtrip → calibration/pilot24 (คง6human-first) → ปิดกฎและตรวจ scorer ที่ใช้ bbox → freeze protocol → ขยาย300รวมpilot แล้วทำต่อใน2,200เป็นbatches ไม่เปิด inference/full evaluation จากการบันทึกข้อตกลงนี้
 
+## คำตัดสินเพิ่มเติมจาก master plan review — 6 พฤศจิกายน 2026
+
+ผู้ใช้ยืนยันระหว่างตรวจแผน: **(1) fine-tune helper หลังมี seed ที่ตรวจรับ (2) คะแนนหลักเฉพาะคนด้านยาว bbox ≥50 px แต่คงคนเล็กและสถานะยกเว้น (3) benchmark YOLO26/11/v9/v8 เป็นงานแยก** อ่าน [รายงานตรวจแผน](../reports/PSEUDO_LABELING_MASTER_PLAN_REVIEW_TH.md) เพื่อดูข้อผิดพลาดที่ยังต้องแก้ ไม่ถือว่า master plan ทุกข้อได้รับรับรองแล้ว
+
+เกณฑ์50ใช้ `max(width,height)` ของ visible GT bbox ใน original pixels เป็น project scope ไม่ใช่ physical distance หรือ CityPersons replication ไม่ลบ annotation คน<50และไม่ถือเป็นbackground การจับคู่ excluded people/ignore priority และโดเมน parsing ที่ใช้ร่วมกันยังต้อง freeze ก่อนคะแนนหลัก ตัวเลขขนาดจาก prediction ใช้แทน GT eligibility ไม่ได้
+
+ผู้ใช้เลือก finaltest แบบกล้องเดิมแต่กันคนละเหตุการณ์/ช่วงเวลาแล้ว ต้องกันevent/timegroupsก่อนเลือกseed/fine-tune ไม่อ้างunseen-cameraหรือเรียกseedที่ใช้พัฒนาว่าunseen test Pilot24ยังเป็นreadiness subsetภายในseedเป้าหมาย300; seedจำนวน/รายชื่อจริงและsplitต้องตรวจgroup feasibility ไม่เปิดtraining/inference/downloadจากรอบอ่านแผนนี้
+
 ## ผู้ทำตอบ 4 เรื่อง ส่วนตัวเลขให้สคริปต์เก็บ
 
 | ขั้น | สิ่งที่ทำจริง | สิ่งที่บันทึก |
@@ -158,7 +166,7 @@ Cityscapes มี policy เติมรูภายใน foreground จริ�
 
 ตัวอย่างคำนวณเพื่ออธิบายความไวของ IoU: ถ้า GT เป็นสี่เหลี่ยม10×10 แต่ขอบทำนายหดเข้าทุกด้าน1px เหลือ8×8 จะได้IoU0.64; GT20×20เหลือ18×18ได้0.81 ตัวอย่างสมมตินี้อธิบายว่าความผิด1pxกระทบคนเล็กมาก ไม่ใช่ผลทดลองหรือเหตุผลให้ตั้ง20pxเป็นเส้นตัดสากล
 
-หลัง pilot ให้รายงานจำนวนคนและความพร้อม bbox/mask/target/color ตามขนาดก่อนเลือก evaluation subsets; ถ้าจำเป็นต้องมี minimum สำหรับคะแนนหลัก ต้อง freeze ก่อนดูผลผู้เข้าสอบและมี tiny-person diagnostic/ignore treatment ที่ประกาศเหมือนกันทุกระบบ คนต่ำกว่าเส้นตัดห้ามหายจาก annotation หรือกลายเป็น background เงียบ ๆ ยังไม่มี final benchmark cutoff ในรอบนี้
+ผู้ใช้เลือก minimum คะแนนหลักเป็นคนด้านยาว visible GT bbox ≥50 px ใน master plan review แล้ว ให้รายงาน counts/validity ตามขนาดและคง tiny-person diagnostic/สถานะยกเว้นร่วมกันทุกระบบ คนต่ำกว่าเส้นตัดห้ามหายจาก annotation หรือกลายเป็น background เงียบ ๆ รายละเอียด excluded matching/valid domain ต้อง freeze ก่อนดูผลผู้เข้าสอบ
 
 ### โมเดลช่วยร่างและเรื่อง bias
 
@@ -189,7 +197,7 @@ Cityscapes มี policy เติมรูภายใน foreground จริ�
 
 ### จำนวนภาพและลำดับที่ใช้
 
-คง **pilot24 → release300รวม24 → ทำต่อใน2,200** ไม่สร้างจำนวน seed ใหม่ที่ไม่มีเหตุผล 24ภาพมี6calibration+18workflow โดย6ในworkflowเป็นhuman-firstตามแผนเดิม จำนวน24เพื่อพิสูจน์เครื่องมือ/กฎ/ภาระงาน ไม่ใช่จำนวนที่ให้ statistical precision ของทั้งdatasetและไม่ใช่ชุด train โมเดล SAM3 ในวิธีนี้เป็นpretrainedzero-shot ไม่มี training/fine-tuningจาก24ภาพ
+คง **pilot24 → release300รวม24 → ทำต่อใน2,200** ไม่สร้างจำนวน seed ใหม่ที่ไม่มีเหตุผล 24ภาพมี6calibration+18workflow โดย6ในworkflowเป็นhuman-firstตามแผนเดิม จำนวน24เพื่อพิสูจน์เครื่องมือ/กฎ/ภาระงาน ไม่ใช่จำนวนที่ให้ statistical precision ของทั้งdatasetและยังไม่ใช่การเริ่มฝึกโมเดลในขั้นpilotนี้ เริ่มตรวจด้วยpretrainedhelperก่อน ส่วนfine-tuneเป็นstageที่ผู้ใช้เลือกให้ทำหลังseedที่ตรวจรับและtrainingreadinessพร้อม
 
 เตรียม queue candidate24 จาก24กลุ่มกล้องแล้วด้วย deterministic camera round-robin; **ยังไม่ใช่ membership ที่รับรอง coverage** ต้องเปิดตรวจคนเล็ก/มืด/บัง/ท่าทางก่อนfreezepilot รายชื่อและภาพอยู่private ไม่เผยแพร่กล้องจริงขึ้นGit การเห็นแต่24กล้องยังไม่รับรอง coverageครบ67กลุ่มหรือทุกเหตุการณ์ เปลี่ยนสมาชิกต้องสร้างqueueใหม่พร้อมเหตุผล ไม่แก้queuehashย้อนหลัง
 

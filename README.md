@@ -1,3 +1,5 @@
+> **ตรวจ master plan แล้ว:** ดู [รายงานและคำตัดสินล่าสุด](reports/PSEUDO_LABELING_MASTER_PLAN_REVIEW_TH.md) ยืนยัน fine-tune helper หลัง seed, คะแนนหลักคน≥50pxแต่เก็บคนเล็ก, detector study แยก และทดสอบกล้องเดิมคนละเหตุการณ์ ยังไม่รับรองกฎทั้งหมดหรือเปิดรันใหม่
+
 > **GT scope ที่ผู้ใช้รับรอง:** bbox คน + person ID + masks 4 คลาส/validity; ไม่บังคับ GT mask คนทั้งตัว อ่าน [ข้อตกลงและสิ่งที่ยังต้องตรวจ](docs/ANNOTATION_GUIDELINE_V0_2_TH.md#accepted-gt-scope) ยังไม่เริ่ม pilot หรือ inference เพิ่ม
 
 > **คู่มือ annotation ฉบับสั้น:** อ่าน [4 เรื่องที่ผู้ทำต้องตอบ พร้อมกติกา ขนาดคน และหลักฐานจาก paper](docs/ANNOTATION_GUIDELINE_V0_2_TH.md) มี scripts ร่าง bbox/person mask/4 parts และตรวจไฟล์แบบ CPU แล้ว; GPU/SAM3 quality ยังไม่ทดสอบ; pilot24ต้องได้งานที่นำไปใช้ต่อได้ ยังไม่ใช่GTที่สร้างเสร็จ
