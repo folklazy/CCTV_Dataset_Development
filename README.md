@@ -1,3 +1,5 @@
+> **GT scope ที่ผู้ใช้รับรอง:** bbox คน + person ID + masks 4 คลาส/validity; ไม่บังคับ GT mask คนทั้งตัว อ่าน [ข้อตกลงและสิ่งที่ยังต้องตรวจ](docs/ANNOTATION_GUIDELINE_V0_2_TH.md#accepted-gt-scope) ยังไม่เริ่ม pilot หรือ inference เพิ่ม
+
 > **คู่มือ annotation ฉบับสั้น:** อ่าน [4 เรื่องที่ผู้ทำต้องตอบ พร้อมกติกา ขนาดคน และหลักฐานจาก paper](docs/ANNOTATION_GUIDELINE_V0_2_TH.md) มี scripts ร่าง bbox/person mask/4 parts และตรวจไฟล์แบบ CPU แล้ว; GPU/SAM3 quality ยังไม่ทดสอบ; pilot24ต้องได้งานที่นำไปใช้ต่อได้ ยังไม่ใช่GTที่สร้างเสร็จ
 
 > **เว็บ local พร้อมซิงค์:** เปิดหน้าตรวจผ่านเบราว์เซอร์บนคอมผู้ใช้ โดยภาพและฐานข้อมูลอยู่บน server ชุดเดียว หน้าต่างอื่นรับผลใหม่ทุก5วินาทีหลังบันทึก มีการป้องกันบันทึกทับ revision ที่ใหม่กว่า ดู [วิธีเปิดและข้อจำกัด](docs/ASSISTED_COVERAGE_WORKFLOW_TH.md#ใช้ผ่านเว็บและซิงค์ข้อมูลในระบบ-local) ยังไม่รองรับ offline queue หรือซิงค์ polygon อัตโนมัติ

@@ -1,3 +1,6 @@
+> **ข้อตกลงล่าสุด 6 พฤศจิกายน 2026: GT_SCOPE_ACCEPTED / PILOT_NOT_STARTED**
+> GT ที่บังคับคือ **bbox คน + person ID + masks 4 คลาส/validity** ไม่บังคับ GT mask คนทั้งตัว ดู [ข้อกำหนดที่รับรองแล้ว](../docs/ANNOTATION_GUIDELINE_V0_2_TH.md#accepted-gt-scope) คง baseline pipeline ใช้ RGB crops และ predicted YOLO masks จัดเจ้าของ; evaluation ใหม่ต้องใช้ bbox-based matching ตามนิยามที่ยังต้อง freeze ไม่เปลี่ยน scorer/ผลเก่า การรับรอง scope ไม่ใช่ GT acceptance หรือ GPU readiness งานนี้ปรับเอกสาร/queue metadata ไม่มี model calls เพิ่ม
+
 > **สถานะล่าสุด 6 พฤศจิกายน 2026: เตรียม script pseudo-label person + 4 parts แล้ว; CPU checks ผ่าน14กรณี; GPU inference0ครั้ง**
 > [คู่มือหลักและเหตุผลเลือก helper/ขนาดขั้นต่ำ](../docs/ANNOTATION_GUIDELINE_V0_2_TH.md#person-part-pseudolabel) · candidate queue24จาก2,200เตรียมแล้ว แยก6calibration/6human-first/12workflow แต่ยังไม่รับรองvisualcoverageหรือGT Precheckจริงผ่านimports/input/checkpointbindings; ยังไม่ได้โหลดSAM3บนGPU/วัดความแม่น4parts ต้องcalibrationจริงก่อนpilot; งานSapiensเดิมไม่ถูกแก้ ไม่มีGUIใหม่ ข้อความถัดไปเป็นประวัติตามวันที่
 

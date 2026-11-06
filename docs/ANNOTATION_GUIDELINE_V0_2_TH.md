@@ -2,6 +2,26 @@
 
 อัปเดต 6 พฤศจิกายน 2026 — **ข้อเสนอปฏิบัติสำหรับ pilot24 ยังไม่ freeze GT** ใช้ภาพที่คัดไว้2,200ภาพ ขั้นที่ทำเสร็จคือรับไฟล์และวัดสถิติภาพ; ยังไม่ได้วัดระยะ/ขนาดคนครบชุดหรือสร้าง annotationจริง
 
+<a id="accepted-gt-scope"></a>
+## ขอบเขต GT ที่ผู้ใช้รับรองแล้ว — 6 พฤศจิกายน 2026
+
+**GT-SCOPE-20261106-USER-ACCEPTED:** ทำ **bbox คน + person ID ภายในภาพ + masks Hair/Face/Upper/Lower พร้อม validity** ไม่บังคับวาดหรือตรวจรับ **GT mask คนทั้งตัว** การรับรองนี้ยืนยันชนิดข้อมูลและหลักการประเมิน ไม่ใช่การ freeze ขอบคลาส/mapping/matching thresholds หรือรับรองว่า annotation/pilot ผ่านแล้ว
+
+| ขั้น | ข้อมูลและหน้าที่ | สิ่งที่ต้องตรวจรับ |
+| --- | --- | --- |
+| เตรียม GT | bbox ของคนที่เห็น, person ID และ masks 4 ส่วนของคนนั้น; ส่วนที่ประเมินไม่ได้มีสถานะ/เหตุผล | ผู้ใช้ตรวจความครบและขอบเขตจริง ไม่จำกัดตามคนที่โมเดลเสนอ |
+| สร้างร่าง/รันระบบ | SAM3 person mask เป็น helper draft; ตอนทดสอบ YOLO สร้าง predicted bbox/mask ของตัวเอง และ parser ใช้ RGB crop | helper/predicted mask ไม่ใช่ GT และไม่เพิ่มภาระว่าต้องตรวจรับ person mask ทั้งตัว |
+| จัดเจ้าของหลัง parser | baseline pipeline ปัจจุบันใช้ predicted YOLO mask จำกัดผลรายคน เป็นส่วนหนึ่งของผลระบบ | ไม่ใช้ GT mask/GT class ช่วยเลือกหรือแก้ predictions |
+| ประเมินผล | bbox GT สำหรับ detector และการจับคู่รายคนตามกติกาที่จะ freeze; GT masks4ส่วนสำหรับ parsing | domain/mapping/aggregation เดียวกันทุกระบบ นับ missed/duplicate/FP/FN ตามนิยาม |
+
+**Person ID** เป็นเลขภายในภาพเพื่อผูก bbox และ parts ว่าเป็นของใคร ไม่ใช่ตัวตนข้ามภาพหรือ tracking คนที่2ติดมาในcropคนที่1ยังเป็นความเสี่ยงของpipeline; ถ้าผลสุดท้ายเอาเสื้อคนที่2มาผูกคนที่1 การประเมินรายคนต้องนับส่วนเกินได้จาก GT Upper ของแต่ละคน ไม่ใช่ดูเฉพาะ semantic รวมทั้งภาพ
+
+วัด YOLO box AP/Precision/Recall และ parsing per-target IoU/Precision/Recall/F1-Dice/confusion ได้เมื่อ GT/domain ตรวจครบ ส่วน person-mask AP/IoU ทั้งตัวและ full-person-mask matching/Q แบบ CIHP เดิมไม่มีสิทธิ์รายงานจาก GT นี้ ต้องใช้ bbox-based matching ที่นิยามใหม่และผ่าน scorer acceptance; ยังไม่ได้แก้ scorer เก่าหรือเปลี่ยนผล CIHP/CCTV เดิม
+
+สีบน–ล่างยังเป็น requirement เดิมในภาพที่ประเมินได้ เก็บ GT สี/unknown แยกจาก mask validity เพื่อประเมินสีภายหลัง การอนุมัติ scope นี้ไม่ทำให้ unknown/ส่วนไม่เห็นต้องมีคำตอบหรือ mask ไม่ว่าง
+
+**ลำดับงาน:** ยืนยัน coverage/rule-critical examples และ lossless edit roundtrip → calibration/pilot24 (คง6human-first) → ปิดกฎและตรวจ scorer ที่ใช้ bbox → freeze protocol → ขยาย300รวมpilot แล้วทำต่อใน2,200เป็นbatches ไม่เปิด inference/full evaluation จากการบันทึกข้อตกลงนี้
+
 ## ผู้ทำตอบ 4 เรื่อง ส่วนตัวเลขให้สคริปต์เก็บ
 
 | ขั้น | สิ่งที่ทำจริง | สิ่งที่บันทึก |
@@ -94,7 +114,7 @@ Cityscapes มี policy เติมรูภายใน foreground จริ�
 
 | ตรวจเรื่องอะไร | สิ่งที่เก็บและนำไปใช้ |
 | --- | --- |
-| คนเล็ก–ใหญ่ | หลังตรวจmask คำนวณกว้าง/สูงของvisible bbox, พื้นที่mask และสัดส่วนต่อภาพ เก็บทั้งสองแกนเพื่อไม่ทำให้คนนอนดูเล็กเพราะใช้ความสูงอย่างเดียว |
+| คนเล็ก–ใหญ่ | ใช้ bbox GT ที่ตรวจแล้ววัดกว้าง/สูง พื้นที่กรอบ และสัดส่วนภาพทั้งสองแกน; พื้นที่ mask GT วัดเฉพาะ4parts ไม่แต่งพื้นที่ mask คนทั้งตัวจาก bbox |
 | รายละเอียด4ส่วน | วัดพื้นที่Hair/Face/Upper/Lowerแยกรายคน คนตัวใหญ่อาจมีFaceเล็กหรือถูกบังได้ |
 | คนซ้อน/สิ่งบัง/หลุดขอบ | ระบุสภาพที่เห็นและส่วนที่ได้รับผล ไม่ประมาณเปอร์เซ็นต์ตัวเต็มที่ซ่อน |
 | เบลอ/แสง | เก็บความเบลอ แสงมืด ย้อนแสง glare และขาวดำ จากภาพจริง; timestampไม่ยืนยันสภาพแสงหรือIR |
@@ -129,7 +149,7 @@ Cityscapes มี policy เติมรูภายใน foreground จริ�
 | การใช้งาน | เกณฑ์ที่แนะนำตอนนี้ | เหตุผล |
 | --- | --- | --- |
 | บันทึกว่ามีคน / bbox | คนยืนยันได้และขอบ bbox รองรับจากภาพ; ยังไม่มี hard minimum | คนเล็กยังอาจเป็นโจทย์ที่ YOLO ต้องตรวจ การไม่ label จะทำให้ผู้ตรวจพบจริงกลายเป็น FP |
-| person mask | ลาก visible boundary ที่ภาพรองรับได้ เก็บทุกชิ้นและรู; ไม่เดาตัวเต็มใต้สิ่งบัง | bbox ใช้ได้ไม่ได้แปลว่า pixel GT แม่นพอ |
+| person mask | optional/helper เท่านั้น หากเลือกสร้าง GT เพิ่มจึงตรวจ visible boundary/ทุกชิ้น/รู; ไม่เดาตัวเต็มใต้สิ่งบัง | ไม่ใช่ gate ของ GT ชุด bbox+4parts ที่รับรองแล้ว |
 | Hair/Face/Upper/Lower | พิจารณาความชัดของแต่ละส่วน ไม่ตัดสินจาก bbox คนรวม | คนใหญ่แต่หันหลังอาจไม่มี Face ที่เห็น; คนเล็กอาจเห็นเสื้อแต่ไม่มีรายละเอียดหน้า |
 | สีบน/ล่าง | เห็น apparent color เพียงพอและ region ไม่ปนเปื้อน | mask ถูกแต่ภาพขาวดำยังบอก hue ของเสื้อจริงไม่ได้ |
 | จัดคิวตรวจขนาด | ยาวสุดของ visible bbox `<20`, `20–49`, `50–99`, `≥100 px` พร้อม width/height/area จริง | เป็น **review bins ที่เสนอ** ไม่ใช่เกณฑ์คัดคนหรือมาตรฐานสากล; ใช้ทั้งสองแกนเพื่อรองรับคนนอน |
@@ -165,7 +185,7 @@ Cityscapes มี policy เติมรูภายใน foreground จริ�
 - ยังไม่ compose เป็นเฉลย4classแบบบังคับชนะทับกัน หาก Face/Hairซ้อนหรือ Upper/Lowerชนกันให้เก็บไว้ตรวจ ไม่ใช้คะแนนสูงสุดแปลเป็น GT ไม่มี proposalคือ “โมเดลไม่เสนอ” ไม่ใช่ absent หรือ verified negative
 - ทุก mask อยู่ original grid; person support ไม่เท่ากับ union4parts เพราะยังมีผิวกาย รองเท้า/ส่วนอื่น person masks ที่รวมกระเป๋าหรือคนข้างเคียงต้องแก้ตามกฎ
 
-โมเดลมี learned bbox ของตนเอง และ script มี bboxที่คำนวณจาก visible mask เก็บแยกกัน หลังคนแก้ mask จึงคำนวณ envelopeใหม่ได้ สำหรับทดสอบ YOLO ให้ประกาศ visible-person GT และใช้ขอบจากงานที่ตรวจแล้ว ไม่ใช้ draft model box เป็น GT โดยอัตโนมัติ และไม่เรียกผลว่า official amodal pedestrian benchmark
+โมเดลมี learned bbox ของตนเอง และ script เก็บ bbox envelope จาก helper mask แยกไว้เป็นร่าง **GT bbox คนต้องให้ผู้ใช้ตรวจ/แก้จากภาพจริงได้โดยตรง ไม่บังคับแก้ person mask ก่อน** ไม่ใช้ union ของ4partsแทน bbox คนเพราะอาจขาดแขนขา และไม่รับ draft model box เป็น GT อัตโนมัติ ประกาศ visible-person bbox policy ให้ชัด ไม่เรียกผลว่า official amodal pedestrian benchmark
 
 ### จำนวนภาพและลำดับที่ใช้
 
@@ -211,7 +231,7 @@ Cityscapes มี policy เติมรูภายใน foreground จริ�
 
 Pilot24คือ **ลองannotateจริง** เพื่อวัดความถูกต้องของเครื่องมือ กติกา และเวลาที่ใช้ ไม่ใช่แค่plotกราฟ ภาพที่แก้จนผ่านใช้ต่อใน2,200และreleaseแรก300ได้โดยรักษาIDs/source hashes/annotation revisions ไม่ทำซ้ำเพราะเปลี่ยนbatch
 
-ผลที่ต้องได้คือ original references, masksสี่ส่วนและperson support/owner, validity, สีพร้อมสถานะ, ร่างก่อนแก้/ผลหลังแก้ และreview receipt เก็บเวลาสร้างร่าง/เวลาแก้จริงเพื่อประมาณงานที่เหลือ ถ้ากฎเปลี่ยนให้reopenเฉพาะส่วนที่ได้รับผล เก็บpilotเป็นdevelopment exposure ไม่เรียก24ภาพนี้ว่าunseen test และไม่ใช้มันสรุปคุณภาพทั้งdataset
+ผลที่ต้องได้คือ original references, bbox GT พร้อม person ID, masks สี่ส่วนและ owner/validity, สีพร้อมสถานะ, ร่างก่อนแก้/ผลหลังแก้ และ review receipt; person mask ที่ helper สร้างแยกเป็น draft ไม่ใช่ GT บังคับ เก็บเวลาสร้างร่าง/เวลาแก้จริงเพื่อประมาณงานที่เหลือ ถ้ากฎเปลี่ยนให้reopenเฉพาะส่วนที่ได้รับผล เก็บpilotเป็นdevelopment exposure ไม่เรียก24ภาพนี้ว่าunseen test และไม่ใช้มันสรุปคุณภาพทั้งdataset
 
 **เครื่องมือที่เพิ่มแล้ว:** [annotation_scale.py](../scripts/annotation_scale.py) อ่านbinary maskที่มีอยู่และคืนJSONขนาด/พื้นที่โดยไม่แก้ไฟล์ ใช้ได้ทั้งpersonและแต่ละtarget แยกstage `draft` / `human_reviewed`; stageเป็นprovenanceที่ผู้เรียกระบุ ไม่ใช่การรับรองโดยโปรแกรม
 

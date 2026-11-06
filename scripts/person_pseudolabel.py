@@ -156,6 +156,11 @@ def prepare(binding, output, count=24, seed=20261106):
               'long_side_review_bins_px': [20, 50, 100],
               'size_bins_are_review_tags_not_exclusion': True,
               'targets': list(TARGETS), 'prompts': PROMPTS,
+              'gt_scope_decision': 'GT-SCOPE-20261106-USER-ACCEPTED',
+              'required_gt': ['person_bbox', 'image_local_person_id', 'four_part_masks', 'task_validity'],
+              'full_person_gt_mask_required': False,
+              'generated_person_masks_role': 'DRAFT_HELPER_NOT_REQUIRED_GT',
+              'person_matching_for_new_gt': 'BBOX_POLICY_TO_FREEZE_BEFORE_EVALUATION',
               'requires_human_review_every_image': True}
     write(output/'QUEUE.json', config)
     write(output/'QUEUE.sha256.json', {'sha256': file_hash(output/'QUEUE.json')})

@@ -145,3 +145,15 @@ Next/blockers:เปิดผ่านSSH tunnelแล้วกดบันท�
 - Limitations: SAM3person/partqualityและGPUpeakยังไม่ทดสอบ, queueยังไม่visualaccepted, มีSapiens1Bใช้T4อยู่จึงไม่แทรกGPUcallในงานสร้างscript/researchนี้ ไม่ประกาศว่าGPUรันไม่ได้เพียงเพราะexternalPID. PromptFace/garmentsไม่รับรองtaxonomyagreement; ownedintersectionไม่ใช่GT; ไม่มีautoaccept/exportevaluation
 - Next: ยืนยันcoverage/6human-first; boundedcalibrationหนึ่งภาพด้วยactualresourcechecksและดูrawoutputsก่อนpilot24; ขยาย300ตามกฎที่freezeและreviewทุกภาพโดยไม่ใช้คะแนนผู้เข้าสอบตั้งGT
 - Git: stageเฉพาะscripts/tests/docsรอบนี้ คงpendingworkเดิม; metadata/IDs/images/weights/rawrunอยู่นอกGit ไม่มีnativebenchmark/environment/sourceadapterchanges
+
+
+## GT-SCOPE-20261106-USER-ACCEPTED
+
+เวลา 2026-11-06T15:52:24+07:00 (Asia/Bangkok). ผู้ใช้ตอบ “ได้ งั้นตามนี้” หลังยืนยันหลักbenchmarkและข้อจำกัดของ GT bbox+personID+4parts
+
+- Decision: GT บังคับคือpersonbbox/image-localpersonID/HairFaceUpperLowermasksพร้อมvalidity; full-personGTmaskoptional ไม่บังคับreview SAM3/YOLOpersonmaskให้เป็นเฉลย การจัดเจ้าของของbaselineยังใช้predictedYOLOmaskหลังRGBcrop parsing ไม่ใช้GTแก้prediction
+- Scope of acceptance: ยืนยันชนิดข้อมูลและหลักการเปรียบเทียบเท่านั้น ไม่freezeFace/Dress/mapping/matchingthresholds/ignore/aggregation หรือรับรองcoverage/pilot/scorer/GPUready. สีบนล่างคงrequirementsเดิมตามobservability
+- Outputs: อัปเดตคู่มือหลัก/QA/status/READMEและqueueproducer metadata ให้แยกrequiredGTกับhelperpersonmask ไม่แก้scientificinference behaviorของdraftdriver/nativebenchmark/scorer ไม่แก้legacyannotationtemplate0.1หรือhistoricalappendix
+- Verification: document/table/link consistency, stagedscope, existingCPUfixtures14เพื่อยืนยันqueueadditionไม่เปลี่ยนpacketgeometry/ownership/budgetguards; ไม่modelcalls ไม่มีbulkdataaudit
+- History: queue24เดิมและprechecksรักษาไว้; amendmentreceiptในprivateworkrunผูกparentQUEUEhashและdecision ไม่แก้queuefingerprintย้อนหลัง ข้อมูลยังเป็นcandidateไม่ใช่visualaccepted
+- Next: ยืนยันcoverage/rulecases + losslesseditroundtrip; boundedcalibration/pilot24และ6human-firstก่อนfreeze/ขยาย300. Newbboxmatcher/evaluatorยังต้องimplementation/acceptanceที่ประกาศ ไม่รายงานfull-personmaskmetricsหรือใช้Qเก่าแทน

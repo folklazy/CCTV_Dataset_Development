@@ -1,5 +1,8 @@
 # แผน annotation pilot และ QA ทดลอง v0.1 — PROPOSED
 
+**GT scope รับรองแล้ว 6 พฤศจิกายน 2026:** [GT-SCOPE-20261106-USER-ACCEPTED](../docs/ANNOTATION_GUIDELINE_V0_2_TH.md#accepted-gt-scope) บังคับ bbox คน + person ID + masks4parts/validity; full-person GT mask ไม่บังคับ SAM3/YOLO person masks เป็น helper/predictions ข้อกำหนดด้าน pixel accuracy/holes ของ gate ด้านล่างใช้กับ GT masks4parts ที่ต้องตรวจ และกับ helper export ตามหน้าที่ ไม่บังคับให้ผู้ใช้รับรอง mask คนทั้งตัว กฎละเอียดและ pilot closure ยังรอตรวจ
+
+
 ## เพิ่มเติม 6 พฤศจิกายน 2026 — เตรียม scripts แล้ว ยังไม่เปิด pilot
 
 ใช้ [scripts person + 4 parts](../docs/ANNOTATION_GUIDELINE_V0_2_TH.md#person-part-pseudolabel) ตามคำชี้แจงผู้ใช้ ไม่พัฒนาGUIใหม่ มีcandidatequeue24ตามกล้องแต่ยังต้องยืนยันvisualcoverage/human-firstก่อนfreeze; nohardpixeldeletion, helperSAM3แยกจากผู้เข้าสอบแต่ไม่รับรองarchitecture/trainingindependence CPUfixtures14ผ่านและprecheckจริงผ่านimports/inputs/weightsbindings ไม่มีGPUmodelcalls ไม่ถือว่าnativeSAM3personหรือpartqualityผ่านแล้ว ข้อความประวัติด้านล่างที่บอกยังไม่มีtoolsต้องอ่านคู่กับสถานะนี้
@@ -13,7 +16,7 @@
 | Gate | หลักฐานก่อนเดินต่อ |
 | --- | --- |
 | Membership | 24 unique pixel groups ที่เปิดต้นฉบับแล้ว พร้อม coverage/เหตุผลเลือกและประวัติเห็นข้อมูล; ไม่อ้างว่าเป็น sample แทนประชากรทั้งหมด |
-| Annotation contract | กติกา 4 targets/auxiliary/owner/unknown/color มี revision ชัด; ห้ามทำ unknown เป็น BG, เติมส่วนซ่อน หรือตัด dress ด้วย heuristic |
+| Annotation contract | bbox GT/person ID/4 targets/validity ตาม accepted scope; person mask ทั้งตัว optional; กติกา auxiliary/owner/unknown/color มี revision ชัด; ห้ามทำ unknown เป็น BG, เติมส่วนซ่อน หรือตัด dress ด้วย heuristic |
 | Tool readiness | export/import รักษาขนาด orientation holes disjoint parts owner และ unknown; synthetic expected masks ไม่ผูกกับ logic ของ exporter; ต้องทดลอง GUI/API จริง |
 | AI draft | บันทึก model/checkpoint/source/prompt/config/device/calls/error; ร่างแยกจาก HUMAN_REVIEW ไม่ auto-accept |
 | Human review | ผู้ใช้ตรวจทุกภาพ แยก NEEDS_FIX กับ ACCEPTED; 6 ภาพ blind เก็บผลก่อนเห็น AI และก่อน adjudication ไม่อ้าง independent annotators สองคน |
