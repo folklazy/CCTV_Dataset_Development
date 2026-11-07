@@ -1,3 +1,34 @@
+# แผนที่ปรับแล้ว: อะไรเปลี่ยน และทำไม
+
+อัปเดต 8 พฤศจิกายน 2026 (Asia/Bangkok) — **REVISION_2_REVIEWABLE_NOT_FROZEN**
+
+ปรับไฟล์แผนหลัก private `PSEUDO_LABELING_MASTER_PLAN_2200_TH.md` ที่ผู้ใช้ส่งมาแล้ว โดยเก็บรุ่นก่อนแก้พร้อมhashไว้ภายนอกGit ไม่สร้างmasterplanอีกชุด รายงานหน้านี้เป็นคำอธิบายการแก้และเก็บreviewเดิม ไม่ใช่แผนคู่ขนาน
+
+**เรื่องที่ตกลงกันยังเหมือนเดิม:** GT bbox+personID+4parts/validity; ไม่บังคับGTmaskคนทั้งตัว; คะแนนหลักคนด้านยาวvisibleGTbbox≥50pxแต่เก็บคนเล็กพร้อมสถานะ; fine-tunehelperหลังverifiedseed; detector4familiesเป็นงานแยก; finaltestเป็นกล้องเดิมคนละเหตุการณ์/ช่วงเวลา
+
+| สิ่งที่ปรับ | ความหมายในงานจริง |
+| --- | --- |
+| เก็บคนเล็กแทนลบทิ้ง | คน<50pxยังมีbbox/สถานะยกเว้น แต่ไม่บังคับวาด4partsของกลุ่มนี้ ต้องมีignorematchingที่ไม่ลบคนใหญ่ที่ซ้อนกัน |
+| ปิดคำอ้างbias100% | ใช้คนตรวจรับและhuman-first6 เก็บร่างก่อน–หลัง ไม่ใช้ชื่อarchitectureรับรองความเป็นกลาง |
+| เก็บรูปทรงGTให้ครบ | ไม่ลดทุกpolygonเหลือ10–25จุดหรือทิ้งชิ้นเล็กอัตโนมัติ แยกrawmasksจากสำเนาแก้ง่ายและตรวจอ่านกลับ |
+| แยกกลุ่มข้อมูลก่อนfine-tune | กันevent/timegroupsก่อนเลือกseed ไม่ใช้ภาพเหตุการณ์เดียวกันปนtrain/validation/finaltest |
+| คืนpilot24ก่อนseed300 | 24เป็นsubsetใน300 เพื่อพบปัญหาเครื่องมือ/กฎก่อนขยาย ไม่เพิ่มเป็น324 และไม่ฝึกจากdraftที่ยังไม่รับรอง |
+| แก้รุ่นโมเดลและlabelIDs | ไม่เดาSAM3.1ว่าHiera ไม่รับรองSegFormerเป็น4parthead และแก้SapiensApparel1/Left_Lower_Leg8กับCIHPTorso-skin10ให้ตรงsource |
+| สคริปต์วัดค่า คนยืนยันความหมาย | ขนาดไม่ใช่ระยะเมตร สว่าง/คม/สีเทาเป็นproxies ไม่ใช่IR/blur/occlusionGTโดยอัตโนมัติ |
+| สีไม่เดาตามcategory | ไม่defaultUpper=shirt/Lower=pants ไม่ลบสีขาวเขียวเพื่อแก้OSDทุกจุด ไม่ใช้erosionเปลี่ยนGTgeometry และไม่ใช้ดำแทนunknown |
+
+**ลำดับที่อ่านง่าย:** กันกลุ่มข้อมูล → ตรวจเครื่องมือ/กฎ → pilot24 → seedประมาณ300รวมpilot → fine-tunehelper → ช่วยร่างภาพถัดไปให้คนตรวจ → freezeและbenchmarkแต่ละงาน
+
+**สิ่งที่ยังต้องทำจริง:** exacthelper/checkpoint/source/resource readiness, event/timegroup manifestและsplit membership, losslessdesktopeditroundtrip, ขอบคลาส/OTHER/validityและignorematching, trainingconfig/budget และ actualpacket→scorer→reporter ไม่ถือว่าแก้เอกสารแล้วงานเหล่านี้ผ่าน
+
+แผนหลักฉบับปรับมี154บรรทัด SHA256 `07a221a9ab8439bfa60cb95d2d893f53dcf4b6e990ce104a982dc8387fd0ad23`; ตรวจตาราง/ลิงก์/ความสอดคล้องกับสี่คำตัดสินและbackupแล้ว รอบนี้ไม่มีmodelinference/training/download และไม่เปลี่ยนactivebenchmark/scorer/configหรือข้อมูลต้นฉบับ
+
+---
+
+## ประวัติ review วันที่6พฤศจิกายน — อ้างไฟล์รุ่นก่อนปรับ
+
+เนื้อหาต่อไปนี้เป็นหลักฐานว่าพบอะไรในรุ่นเก่า ข้อความว่า “ผู้ตรวจไม่แก้ต้นฉบับ” และตารางMUST_FIXเป็นสถานะในรอบreviewนั้น รอบวันที่8ได้แก้คำอธิบายในแผนแล้วตามสรุปด้านบน ส่วนreadiness/implementationที่ยังไม่ทำคงเป็นpendingตามจริง
+
 # ตรวจแผน AI-assisted annotation สำหรับ CCTV 2,200 ภาพ
 
 สถานะ **REVIEW_COMPLETE / FOUR_SCOPE_DECISIONS_ACCEPTED / REMAINING_RULES_NOT_FROZEN** — 2026-11-06T17:58:46+07:00 (Asia/Bangkok)

@@ -170,3 +170,15 @@ Next/blockers:เปิดผ่านSSH tunnelแล้วกดบันท�
 - Verification: counts2200/67cameras/93dates/17fields;269suppliedvisualclaimsไม่เท่ากับhumanGTreceipt;remark16ไม่ใช่18;minsamecameragap1807sและ655adjacentgaps<14400s. Reusefileaudit ไม่newdecode/bulkhash. ExistingCPU14casesสำหรับqueueadditionและdoclinks/tables/inputimmutabilitychecksตามreceipt
 - Blockers/next: ปรับmasterplanตามreviewโดยรักษาประวัติ; กันevent/timegroups+sourceidentityก่อนseed, ตรวจmodelcheckpoint/task/resourceและlosslesseditroundtrip, pilot24ภายในseedเป้าหมาย300ก่อนFT; GTfullpersonmaskยังoptionalและกฎละเอียดNOT_FROZEN
 - Git/private: นำเฉพาะpublic-safereview/docs/codeขึ้นrepo; originalplan/metadata/รายชื่อกล้อง/DB/weights/rawevidenceอยู่นอกGit ไม่มีmodelcalls/training/download/installในรอบนี้
+
+
+## MASTER-PLAN-REVISION2-20261108 / REVIEWABLE_NOT_FROZEN
+
+วันที่ผู้ใช้ 8 พฤศจิกายน 2026 (Asia/Bangkok); audit recorded UTC 2026-11-07T19:40:16.121266+00:00. ผู้ใช้ขอให้สรุปสิ่งที่ต้องปรับและทำให้ดูพร้อมคำอธิบายง่าย จึงปรับแผนprivateไฟล์เดิมหลังสำรอง ไม่สร้างmasterplanคู่ขนาน
+
+- Inputs: HEADd0eb110, private masterplan249lines SHAac52fba48f6aacba2601984ea7330598f4e3243b79b98210b703795a47a202ad, review15กลุ่มและสี่คำตัดสินผู้ใช้; ไม่มีข้อเท็จจริงmodel/readinessใหม่ที่อ้างจากการรัน
+- Outputs: masterplanrevision2รวม154lines SHA07a221a9ab8439bfa60cb95d2d893f53dcf4b6e990ce104a982dc8387fd0ad23, beforebackup+revisionmanifestprivate; เพิ่มpublicfriendlysummaryในreviewเดิม, status/guide/READMElinks ไม่อัปโหลดprivateplan/metadata/weights/ภาพ
+- Changes: แยกaccepted/proposed/pending; เก็บsmallpeopleและprimary50, losslessGT/editablecopy, event/timegroupก่อนseed/FT, pilot24ภายใน300, helpermodel/taskbindingsแทนAPwinnerclaim, sourceIDsถูก, per-taskvalidity/unknown/type/color/OSDที่ไม่เดา และseparatedetector/parser/colorclaims
+- Verification: documenttables/links, backuphashและconcurrentwriteguard, acceptedscopetrace, historicalreviewpreserved; ไม่มีexecutionacceptanceหรือfulltestsเพราะเปลี่ยนเอกสารเท่านั้น
+- State/next: REVIEWABLE_NOT_FROZEN ไม่เปลี่ยนacceptedGTscope ไม่เริ่มsplitassignment/inference/training/download/install. ถัดไปปิดschema/ignore/actualeditroundtripและเสนอevent/timegroupsเพื่อseed/pilotreadinessก่อนlaunch
+- Git: เฉพาะrelateddocs; pendingworkingchangesเดิมรักษาไว้; Gitเก็บcommitidentityเอง ไม่ใส่selfhashในlog

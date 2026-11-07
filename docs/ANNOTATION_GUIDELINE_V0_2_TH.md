@@ -1,5 +1,8 @@
 # ทำ annotation CCTV: คู่มือสั้นสำหรับผู้ทำ
 
+> **แผนหลักปรับแล้ว 8 พฤศจิกายน 2026:** workflowในprivate `PSEUDO_LABELING_MASTER_PLAN_2200_TH.md` เป็นrevision2ที่อ่านตรวจได้ โดยคงข้อตกลงGTและscopeเดิม อ่าน [สิ่งที่ปรับและเหตุผลแบบสั้น](../reports/PSEUDO_LABELING_MASTER_PLAN_REVIEW_TH.md) คู่มือนี้ยังเป็นรายละเอียดannotationประกอบ; ยังไม่freezeกฎละเอียดหรือรับรองpilot/scorer/trainingready
+
+
 อัปเดต 6 พฤศจิกายน 2026 — **ข้อเสนอปฏิบัติสำหรับ pilot24 ยังไม่ freeze GT** ใช้ภาพที่คัดไว้2,200ภาพ ขั้นที่ทำเสร็จคือรับไฟล์และวัดสถิติภาพ; ยังไม่ได้วัดระยะ/ขนาดคนครบชุดหรือสร้าง annotationจริง
 
 <a id="accepted-gt-scope"></a>

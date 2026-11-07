@@ -1,3 +1,6 @@
+> **อัปเดตแผน 8 พฤศจิกายน 2026: REVISION_2_REVIEWABLE_NOT_FROZEN**
+> ปรับแผนหลักprivateไฟล์เดิมพร้อมbackupแล้ว อ่าน [ตารางสิ่งที่เปลี่ยนและเหตุผล](PSEUDO_LABELING_MASTER_PLAN_REVIEW_TH.md) คงGTbbox+4parts, primary≥50pxพร้อมเก็บคนเล็ก, plannedhelperFT, separatedetectorstudy และsame-cameraheld-out-events. รอบนี้ตรวจเอกสารเท่านั้น ไม่เปิดinference/training/downloadหรือแก้benchmarkเก่า ข้อความถัดไปเป็นประวัติตามวันที่
+
 > **Master plan review — 6 พฤศจิกายน 2026: REVIEW_COMPLETE / FOUR_SCOPE_DECISIONS_ACCEPTED / NOT_EXECUTION_READY**
 > [รายงานตรวจแผนหลัก](PSEUDO_LABELING_MASTER_PLAN_REVIEW_TH.md): ยืนยัน helper fine-tuning หลัง seed, primary person longside≥50pxพร้อมเก็บคนเล็ก, detector benchmark4familiesเป็นงานแยก และ same-camera held-out events/timeblocks. ยังมี MUST_FIX เรื่อง bias/IDs/model bindings/ignore/geometry/สีและsplitmembership ต้นฉบับ privateยังไม่แก้ ไม่เริ่ม training/inference/download หรือbenchmarkใหม่
 

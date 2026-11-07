@@ -1,3 +1,5 @@
+> **แผนฉบับปรับ 8 พฤศจิกายน 2026:** อ่าน [สิ่งที่เปลี่ยนและเหตุผลแบบเข้าใจง่าย](reports/PSEUDO_LABELING_MASTER_PLAN_REVIEW_TH.md) แก้แผนหลักprivateไฟล์เดิมและเก็บbackupแล้ว ยังไม่freezeหรือเริ่มรัน
+
 > **ตรวจ master plan แล้ว:** ดู [รายงานและคำตัดสินล่าสุด](reports/PSEUDO_LABELING_MASTER_PLAN_REVIEW_TH.md) ยืนยัน fine-tune helper หลัง seed, คะแนนหลักคน≥50pxแต่เก็บคนเล็ก, detector study แยก และทดสอบกล้องเดิมคนละเหตุการณ์ ยังไม่รับรองกฎทั้งหมดหรือเปิดรันใหม่
 
 > **GT scope ที่ผู้ใช้รับรอง:** bbox คน + person ID + masks 4 คลาส/validity; ไม่บังคับ GT mask คนทั้งตัว อ่าน [ข้อตกลงและสิ่งที่ยังต้องตรวจ](docs/ANNOTATION_GUIDELINE_V0_2_TH.md#accepted-gt-scope) ยังไม่เริ่ม pilot หรือ inference เพิ่ม
