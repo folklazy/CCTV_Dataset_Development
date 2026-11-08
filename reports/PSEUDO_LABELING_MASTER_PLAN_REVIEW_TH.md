@@ -1,6 +1,6 @@
 # แผนที่ปรับแล้ว: อะไรเปลี่ยน และทำไม
 
-อัปเดต 8 พฤศจิกายน 2026 (Asia/Bangkok) — **REVISION_2_REVIEWABLE_NOT_FROZEN**
+อัปเดต 8 พฤศจิกายน 2026 (Asia/Bangkok) — **REVISION_2_1_REVIEWABLE_NOT_FROZEN**
 
 ปรับไฟล์แผนหลัก private `PSEUDO_LABELING_MASTER_PLAN_2200_TH.md` ที่ผู้ใช้ส่งมาแล้ว โดยเก็บรุ่นก่อนแก้พร้อมhashไว้ภายนอกGit ไม่สร้างmasterplanอีกชุด รายงานหน้านี้เป็นคำอธิบายการแก้และเก็บreviewเดิม ไม่ใช่แผนคู่ขนาน
 
@@ -8,7 +8,7 @@
 
 | สิ่งที่ปรับ | ความหมายในงานจริง |
 | --- | --- |
-| เก็บคนเล็กแทนลบทิ้ง | คน<50pxยังมีbbox/สถานะยกเว้น แต่ไม่บังคับวาด4partsของกลุ่มนี้ ต้องมีignorematchingที่ไม่ลบคนใหญ่ที่ซ้อนกัน |
+| คนเล็กนอกงานหลัก | คน<50pxเก็บข้อมูลยกเว้นขั้นต่ำ ไม่ต้องวาด4parts/สี/GTmaskทั้งตัวหรือไล่bboxละเอียด; ไม่ทำเป็นbackgroundอัตโนมัติ และต้องมีignorematchingที่ไม่ซ่อนคนใหญ่ |
 | ปิดคำอ้างbias100% | ใช้คนตรวจรับและhuman-first6 เก็บร่างก่อน–หลัง ไม่ใช้ชื่อarchitectureรับรองความเป็นกลาง |
 | เก็บรูปทรงGTให้ครบ | ไม่ลดทุกpolygonเหลือ10–25จุดหรือทิ้งชิ้นเล็กอัตโนมัติ แยกrawmasksจากสำเนาแก้ง่ายและตรวจอ่านกลับ |
 | แยกกลุ่มข้อมูลก่อนfine-tune | กันevent/timegroupsก่อนเลือกseed ไม่ใช้ภาพเหตุการณ์เดียวกันปนtrain/validation/finaltest |
@@ -21,7 +21,25 @@
 
 **สิ่งที่ยังต้องทำจริง:** exacthelper/checkpoint/source/resource readiness, event/timegroup manifestและsplit membership, losslessdesktopeditroundtrip, ขอบคลาส/OTHER/validityและignorematching, trainingconfig/budget และ actualpacket→scorer→reporter ไม่ถือว่าแก้เอกสารแล้วงานเหล่านี้ผ่าน
 
-แผนหลักฉบับปรับมี154บรรทัด SHA256 `07a221a9ab8439bfa60cb95d2d893f53dcf4b6e990ce104a982dc8387fd0ad23`; ตรวจตาราง/ลิงก์/ความสอดคล้องกับสี่คำตัดสินและbackupแล้ว รอบนี้ไม่มีmodelinference/training/download และไม่เปลี่ยนactivebenchmark/scorer/configหรือข้อมูลต้นฉบับ
+แผนหลักปัจจุบัน revision2.1 มี172บรรทัด SHA256 `40eec96ff94ce2e23f4a0d1ff62befa2477c2e67d7afdabaa9fe497f8cd55961`; รุ่น2เดิม SHA256 `07a221a9ab8439bfa60cb95d2d893f53dcf4b6e990ce104a982dc8387fd0ad23` เก็บในprivatebackup ไม่เขียนประวัติreviewทับ รอบนี้แก้เอกสารเท่านั้น ไม่ได้ตรวจรับexecution/scorerหรือเริ่มmodelinference/training/download
+
+<a id="bounded-scope-50px"></a>
+## ขอบเขตที่ทำจริง และไม่ขยายเอง — 8 พฤศจิกายน 2026
+
+ผู้ใช้ย้ำว่าเอาคนตั้งแต่50pxขึ้นไปและต้องการลดงานนอกขอบเขต จึงปิดข้อความเดิมในคู่มือที่ว่า “ยังไม่มีhard minimum” ซึ่งเปิดช่องให้ต้องทำคนเล็กละเอียดเกินความจำเป็น
+
+| ประเด็น | ขอบเขตที่ใช้ต่อ | สิ่งที่ไม่เพิ่มเอง |
+| --- | --- | --- |
+| คนในงานหลัก | `max(visible GT bbox width,height) ≥ 50` original px;49ไม่เข้า/50เข้า | ไม่กำหนดว่าทั้งสองด้านต้องถึง50 ไม่ใช้predictedbboxคัดGT |
+| คนต่ำกว่า50 | บันทึกยกเว้นขั้นต่ำ; ถ้ามีbboxเดิมใช้ต่อ | ไม่ทำ4parts/สี/GTmaskทั้งตัว ไม่ไล่ขอบหรือbboxละเอียดทุกราย |
+| งาน annotation | bbox+personID+4parts/validity; สีตามที่สังเกตได้ รูปแบบกลางรุ่นเดียว | ไม่เพิ่มparts ไม่บังคับGTmaskทั้งตัว ไม่เดาคำตอบของส่วนที่ไม่เห็น |
+| จำนวนและลำดับ | pool2,200; pilot24อยู่ในseedเป้าหมาย300; helperFTหลังverifiedseed | ไม่เพิ่มpilot/โมเดลhelper/รอบฝึก/เว็บใหม่โดยพลการ; exactFTbudgetยังpending |
+| การเปรียบเทียบ | detector4familiesแยกจากparser9/frozenYOLO26x | ไม่เพิ่มmatrix4×9 ไม่แก้ผลหรือprotocolเก่า |
+| พบข้อกำกวม | พักเฉพาะเคส เก็บเหตุผล แก้กฎกลางเป็นversionเดียวและระบุงานที่กระทบ | ไม่สร้างกฎเฉพาะภาพ/โมเดลหรือวนตรวจทั้งชุดใหม่ |
+
+**ยังไม่รับรองscorer:** coarse exclusionไม่ใช่GTmaskคนทั้งตัว และไม่ให้ignoreทุกpredictionที่แตะพื้นที่ ต้องปิดmatching/sharedpixel domainร่วมกันก่อนbenchmark ไม่ให้ignoreลบGTpartsของคนที่อยู่ในงานหลัก
+
+**สิ่งถัดไป:** ปิดschema/validity/exclusion policyที่ค้างและการแก้–อ่านกลับไฟล์ให้ตรง แล้วpilot24ตามแผนเดิม ยังไม่เปิดpilot/training/inferenceจากงานเอกสารนี้
 
 ---
 

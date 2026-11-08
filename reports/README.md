@@ -1,3 +1,6 @@
+> **ขอบเขตล่าสุด 8 พฤศจิกายน 2026: PRIMARY_PERSON_50PX_ACCEPTED / REVISION_2_1_NOT_FROZEN**
+> งานหลักเฉพาะคนที่ด้านยาว visible GT bbox ≥50px ในพิกเซลต้นฉบับ; คน<50pxไม่ทำ4parts/สี/GTmaskทั้งตัว เก็บข้อมูลยกเว้นขั้นต่ำ ไม่เพิ่มงานไล่ขอบละเอียด อ่าน [ขอบเขต/สิ่งที่ไม่ทำ/จุดหยุด](PSEUDO_LABELING_MASTER_PLAN_REVIEW_TH.md#bounded-scope-50px) คงpool2,200/pilot24ภายในseed300 และscopeเดิม; schema/ignore/scorer readinessยังpending ไม่มีmodel callsหรือtrainingเพิ่ม ข้อความถัดไปเก็บประวัติตามวันที่
+
 > **อัปเดตแผน 8 พฤศจิกายน 2026: REVISION_2_REVIEWABLE_NOT_FROZEN**
 > ปรับแผนหลักprivateไฟล์เดิมพร้อมbackupแล้ว อ่าน [ตารางสิ่งที่เปลี่ยนและเหตุผล](PSEUDO_LABELING_MASTER_PLAN_REVIEW_TH.md) คงGTbbox+4parts, primary≥50pxพร้อมเก็บคนเล็ก, plannedhelperFT, separatedetectorstudy และsame-cameraheld-out-events. รอบนี้ตรวจเอกสารเท่านั้น ไม่เปิดinference/training/downloadหรือแก้benchmarkเก่า ข้อความถัดไปเป็นประวัติตามวันที่
 

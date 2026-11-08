@@ -182,3 +182,14 @@ Next/blockers:เปิดผ่านSSH tunnelแล้วกดบันท�
 - Verification: documenttables/links, backuphashและconcurrentwriteguard, acceptedscopetrace, historicalreviewpreserved; ไม่มีexecutionacceptanceหรือfulltestsเพราะเปลี่ยนเอกสารเท่านั้น
 - State/next: REVIEWABLE_NOT_FROZEN ไม่เปลี่ยนacceptedGTscope ไม่เริ่มsplitassignment/inference/training/download/install. ถัดไปปิดschema/ignore/actualeditroundtripและเสนอevent/timegroupsเพื่อseed/pilotreadinessก่อนlaunch
 - Git: เฉพาะrelateddocs; pendingworkingchangesเดิมรักษาไว้; Gitเก็บcommitidentityเอง ไม่ใส่selfhashในlog
+
+## SCOPE-50PX-BOUNDED-20261108 / USER_SCOPE_CLARIFIED_NOT_FROZEN
+
+เวลา 2026-11-08T15:20:20.842745+07:00 (Asia/Bangkok). ผู้ใช้ย้ำงานหลักคนตั้งแต่50pxและขอจำกัดงานให้อยู่ในรูปแบบเดียว ลดงานที่ขยายโดยไม่จำเป็น
+
+- Inputs: HEADa36ae93, private masterplan revision2, ข้อตกลงเดิม primary visible GT bbox max(width,height)≥50 และคำชี้แจงผู้ใช้ล่าสุด; ใช้หลักฐานเดิม ไม่ตรวจภาพทั้งชุดใหม่
+- Changes: ปรับแผนเดิมเป็นrevision2.1และคู่มือให้คน<50ทำเพียงข้อมูลยกเว้นขั้นต่ำ ไม่วาด4parts/สี/GTmaskทั้งตัวหรือไล่bboxละเอียดโดยไม่จำเป็น; คนคาบเส้น50วัดbboxก่อน; แก้ข้อความคู่มือที่ยังเปิดเกณฑ์ขั้นต่ำไว้กว้าง; เพิ่มตารางทำ/ไม่เพิ่มเอง/จุดหยุดและรูปแบบกลาง
+- Outputs: masterplan172lines SHA256 40eec96ff94ce2e23f4a0d1ff62befa2477c2e67d7afdabaa9fe497f8cd55961; backupก่อนแก้และDOCUMENT_CHECKอยู่private work run scope-50px-bounded; อัปเดตreview/statusเดิม ไม่สร้างแผนหรือรายงานคู่ขนาน ไม่เผยแพร่ภาพ/metadata/privatepaths
+- Verification: hashตรงรายงาน, relative links43รายการมีไฟล์จริง, historicalreviewและภาคผนวกguideคงเดิม, removed obsolete no-minimum wording; documentconsistencyเท่านั้น ไม่ใช่execution/scoreracceptance ไม่รันtestsuiteหรือmodelcalls
+- Limits/blockers: pool2,200, pilot24ภายในseedเป้าหมาย300, helperFTหลังverifiedseedและdetector/parserแยกตามเดิม; exacttrainingbudget/schema/validity/exclusionmatching/sharedpixeldomain/desktoproundtripยังต้องปิด coarseexclusionไม่ใช่silhouetteและห้ามซ่อนpartsของคนeligible
+- Next: ปิดข้อค้างเฉพาะschema/ignore/toolroundtripเพื่อpilot24; ไม่เพิ่มโมเดล/รอบฝึก/pilot/เว็บเอง ไม่เริ่มinference/training/download/splitassignmentหรือเปลี่ยนbenchmarkเก่า Gitเก็บcommitidentity; ตรวจstaged/pushและremoteก่อนแจ้งsync
