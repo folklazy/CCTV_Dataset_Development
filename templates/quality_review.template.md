@@ -1,4 +1,6 @@
-# แผน annotation pilot และ QA ทดลอง v0.1 — PROPOSED
+# แบบตรวจ annotation pilot และ QA — PLAN_ACCEPTED / EXECUTION_NOT_FROZEN
+
+**รับรองแผน 8 พฤศจิกายน 2026:** ใช้กฎเริ่มต้นใน [แผนที่รับรองแล้ว](../reports/PSEUDO_LABELING_MASTER_PLAN_REVIEW_TH.md#plan-accepted) คน≥50pxทำbbox/personID/4partsและสีเมื่อสังเกตได้; คน<50pxเก็บข้อมูลยกเว้นขั้นต่ำ ไม่ไล่parts/สี/ขอบละเอียด กรอกผลที่ตรวจจริง ไม่ใช้สถานะรับรองแผนแทนpilot/GTacceptance
 
 **Master plan review — 6 พฤศจิกายน 2026:** ผู้ใช้เลือกhelperfine-tuningหลังverifiedseed, primarypersonlongside≥50pxโดยเก็บคนเล็กไว้ และseparatedetectorstudy4familiesแล้ว [รายละเอียด/ประเด็นค้าง](../reports/PSEUDO_LABELING_MASTER_PLAN_REVIEW_TH.md) Pilot24เป็นsubsetของseedเป้าหมาย300 ไม่ข้ามtoolreadiness; ผู้ใช้เลือกsame-camera held-out events/timeblocksแล้ว ต้องmaterializegroupingก่อนfreeze seed ไม่ใช้trainedseedเป็นunseenconfirmatorytest
 

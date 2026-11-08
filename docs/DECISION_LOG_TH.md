@@ -193,3 +193,14 @@ Next/blockers:เปิดผ่านSSH tunnelแล้วกดบันท�
 - Verification: hashตรงรายงาน, relative links43รายการมีไฟล์จริง, historicalreviewและภาคผนวกguideคงเดิม, removed obsolete no-minimum wording; documentconsistencyเท่านั้น ไม่ใช่execution/scoreracceptance ไม่รันtestsuiteหรือmodelcalls
 - Limits/blockers: pool2,200, pilot24ภายในseedเป้าหมาย300, helperFTหลังverifiedseedและdetector/parserแยกตามเดิม; exacttrainingbudget/schema/validity/exclusionmatching/sharedpixeldomain/desktoproundtripยังต้องปิด coarseexclusionไม่ใช่silhouetteและห้ามซ่อนpartsของคนeligible
 - Next: ปิดข้อค้างเฉพาะschema/ignore/toolroundtripเพื่อpilot24; ไม่เพิ่มโมเดล/รอบฝึก/pilot/เว็บเอง ไม่เริ่มinference/training/download/splitassignmentหรือเปลี่ยนbenchmarkเก่า Gitเก็บcommitidentity; ตรวจstaged/pushและremoteก่อนแจ้งsync
+
+## MASTER-PLAN-ACCEPTANCE-20261108 / PLAN_ACCEPTED_EXECUTION_NOT_FROZEN
+
+เวลา 2026-11-08T15:25:07.862793+07:00 (Asia/Bangkok). ผู้ใช้ยืนยัน “ที่เหลือผมว่าโอเคแล้วปรับเลย” หลังตารางจำกัดscope/เกณฑ์50px จึงบันทึกรับรองแผนและกฎเริ่มต้นที่ระบุ ไม่ถามscopeเดิมซ้ำ
+
+- Inputs: HEADe605366, masterplanrevision2.1 SHA256 40eec96ff94ce2e23f4a0d1ff62befa2477c2e67d7afdabaa9fe497f8cd55961, คู่มือ/review/ข้อตกลงเดิม และคำรับรองล่าสุด; ตรวจHEAD/workingtree/remoteก่อนแก้
+- Changes: แผนไฟล์เดิมrevision2.2 แยกUSER_ACCEPTED planและstartingrulesออกจากpendingimplementation/readiness; รับscope≥50/ข้อมูลยกเว้นขั้นต่ำ, GT4parts/สี/validity, grouping-before-FT, pilot24ในseedเป้าหมาย300และข้อปรับที่เสนอไว้ ไม่เลือกhelperalternativesทั้งหมดหรือเติมtrainingbudgetที่ยังไม่มี
+- Outputs: masterplan184lines SHA256 0b7e4d149a284ed51f5fa4075c907cb86faa86f0dec85224bc7fcc3a80b8fa4e, privatebeforebackups/provenance; อัปเดตreview/guide/status/README/AGENTSและQAtemplateเดิม ไม่สร้างmasterplanหรือรายงานเพิ่ม ไม่เผยแพร่privateplan/ข้อมูลจริง
+- Verification: ตรวจhash/relative links/stateconsistency/historypreservationและstageddiff/privacy; แก้เอกสารเท่านั้น ไม่รันtestsuite/CPUacceptance/modelcalls ไม่มีผลGPU/GTใหม่
+- Blockers/next: จัดทำschema/domain/ignorematching/toolroundtripและeventgroup/membershipก่อนpilot; exacthelper/checkpoint/environment/resourcebudgetยังต้องตรวจ ไม่ถือว่างานเหล่านี้ผ่านจากการรับรองแผน ไม่เปลี่ยนfrozenbenchmarksหรือsourceimages
+- Git: stagedเฉพาะงานเกี่ยวข้อง; README/AGENTSใช้prefixบนHEADเพื่อรักษาunrelatedworkingedits ไม่รวมpendingworkอื่น ตรวจpush/remoteก่อนแจ้งsync ไม่ใส่selfcommithashในlog

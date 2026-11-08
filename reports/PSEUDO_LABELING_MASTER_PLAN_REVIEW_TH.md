@@ -1,8 +1,22 @@
 # แผนที่ปรับแล้ว: อะไรเปลี่ยน และทำไม
 
-อัปเดต 8 พฤศจิกายน 2026 (Asia/Bangkok) — **REVISION_2_1_REVIEWABLE_NOT_FROZEN**
+อัปเดต 8 พฤศจิกายน 2026 (Asia/Bangkok) — **REVISION_2_2_PLAN_ACCEPTED_NOT_EXECUTION_FROZEN**
 
 ปรับไฟล์แผนหลัก private `PSEUDO_LABELING_MASTER_PLAN_2200_TH.md` ที่ผู้ใช้ส่งมาแล้ว โดยเก็บรุ่นก่อนแก้พร้อมhashไว้ภายนอกGit ไม่สร้างmasterplanอีกชุด รายงานหน้านี้เป็นคำอธิบายการแก้และเก็บreviewเดิม ไม่ใช่แผนคู่ขนาน
+
+<a id="plan-accepted"></a>
+## ผู้ใช้รับรองแผนฉบับปรับแล้ว — 8 พฤศจิกายน 2026
+
+คำยืนยัน “ที่เหลือผมว่าโอเคแล้วปรับเลย” รับข้อปรับและกฎเริ่มต้นที่ระบุในrevision2.1เป็นแผนทำงานแล้ว รวมscopeคน≥50px/ข้อมูลยกเว้นขั้นต่ำ, นิยาม4parts/สี/validity, เก็บmaskแบบไม่สูญเสียและprovenance, กันเหตุการณ์ก่อนhelperFT และpilot24ภายในseedเป้าหมาย300 ไม่ถามขอบเขตเดิมซ้ำ
+
+| แผนรับรองแล้ว | ยังต้องทำและตรวจจริง |
+| --- | --- |
+| ขอบเขต/ลำดับงาน/กฎannotationเริ่มต้น/วิธีลดbiasและข้อจำกัดคำอ้าง | schema, mapping, shared pixel domainและignore matchingที่ยังไม่กำหนดครบ |
+| helperFTหลังverifiedseed; helperเป็นร่าง คนตรวจรับทุกภาพ | exacthelper/checkpoint/source/environmentและtrainingbudget; ตัวเลือกโมเดลยังไม่ใช่คำสั่งเลือกทั้งหมด |
+| กล้องเดิม คนละเหตุการณ์/ช่วงเวลา; pilot24อยู่ในseedประมาณ300 | group/split/pilot membershipที่ตรวจsourceและlossless editor roundtrip |
+| ไม่ขยายpool/parts/โมเดล/รอบฝึก/เว็บเอง | actualpilot/GTacceptance/scoreracceptance/resource readiness; ไม่มีผลใหม่จากการรับรองแผน |
+
+การตรวจpilotยังอาจพบกฎที่ต้องแก้ ให้เก็บก่อน–หลัง/เหตุผล/งานที่กระทบในrevisionกลาง ไม่ปรับจากคะแนนfinaltest **สถานะแผน:รับรองแล้ว; สถานะexecution:ยังไม่freeze/ยังไม่เริ่มในรอบนี้**
 
 **เรื่องที่ตกลงกันยังเหมือนเดิม:** GT bbox+personID+4parts/validity; ไม่บังคับGTmaskคนทั้งตัว; คะแนนหลักคนด้านยาวvisibleGTbbox≥50pxแต่เก็บคนเล็กพร้อมสถานะ; fine-tunehelperหลังverifiedseed; detector4familiesเป็นงานแยก; finaltestเป็นกล้องเดิมคนละเหตุการณ์/ช่วงเวลา
 
@@ -21,7 +35,7 @@
 
 **สิ่งที่ยังต้องทำจริง:** exacthelper/checkpoint/source/resource readiness, event/timegroup manifestและsplit membership, losslessdesktopeditroundtrip, ขอบคลาส/OTHER/validityและignorematching, trainingconfig/budget และ actualpacket→scorer→reporter ไม่ถือว่าแก้เอกสารแล้วงานเหล่านี้ผ่าน
 
-แผนหลักปัจจุบัน revision2.1 มี172บรรทัด SHA256 `40eec96ff94ce2e23f4a0d1ff62befa2477c2e67d7afdabaa9fe497f8cd55961`; รุ่น2เดิม SHA256 `07a221a9ab8439bfa60cb95d2d893f53dcf4b6e990ce104a982dc8387fd0ad23` เก็บในprivatebackup ไม่เขียนประวัติreviewทับ รอบนี้แก้เอกสารเท่านั้น ไม่ได้ตรวจรับexecution/scorerหรือเริ่มmodelinference/training/download
+แผนหลักปัจจุบัน revision2.2 มี184บรรทัด SHA256 `0b7e4d149a284ed51f5fa4075c907cb86faa86f0dec85224bc7fcc3a80b8fa4e`; revision2.1เดิม SHA256 `40eec96ff94ce2e23f4a0d1ff62befa2477c2e67d7afdabaa9fe497f8cd55961` เก็บในprivatebackup; รุ่น2เดิม SHA256 `07a221a9ab8439bfa60cb95d2d893f53dcf4b6e990ce104a982dc8387fd0ad23` เก็บในprivatebackup ไม่เขียนประวัติreviewทับ รอบนี้แก้เอกสารเท่านั้น ไม่ได้ตรวจรับexecution/scorerหรือเริ่มmodelinference/training/download
 
 <a id="bounded-scope-50px"></a>
 ## ขอบเขตที่ทำจริง และไม่ขยายเอง — 8 พฤศจิกายน 2026
