@@ -1,3 +1,6 @@
+> **10 พฤศจิกายน 2026 — SPLIT_MATERIALIZED / EVENT_REVIEW_PENDING**
+> Development1,760ภาพ และheldoutcandidate440ภาพครบ2,200IDs; seed300รวมpilot24อยู่ในdevelopmentแล้ว ตรวจmembership/sourcebinding/parentpilotผ่าน อ่าน [ผลแบ่งและข้อจำกัด](PSEUDO_LABELING_MASTER_PLAN_REVIEW_TH.md#time-block-split) รอบนี้ใช้metadataและCPU ขั้นถัดไปตรวจevent-context/coverage/toolroundtripก่อนpilot สถานะก่อนหน้าด้านล่างเป็นประวัติ
+
 > **สถานะล่าสุด 8 พฤศจิกายน 2026: PLAN_ACCEPTED / EXECUTION_NOT_FROZEN — revision2.2**
 > ผู้ใช้รับรองข้อปรับและกฎเริ่มต้นในแผนแล้ว อ่าน [ขอบเขตที่รับรองกับสิ่งที่ยังต้องตรวจจริง](PSEUDO_LABELING_MASTER_PLAN_REVIEW_TH.md#plan-accepted) ไม่ถามscopeเดิมซ้ำ; คง2,200ภาพ/คน≥50px/pilot24ในseedเป้าหมาย300 ไม่เพิ่มงานเอง ขั้นถัดไปปิดschema/ignore/toolroundtripและgroupingเพื่อpilot; ไม่มีinference/training/downloadเพิ่ม สถานะก่อนหน้าด้านล่างเป็นประวัติตามวันที่
 

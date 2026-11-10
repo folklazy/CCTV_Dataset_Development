@@ -1,8 +1,25 @@
 # แผนที่ปรับแล้ว: อะไรเปลี่ยน และทำไม
 
-อัปเดต 8 พฤศจิกายน 2026 (Asia/Bangkok) — **REVISION_2_2_PLAN_ACCEPTED_NOT_EXECUTION_FROZEN**
+อัปเดต 10 พฤศจิกายน 2026 (Asia/Bangkok) — **REVISION_2_3_PLAN_ACCEPTED_SPLIT_MATERIALIZED_NOT_EXECUTION_FROZEN**
 
 ปรับไฟล์แผนหลัก private `PSEUDO_LABELING_MASTER_PLAN_2200_TH.md` ที่ผู้ใช้ส่งมาแล้ว โดยเก็บรุ่นก่อนแก้พร้อมhashไว้ภายนอกGit ไม่สร้างmasterplanอีกชุด รายงานหน้านี้เป็นคำอธิบายการแก้และเก็บreviewเดิม ไม่ใช่แผนคู่ขนาน
+
+<a id="time-block-split"></a>
+## จัดทำรายชื่อแบ่งข้อมูลแล้ว — 10 พฤศจิกายน 2026
+
+| ชุด | จำนวนภาพ | กล้อง | สถานะ |
+| --- | --- | --- | --- |
+| Development | 1,760 | 67 | ฝั่งพัฒนา |
+| Seedซึ่งอยู่ในDevelopment | 300 | 67 | รวมPilot24แล้ว รอannotationตรวจรับ |
+| Pilotซึ่งอยู่ในSeed | 24 | 24 | 6calibration/6human-first/12workflowตามqueueเดิม |
+| DevelopmentนอกSeed | 1,460 | — | สำรองฝั่งพัฒนา |
+| Held-out test candidate | 440 | 49 | กันไว้ก่อนhelperFT รอsource-contexteventreviewก่อนfinalfreeze |
+
+Codexใช้ค่าเริ่มต้น80/20, site+วันตามเวลาไทย, same-camera timeguard4ชั่วโมงข้ามเที่ยงคืน และsupplieddHash256bitsระยะไม่เกิน4ก่อนแบ่ง ได้463กลุ่มเวลา ทั้ง49กล้องในheldoutมีข้อมูลdevelopment ส่วน18กล้องอยู่developmentอย่างเดียว เกณฑ์เวลา/hashเป็นกติกาของงานนี้และต้องตรวจบริบทกรณีกำกวม
+
+ตรวจexact2,200IDs ไม่มีขาด/ซ้ำ ไม่มีsite-day/timeblockหรือคู่dHash≤4ข้ามฝั่ง parentpilot/rolesและsourcebindingsตรงเดิม CPUacceptanceเฉพาะงานsplit6กรณีผ่าน รายชื่อ/metadata/pathsจริงและverificationอยู่private run; scriptที่ทำซ้ำได้อยู่ [prepare_annotation_split.py](../scripts/prepare_annotation_split.py)
+
+การแบ่งตามmetadataยังไม่ยืนยันevent/identityindependenceหรือvisualcoverageของคน≥50px สถานะรายชื่อพร้อมเตรียมannotation ส่วนfinaltestfreeze/GTacceptance/helpertrainvalidationยังรอขั้นที่เกี่ยวข้อง ถัดไปตรวจcoverage/rule-criticalcasesและtoolroundtripสำหรับpilot24
 
 <a id="plan-accepted"></a>
 ## ผู้ใช้รับรองแผนฉบับปรับแล้ว — 8 พฤศจิกายน 2026
@@ -13,7 +30,7 @@
 | --- | --- |
 | ขอบเขต/ลำดับงาน/กฎannotationเริ่มต้น/วิธีลดbiasและข้อจำกัดคำอ้าง | schema, mapping, shared pixel domainและignore matchingที่ยังไม่กำหนดครบ |
 | helperFTหลังverifiedseed; helperเป็นร่าง คนตรวจรับทุกภาพ | exacthelper/checkpoint/source/environmentและtrainingbudget; ตัวเลือกโมเดลยังไม่ใช่คำสั่งเลือกทั้งหมด |
-| กล้องเดิม คนละเหตุการณ์/ช่วงเวลา; pilot24อยู่ในseedประมาณ300 | group/split/pilot membershipที่ตรวจsourceและlossless editor roundtrip |
+| กล้องเดิม คนละเหตุการณ์/ช่วงเวลา; pilot24อยู่ในseedประมาณ300 | membershipจัดทำแล้ว รอตรวจevent-context/visualcoverageและlossless editor roundtrip |
 | ไม่ขยายpool/parts/โมเดล/รอบฝึก/เว็บเอง | actualpilot/GTacceptance/scoreracceptance/resource readiness; ไม่มีผลใหม่จากการรับรองแผน |
 
 การตรวจpilotยังอาจพบกฎที่ต้องแก้ ให้เก็บก่อน–หลัง/เหตุผล/งานที่กระทบในrevisionกลาง ไม่ปรับจากคะแนนfinaltest **สถานะแผน:รับรองแล้ว; สถานะexecution:ยังไม่freeze/ยังไม่เริ่มในรอบนี้**
@@ -35,7 +52,7 @@
 
 **สิ่งที่ยังต้องทำจริง:** exacthelper/checkpoint/source/resource readiness, event/timegroup manifestและsplit membership, losslessdesktopeditroundtrip, ขอบคลาส/OTHER/validityและignorematching, trainingconfig/budget และ actualpacket→scorer→reporter ไม่ถือว่าแก้เอกสารแล้วงานเหล่านี้ผ่าน
 
-แผนหลักปัจจุบัน revision2.2 มี184บรรทัด SHA256 `0b7e4d149a284ed51f5fa4075c907cb86faa86f0dec85224bc7fcc3a80b8fa4e`; revision2.1เดิม SHA256 `40eec96ff94ce2e23f4a0d1ff62befa2477c2e67d7afdabaa9fe497f8cd55961` เก็บในprivatebackup; รุ่น2เดิม SHA256 `07a221a9ab8439bfa60cb95d2d893f53dcf4b6e990ce104a982dc8387fd0ad23` เก็บในprivatebackup ไม่เขียนประวัติreviewทับ รอบนี้แก้เอกสารเท่านั้น ไม่ได้ตรวจรับexecution/scorerหรือเริ่มmodelinference/training/download
+แผนหลักปัจจุบัน revision2.3 มี202บรรทัด SHA256 `4856d9b34b6e168ba4f5794663838dc32c79552b52217d4a2568f387264a556d`; เก็บรุ่นก่อนแก้และhashไว้ในprivatebackupพร้อมประวัติreview การจัดทำsplitครั้งนี้ยังรอevent/visual/toolreadinessตามรายละเอียดข้างต้น
 
 <a id="bounded-scope-50px"></a>
 ## ขอบเขตที่ทำจริง และไม่ขยายเอง — 8 พฤศจิกายน 2026

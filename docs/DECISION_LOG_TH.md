@@ -204,3 +204,14 @@ Next/blockers:เปิดผ่านSSH tunnelแล้วกดบันท�
 - Verification: ตรวจhash/relative links/stateconsistency/historypreservationและstageddiff/privacy; แก้เอกสารเท่านั้น ไม่รันtestsuite/CPUacceptance/modelcalls ไม่มีผลGPU/GTใหม่
 - Blockers/next: จัดทำschema/domain/ignorematching/toolroundtripและeventgroup/membershipก่อนpilot; exacthelper/checkpoint/environment/resourcebudgetยังต้องตรวจ ไม่ถือว่างานเหล่านี้ผ่านจากการรับรองแผน ไม่เปลี่ยนfrozenbenchmarksหรือsourceimages
 - Git: stagedเฉพาะงานเกี่ยวข้อง; README/AGENTSใช้prefixบนHEADเพื่อรักษาunrelatedworkingedits ไม่รวมpendingworkอื่น ตรวจpush/remoteก่อนแจ้งsync ไม่ใส่selfcommithashในlog
+
+## ANNOTATION-TIMEBLOCK-SPLIT-20261110 / MEMBERSHIP_MATERIALIZED_EVENT_REVIEW_PENDING
+
+เวลา 2026-11-10T13:54:01.341739+07:00 (Asia/Bangkok). ผู้ใช้สั่งให้แบ่งdevelopment/heldoutและเลือกpilotก่อนannotation จึงจัดทำmembershipจากsourcebindingเดิม
+
+- Inputs: HEAD1f7494d, hash-boundmanifest/ledger2,200, parentpilotqueue24และrolesเดิม; ตรวจworkingtreeก่อนทำ เก็บข้อมูลจริงprivate
+- Method/assumptions: Codexเลือก80/20, site-localdateblocks, same-camera<4hเชื่อมข้ามวัน, supplied256bitdHash≤4เชื่อมกลุ่มก่อนแบ่ง; lockedpilotgroupsและกล้องที่มีเพียงกลุ่มเดียวอยู่development; deterministicseed20261110 ไม่ใช้ผลคะแนนหรือภาพจากโมเดลเลือกsplit
+- Outputs: development1,760/heldoutcandidate440 รวม2,200uniqueIDs, 463groups; seed300ในdevelopmentครอบ67กล้องรวมpilot24/24กล้อง; heldout49กล้องและdevelopment-only18กล้อง รายชื่อ/summary/command/verification/privateรายงานอยู่run annotation-timeblock-split; ปรับแผนหลักไฟล์เดิมrevision2.3 SHA256 4856d9b34b6e168ba4f5794663838dc32c79552b52217d4a2568f387264a556d, เก็บbeforebackup ไม่ย้ายภาพต้นฉบับ
+- Verification: CPUexpectedfixtures6กรณีผ่าน; exactID/sourcejoin/parentpilotและroles/subsets/กลุ่มsite-day/4hguard/nearhashข้ามฝั่ง/manifestledgerhashes/provenanceผ่าน; source/scriptSHAในrunตรวจตรงจริง ไม่มีmodelcalls
+- Limits/next: TIME_BLOCKไม่พิสูจน์event/identityindependence ต้องตรวจclock/long-event/near-duplicatecontextก่อนfinaltestfreeze pilotvisualcoverage/rules/toolroundtripและGTacceptanceยังpending helpertrainvalidationจัดภายในdevelopmentหลังverifiedseed เก็บhuman-first6ตามแผนเดิม
+- Git: ตรวจstaged/privacy/linksและpushเฉพาะsplitcode/tests/relateddocs; รักษางานค้างREADME/AGENTSและcoverageเดิม ใช้Gitเก็บcommitidentity

@@ -1,6 +1,6 @@
 # ทำ annotation CCTV: คู่มือสั้นสำหรับผู้ทำ
 
-> **แผนหลักปรับแล้ว 8 พฤศจิกายน 2026:** workflowในprivate `PSEUDO_LABELING_MASTER_PLAN_2200_TH.md` เป็นrevision2.2ที่ผู้ใช้รับรองแผนและกฎเริ่มต้นแล้ว คงงานหลักคน≥50pxและขอบเขตไม่ขยายเอง อ่าน [สิ่งที่ปรับและเหตุผลแบบสั้น](../reports/PSEUDO_LABELING_MASTER_PLAN_REVIEW_TH.md) คู่มือนี้ยังเป็นรายละเอียดannotationประกอบ; ยังไม่freezeกฎละเอียดหรือรับรองpilot/scorer/trainingready
+> **แผนหลักปรับแล้ว 8 พฤศจิกายน 2026:** workflowในprivate `PSEUDO_LABELING_MASTER_PLAN_2200_TH.md` เป็นrevision2.3ที่ผู้ใช้รับรองแผนและกฎเริ่มต้นแล้ว โดยจัดทำdevelopment1,760/heldoutcandidate440และseed300รวมpilot24ไว้แล้ว คงงานหลักคน≥50pxและขอบเขตไม่ขยายเอง อ่าน [สิ่งที่ปรับและเหตุผลแบบสั้น](../reports/PSEUDO_LABELING_MASTER_PLAN_REVIEW_TH.md) คู่มือนี้ยังเป็นรายละเอียดannotationประกอบ; ยังไม่freezeกฎละเอียดหรือรับรองpilot/scorer/trainingready
 
 
 อัปเดต 8 พฤศจิกายน 2026 — **PLAN_AND_STARTING_RULES_USER_ACCEPTED / EXECUTION_NOT_FROZEN** รับรองกฎเริ่มต้นสำหรับpilot24แล้ว; ยังต้องตรวจเครื่องมือ/ข้อมูลและผลpilotก่อนfreezeใช้งานทั้งชุด ใช้ภาพที่คัดไว้2,200ภาพ ขั้นที่ทำเสร็จคือรับไฟล์และวัดสถิติภาพ; ยังไม่ได้วัดระยะ/ขนาดคนครบชุดหรือสร้าง annotationจริง
