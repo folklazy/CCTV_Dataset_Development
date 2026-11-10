@@ -215,3 +215,14 @@ Next/blockers:เปิดผ่านSSH tunnelแล้วกดบันท�
 - Verification: CPUexpectedfixtures6กรณีผ่าน; exactID/sourcejoin/parentpilotและroles/subsets/กลุ่มsite-day/4hguard/nearhashข้ามฝั่ง/manifestledgerhashes/provenanceผ่าน; source/scriptSHAในrunตรวจตรงจริง ไม่มีmodelcalls
 - Limits/next: TIME_BLOCKไม่พิสูจน์event/identityindependence ต้องตรวจclock/long-event/near-duplicatecontextก่อนfinaltestfreeze pilotvisualcoverage/rules/toolroundtripและGTacceptanceยังpending helpertrainvalidationจัดภายในdevelopmentหลังverifiedseed เก็บhuman-first6ตามแผนเดิม
 - Git: ตรวจstaged/privacy/linksและpushเฉพาะsplitcode/tests/relateddocs; รักษางานค้างREADME/AGENTSและcoverageเดิม ใช้Gitเก็บcommitidentity
+
+## SPLIT-DETAILED-REVIEW-20261110 / REBALANCE_REQUIRED
+
+เวลา 2026-11-10T14:15:41.704659+07:00 (Asia/Bangkok). ผู้ใช้ขอแนะนำการแบ่งและตรวจละเอียด จึงตรวจmasterrevision2.4 SHA256 5dbd59af8a3b4096cd27c0e29da8d70acd6a2c7f683528057246d8c70cea3037 เทียบmanifest/summaryปัจจุบัน
+
+- Inputs: HEADd1df444, parentmembership2200/463groups/seed300/pilot24; อ่านmetadataและbinding ไม่เปลี่ยนต้นฉบับแผนล่าสุดหรือmembership
+- Findings: test440อยู่27groups, sitefractions6/147ถึง157/219; วิธีเดิมเน้นcamera/countทำให้บางสถานที่กระจุก ต้องปรับouterallocationก่อนfinalfreeze เก็บparentเดิม
+- Proposal: outertargetdevelopment1760/heldout440แบบgroup-stratifiedsite/time; helpertrain240+fixedval60ในseed300 รวมpilottrain24; Boost550เฉพาะdevelopmentนอกvalgroups; รอบสองtrain790/val60 แล้วfreezeรุ่นที่ผ่านเกณฑ์จากvalidation
+- Verification: metadatafeasibilityกันval60/8sites/47cams(22day38night)โดยtrain240ครอบ67camsและpilotอยู่train; valgroupsรวม159คือval60+nonseed99 มีeligibleBoostpool1361 ตัวเลขต้องตรวจใหม่หลังouterrebalance ไม่อ้างว่าเป็นรายชื่อที่materializeใหม่หรือvisualGT
+- Outputs: อัปเดตreview/statusเดิมและprivateinputsnapshot ไม่มีnewmasterplan source/inference/trainingหรือscorechanges
+- Next: แก้site/timeallocation เก็บrevisionและmembershipdiffก่อนhelperpartition/coverage/toolreadiness/GTacceptance ไม่มีfinaltestfreezeจากการตรวจนี้

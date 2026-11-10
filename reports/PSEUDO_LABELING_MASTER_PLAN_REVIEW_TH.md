@@ -1,3 +1,32 @@
+<a id="split-detail-review"></a>
+## ตรวจข้อเสนอแบ่งข้อมูลอย่างละเอียด — 10 พฤศจิกายน 2026
+
+สถานะ **REBALANCE_REQUIRED_BEFORE_FINAL_TEST_FREEZE / HELPER_PARTITION_PROPOSED** ตรวจแผนprivateล่าสุดrevision2.4และmembershipเดิมจากrun annotation-timeblock-split-20261110T065020Z คำว่าACCEPTEDในชื่อไฟล์เป็นข้อความต้นฉบับที่นำมาตรวจ รอบนี้ตรวจและเสนอรายละเอียดจากmetadata
+
+**ข้อบกพร่องที่พบในsplitเดิม:** Heldout440อยู่ใน27จาก463กลุ่มเวลา แม้ครอบคลุม49กล้อง/8สถานที่ แต่สัดส่วนภาพtestต่อสถานที่ต่างกันมาก ตั้งแต่6/147(4.08%)ถึง157/219(71.69%) วิธีเลือกเดิมให้ความสำคัญกับcamera coverageและจำนวนรวมใกล้440 จึงเลือกกลุ่มขนาดใหญ่จนกระจุกสถานที่ ต้องจัดรายชื่อใหม่ก่อนfreeze โดยเก็บรายชื่อเก่าไว้เป็นparent ภาพรวม80/20เป็นค่าเริ่มต้นของงานที่Codexเลือก
+
+**วิธีที่แนะนำ:** จัดกลุ่มเหตุการณ์/เวลาและhash-linkedgroupsก่อนแบ่ง จากนั้นตั้งเป้าheldoutประมาณ20%ภายในแต่ละสถานที่ที่แบ่งได้ ตรวจสัดส่วนday/nightและกล้อง พร้อมรักษาทั้งกลุ่มไว้ฝั่งเดียวกัน 18กล้องที่มีเพียงวันเดียวอยู่developmentตามขอบเขตsame-cameraheldout จำนวน440เป็นเป้าหมาย ให้รักษากลุ่มก่อนการบังคับยอดพอดี ต้องรายงานส่วนเบี่ยงเบนและจำนวนกลุ่ม/กล้อง/สถานที่จริง เกณฑ์4h/dHash≤4ของรายชื่อเดิมเป็นตัวกรองที่กำหนดในงานนี้ ส่วนclockคลาด/เหตุการณ์ยาวยังรอตรวจsourcecontext
+
+| ส่วนที่เสนอ | ภาพ | บทบาท |
+| --- | --- | --- |
+| Helper trainเริ่มต้น | 240 | อยู่ในseed300 รวมpilot24ไว้ฝั่งtrain |
+| Helper validationคงที่ | 60 | อยู่ในseed300 รักษาทั้งกลุ่มออกจากการฝึกทั้งสองรอบ |
+| Boostสำหรับtrainรอบสอง | 550 | เลือกจากdevelopmentที่เหลือและพ้นทุกvalidationgroup ให้คนตรวจรับก่อนใช้ |
+| Developmentหลังhelperfreeze | 910 | ร่างและคนตรวจรับภายหลัง รวมภาพอื่นของvalidationgroupsที่กันออกจากtraining |
+| Heldouttest | 440เป้าหมาย | ผลประเมินหลักเมื่อGT/protocol/membershipตรวจรับ |
+
+Pilot24เป็นsubsetของseed300 รอบแรกtrain240/val60 รอบสองtrain790/val60 รวมannotationที่ตรวจสะสม850ภาพ ข้อมูล1350ภาพหลังfreezeประกอบด้วยdevelopment910และheldout440 ผลรวม1350/2200รายงานประกอบพร้อมนิยามpopulation ผลหลักใช้heldoutที่ตรวจรับแล้ว กำหนดเกณฑ์เลือกhelperก่อนฝึก ใช้valชุดเดียวเลือกจากv1/v2และเก็บattempts ไม่ตั้งเงื่อนไขรับรองว่าv2ต้องแม่นกว่าหรือแก้เร็วกว่าโดยไม่มีผลวัด
+
+**ตรวจความเป็นไปได้กับmembershipเดิม:** กันval60จาก8สถานที่/47กล้องได้ (metadata22day/38night) พร้อมรักษาseedtrain240ให้มีครบ67กล้องและpilot24อยู่ฝั่งtrain เมื่อกันทุกภาพในvalidationgroupsจะล็อกรวม159ภาพ คือval60และภาพนอกseedอีก99 ภาพ99นี้อยู่ฝั่งdevelopmentหลังfreezeและพ้นทั้งtrain/Boost มีnonseedcandidateที่พ้นvalidationgroupsเหลือ1361ภาพ เพียงพอเลือกBoost550 ตัวเลขนี้เป็นfeasibilityของรายชื่อเดิม ต้องคำนวณและตรวจใหม่เมื่อปรับouter split
+
+**สิ่งที่metadataยังตอบไม่ได้:** personขนาด≥50px, targetvisibility/support, occlusion, blurและactualcolor/IRต้องดูภาพ/GT ไม่ใช้metadatacategoryแทนคลาสบุคคลหรือท่าทาง Helpervalidation60ครอบ8สถานที่/47กล้องตามตัวอย่างที่ตรวจ และการกันกลุ่มไม่รับรองidentityindependenceข้ามเวลา
+
+**ขั้นถัดไปที่มีขอบเขต:** ปรับouterallocationให้กระจายสถานที่/ช่วงเวลา เก็บparent+diff → คัดseed/train/val/Boostด้วยเกณฑ์ที่ประกาศก่อนคะแนน → ตรวจsourcecontext/coverage/toolroundtripสำหรับpilot → ตรวจรับGT → ฝึกhelperตามbudgetที่กำหนด รายชื่อเดิมอยู่สถานะcandidateจนปิดข้อบกพร่องนี้
+
+---
+
+ประวัติการจัดทำsplitและแผนrevisionก่อนหน้าอยู่ด้านล่าง
+
 # แผนที่ปรับแล้ว: อะไรเปลี่ยน และทำไม
 
 อัปเดต 10 พฤศจิกายน 2026 (Asia/Bangkok) — **REVISION_2_3_PLAN_ACCEPTED_SPLIT_MATERIALIZED_NOT_EXECUTION_FROZEN**
