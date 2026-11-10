@@ -1,3 +1,6 @@
+> **10 พฤศจิกายน 2026 — BALANCED_MEMBERSHIP_VERIFIED / GT_AND_EVENT_REVIEW_PENDING**
+> ปรับรายชื่อครบ2,200IDs Test440จาก106กลุ่มเวลา/46กล้อง มี19.23–20.14%ต่อSiteที่แบ่งได้ จัดtrain240/val60/Boost550/reserve910ครบพร้อมpilot24ในtrain อ่าน [ผลรายSiteและข้อจำกัด](PSEUDO_LABELING_MASTER_PLAN_REVIEW_TH.md#balanced-split-complete) ขั้นถัดไปevent-context/coverage/schema/ignore/toolroundtripและGTacceptance สถานะก่อนหน้าด้านล่างเป็นประวัติ
+
 > **ตรวจละเอียด10พฤศจิกายน2026 — REBALANCE_REQUIRED_BEFORE_FINAL_TEST_FREEZE**
 > พบtest440จาก27กลุ่มเวลากระจุกบางสถานที่ (สัดส่วนtestรายสถานที่4.08–71.69%) อ่าน [ข้อค้นพบและโครงสร้างtrain240/val60/Boost550](PSEUDO_LABELING_MASTER_PLAN_REVIEW_TH.md#split-detail-review) รายชื่อเดิมเก็บเป็นparentcandidate ขั้นถัดไปปรับallocationตามสถานที่/เวลาแล้วตรวจgroupisolationและcoverageใหม่ ข้อความก่อนหน้าด้านล่างเป็นประวัติ
 

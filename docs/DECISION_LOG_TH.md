@@ -226,3 +226,16 @@ Next/blockers:เปิดผ่านSSH tunnelแล้วกดบันท�
 - Verification: metadatafeasibilityกันval60/8sites/47cams(22day38night)โดยtrain240ครอบ67camsและpilotอยู่train; valgroupsรวม159คือval60+nonseed99 มีeligibleBoostpool1361 ตัวเลขต้องตรวจใหม่หลังouterrebalance ไม่อ้างว่าเป็นรายชื่อที่materializeใหม่หรือvisualGT
 - Outputs: อัปเดตreview/statusเดิมและprivateinputsnapshot ไม่มีnewmasterplan source/inference/trainingหรือscorechanges
 - Next: แก้site/timeallocation เก็บrevisionและmembershipdiffก่อนhelperpartition/coverage/toolreadiness/GTacceptance ไม่มีfinaltestfreezeจากการตรวจนี้
+
+## BALANCED-SPLIT-HELPER-20261110 / MEMBERSHIP_VERIFIED_EVENT_GT_PENDING
+
+เวลา 2026-11-10T14:38:55.005661+07:00 (Asia/Bangkok). ผู้ใช้อนุมัติปรับสคริปต์และmembership Outer Split/helperตามข้อเสนอ
+
+- Inputs: HEADac561e1, source manifest/ledger2200และparent/pilot bindings, master2.4 ตอนเริ่มSHA5dbd59af8a3b4096cd27c0e29da8d70acd6a2c7f683528057246d8c70cea3037 ระหว่างงานพบเปลี่ยนเป็นSHAdfb5a62da8c1f48aa6d9a5168f944a03c39087f74358f37c4c372df336448d7eโดยเพิ่มAuto-Triage/รายละเอียดแบ่ง เก็บรุ่นล่าสุดครบก่อนแก้และรักษาAuto-Triageพร้อมสถานะpending
+- Method: per-siteเป้า20% DPเก็บsubsetสมดุลmetadataต่อcountแล้วรวมSite น้ำหนักcamera0.05/day-night0.1/groupcount0.02/overallcount4ในSUMMARYก่อนคะแนน; รักษาpilotและdevanchorsทุกกล้อง seed20261110; cross-site linkedblockหยุดทบทวน
+- Outputs: development1760/test440; train240/val60/Boost550/reserve910 pilot24ในtrainครบ Test106blocks/46cams/8Sites มี19.23–20.14% เทียบparent27blocks/49camsและSite4.08–71.69% Siteเดียว2ภาพอยู่development
+- Isolation: validation21groupsรวม206ภาพ(60val+146reserve)พ้นtrain/Boost; round1train240/val60 round2train790/val60; parent/source/pilotและmetadataตรง เก็บDIFF770rowsจากouter716IDs/seed212IDs พร้อมSITE_BALANCEจริงprivate
+- Verification: CPUindependentexpected9casesผ่าน และactualcheckexact2200/no missing/no duplicates/timegroups/4hguard/dHashpair/groupisolation/pilot/roles/source-parenthashesผ่าน มีmodelcalls0 Script/source/env/launchcommitbindingsอยู่run
+- Docs: ปรับmasterไฟล์เดิมrevision2.5 SHA256 b9520610edcc1ce88761ca1e30cec70588fad6bcebb08ef638bb776112329408 เก็บbeforebackup พร้อมpublicreview/status/guide/QA/README/AGENTSและlogเดิม ข้อมูลจริงprivate
+- Limits/next: Testcamera49เป็น46แลกกับSitebalance รอsource-context/visualcoverage/schema/ignore/toolroundtripและGTacceptanceก่อนfinalfreeze helper/model/resourcebudgetตรวจตามขั้น Auto-Triageเป็นงานถัดไปตามข้อกำหนดที่เก็บไว้
+- Git: ตรวจdiff/staged/privacy/linksและcommit/pushเฉพาะงานเกี่ยวข้อง รักษาREADME/AGENTSworkingchangesเดิมด้วยprefixบนHEAD Gitเก็บcommitidentity

@@ -4,7 +4,7 @@ from pathlib import Path
 import unittest
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / 'scripts'))
-from prepare_annotation_split import allocate, time_groups
+from prepare_annotation_split import allocate, time_groups, helper_partitions
 
 
 def observation(identifier, site, camera, when, image_hash):
@@ -55,6 +55,44 @@ class TimeBlockTests(unittest.TestCase):
         self.rows[0]['dhash_hex'] = 'abc'
         with self.assertRaises(ValueError):
             time_groups(self.rows, 4)
+
+    def test_site_targets_take_priority_over_large_camera_blocks(self):
+        groups = {}
+        for site in ['A', 'B']:
+            for index in range(10):
+                key = f'{site}-{index}'
+                groups[key] = [dict(candidate_id=f'{key}-{n}', site=site,
+                                    camera_name=site, diurnal_period='day')
+                               for n in range(10)]
+        heldout, _, target = allocate(groups, set(), .2, 42)
+        self.assertEqual(target, 40)
+        for site in ['A', 'B']:
+            self.assertEqual(sum(len(groups[key]) for key in heldout if key.startswith(site)), 20)
+
+    def test_linked_cross_site_block_requests_review(self):
+        groups = {'mixed': [dict(site='A', camera_name='C', candidate_id='a'),
+                            dict(site='B', camera_name='C', candidate_id='b')]}
+        with self.assertRaisesRegex(ValueError, 'Cross-site'):
+            allocate(groups, set(), .2, 42)
+
+    def test_helper_validation_siblings_cannot_enter_boost(self):
+        rows, groups = [], {}
+        for index in range(1500):
+            row = dict(candidate_id=str(index), site='A', camera_name=str(index % 10),
+                       diurnal_period='day' if index % 3 == 0 else 'night')
+            key = str(index-300 if 300 <= index < 600 else index)
+            groups.setdefault(key, []).append(row)
+            rows.append(row)
+        seed = {str(n) for n in range(300)}
+        pilot = {str(n) for n in range(24)}
+        roles, validation_groups = helper_partitions(rows, seed, pilot, groups, 42)
+        self.assertEqual(sum(v == 'HELPER_TRAIN_INITIAL' for v in roles.values()), 240)
+        self.assertEqual(sum(v == 'HELPER_VALIDATION_FIXED' for v in roles.values()), 60)
+        self.assertEqual(sum(v == 'HELPER_TRAIN_BOOST' for v in roles.values()), 550)
+        self.assertTrue(all(roles[key] == 'HELPER_TRAIN_INITIAL' for key in pilot))
+        for key in validation_groups:
+            self.assertEqual({roles[row['candidate_id']] for row in groups[key]},
+                             {'HELPER_VALIDATION_FIXED', 'DEVELOPMENT_AFTER_FREEZE'})
 
 
 if __name__ == '__main__':

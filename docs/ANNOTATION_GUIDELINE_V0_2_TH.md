@@ -1,3 +1,5 @@
+> **Membershipใหม่10พฤศจิกายน2026** ใช้revision2.5และ [รายชื่อที่ตรวจแล้ว](../reports/PSEUDO_LABELING_MASTER_PLAN_REVIEW_TH.md#balanced-split-complete) Seed300=train240รวมpilot24+val60 Boost550และvalidationgroupsผูกไว้แล้ว Heldout440รอevent-context/GTก่อนfinalfreeze กฎ4parts/สี/50pxใช้ตามคู่มือนี้
+
 # ทำ annotation CCTV: คู่มือสั้นสำหรับผู้ทำ
 
 > **แผนหลักปรับแล้ว 8 พฤศจิกายน 2026:** workflowในprivate `PSEUDO_LABELING_MASTER_PLAN_2200_TH.md` เป็นrevision2.3ที่ผู้ใช้รับรองแผนและกฎเริ่มต้นแล้ว โดยจัดทำdevelopment1,760/heldoutcandidate440และseed300รวมpilot24ไว้แล้ว คงงานหลักคน≥50pxและขอบเขตไม่ขยายเอง อ่าน [สิ่งที่ปรับและเหตุผลแบบสั้น](../reports/PSEUDO_LABELING_MASTER_PLAN_REVIEW_TH.md) คู่มือนี้ยังเป็นรายละเอียดannotationประกอบ; ยังไม่freezeกฎละเอียดหรือรับรองpilot/scorer/trainingready

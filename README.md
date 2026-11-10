@@ -1,3 +1,5 @@
+> **ปรับสมดุลและแบ่ง helper แล้ว — 10 พฤศจิกายน2026** Development1,760/Test440 โดยSiteที่แบ่งได้มีTest19.23–20.14% รายชื่อtrain240/validation60/Boost550/reserve910ครบและpilot24อยู่train อ่าน [ตารางรายSiteและผลตรวจ](reports/PSEUDO_LABELING_MASTER_PLAN_REVIEW_TH.md#balanced-split-complete) รายชื่อจริงอยู่private รอevent-context/GT/toolreadinessตามขั้น สถานะก่อนหน้าด้านล่างเป็นประวัติ
+
 > **แบ่งข้อมูลก่อนannotationแล้ว — 10 พฤศจิกายน 2026:** Development1,760ภาพ มีseed300ซึ่งรวมpilot24 และheldouttestcandidate440ภาพ อ่าน [ผลแบ่งและการตรวจรับ](reports/PSEUDO_LABELING_MASTER_PLAN_REVIEW_TH.md#time-block-split) รายชื่อจริงเก็บprivateพร้อมhash; รอตรวจบริบทเหตุการณ์/coverage/เครื่องมือก่อนfinalfreeze สถานะก่อนหน้าด้านล่างเป็นประวัติ
 
 > **แผนรับรองแล้ว — 8 พฤศจิกายน 2026:** ใช้แผนrevision2.2และ [กฎเริ่มต้นที่รับรอง พร้อมรายการที่ยังต้องตรวจจริง](reports/PSEUDO_LABELING_MASTER_PLAN_REVIEW_TH.md#plan-accepted) งานหลักคน≥50px; คนเล็กเก็บข้อมูลยกเว้นขั้นต่ำ คงpool2,200และpilot24ในseedเป้าหมาย300 ไม่ขยายงานเอง ยังไม่freezeexecutionหรือเริ่มโมเดล/ฝึกจากรอบนี้ รายการสถานะก่อนหน้าด้านล่างเป็นประวัติตามวันที่

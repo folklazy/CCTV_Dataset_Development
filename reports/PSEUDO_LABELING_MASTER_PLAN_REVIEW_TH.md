@@ -1,3 +1,49 @@
+<a id="balanced-split-complete"></a>
+## ปรับ split และจัด helper memberships แล้ว — 10 พฤศจิกายน 2026
+
+สถานะ **BALANCED_MEMBERSHIP_VERIFIED / GT_AND_EVENT_REVIEW_PENDING** ผู้ใช้อนุมัติปรับOuter Splitและhelperpartition รายชื่อรุ่นเดิมเป็นparentพร้อมhash/ผลต่าง รุ่นใหม่ใช้เป้า20%ต่อSiteพร้อมcamera/day-night/group representationตามกติกาmetadataในSUMMARYที่ประกาศก่อนมีผลคะแนน
+
+| ส่วน | ภาพ | กล้อง |
+| --- | --- | --- |
+| Development รวม | 1,760 | 67 |
+| Trainเริ่มต้นในDevelopment | 240 | 67 |
+| Validationคงที่ในDevelopment | 60 | 46 |
+| BoostในDevelopment | 550 | 39 |
+| Developmentหลังfreeze | 910 | 32 |
+| Heldouttestcandidate | 440 | 46 |
+
+Pilot24อยู่train240ครบ พร้อมroles6calibration/6human-first/12workflowตามparent Seed300=train240+val60 รอบสองtrain790(240+550)/val60เดิม เลือกจากv1/v2ตามเกณฑ์validationก่อนฝึกแล้วfreezeก่อนร่าง910+440=1,350ภาพ GTที่ตรวจสะสมหลังBoostเท่ากับ850
+
+| Site | ทั้งหมด | Testเดิม | Testใหม่ | Testใหม่ % | กลุ่ม Test | กล้อง Test |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| S01 | 351 | 87 | 70 | 19.94 | 14 | 6 |
+| S02 | 26 | 6 | 5 | 19.23 | 4 | 2 |
+| S03 | 571 | 98 | 115 | 20.14 | 22 | 12 |
+| S04 | 147 | 6 | 29 | 19.73 | 16 | 2 |
+| S05 | 379 | 59 | 76 | 20.05 | 18 | 10 |
+| S06 | 219 | 157 | 44 | 20.09 | 5 | 3 |
+| S07 | 70 | 5 | 14 | 20.00 | 9 | 3 |
+| S08 | 435 | 22 | 87 | 20.00 | 18 | 8 |
+| S09 | 2 | 0 | 0 | 0.00 | 0 | 0 |
+
+Site labelsเป็นนามแฝงเรียงคงที่สำหรับตารางนี้ ชื่อจริงอยู่private Siteที่แบ่งได้8แห่งมีTest19.23–20.14% Site09มี2ภาพในกลุ่มเดียวจึงอยู่development ปัญหาSite04/Site06เดิม4.08%/71.69%แก้เป็น19.73%/20.09%
+
+**ผลแลกเปลี่ยน** Testcameraลด49เป็น46 (3กล้องอยู่development) และtimeblocksเพิ่ม27เป็น106 จากทั้งหมด463 ทุกกล้องในTestมีdevelopment กล้อง21แห่งอยู่developmentอย่างเดียว MetadataTest123day/317night
+
+**Validation isolation** กันทั้ง21กลุ่มรวม206ภาพ คือval60และภาพร่วมกลุ่มอีก146ที่อยู่reserve910และพ้นtrain/Boost Pilot24และrolesอยู่train240ครบ จากparentมีouter716IDsและseed212IDsเปลี่ยน เก็บMEMBERSHIP_DIFF770แถวรวมการเปลี่ยนทั้งสองชนิด
+
+**การตรวจจริง** Exact2,200uniqueIDsไม่มีขาด/ซ้ำ source/parent/pilot hashesและmetadataตรง ไม่มีsite-day/timeguard/hash-linkedgroupข้ามouter และไม่มีvalidationgroupร่วมtrainทั้งสองรอบ CPUexpectedcases9กรณีผ่าน รวมSitebalanceและvalidation siblingsห้ามเข้าBoost [สคริปต์](../scripts/prepare_annotation_split.py) และ [กรณีตรวจ](../tests/test_prepare_annotation_split.py)
+
+**กติกาที่เลือก** DPเก็บmetadata-balancedsubsetต่อจำนวนภาพและรวมSites น้ำหนักsecondarycamera0.05/day-night0.1/groupcount0.02 และoverallcount4ถูกบันทึกก่อนคะแนน การค้นหานี้รายงานเป็นผลจากกติกาที่กำหนด เกณฑ์4h/dHash≤4เป็นข้อกำหนดของงานนี้ หากมีhash-linkedblockข้ามSiteจะหยุดทบทวนallocation ข้อมูลรุ่นนี้ไม่มีกรณีดังกล่าว
+
+**ความพร้อมที่ยังต้องตรวจ** source-contextเรื่องclock/เหตุการณ์ยาว และvisualcoverageคน≥50px/การบดบัง/ความชัด/targetsupport รวมschema/ignore/editorroundtrip/GTacceptanceก่อนfinaltestfreeze ข้อ4.1Auto-Triageที่เพิ่งเพิ่มในแผนเก็บไว้ครบพร้อมสถานะimplementationpending
+
+แผนหลักไฟล์เดิมrevision2.5 SHA256 `b9520610edcc1ce88761ca1e30cec70588fad6bcebb08ef638bb776112329408` เก็บรุ่นก่อนแก้พร้อมhashและสำเนาprivate รายชื่อจริงอยู่balanced split runที่CURRENT_ANNOTATION_SPLIT.txtอ้างถึง
+
+---
+
+ส่วนถัดไปเป็นประวัติreviewและsplitรุ่นก่อนหน้า
+
 <a id="split-detail-review"></a>
 ## ตรวจข้อเสนอแบ่งข้อมูลอย่างละเอียด — 10 พฤศจิกายน 2026
 
