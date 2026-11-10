@@ -1,3 +1,6 @@
+> **ข้อ4.1 Auto-Triageผ่านการreviewข้อกำหนด — 10 พฤศจิกายน2026**
+> TRIAGE_SPEC_REVIEW_1_PROPOSED / IMPLEMENTATION_PENDING อ่าน [สิ่งที่ปรับและหลักฐานcode](PSEUDO_LABELING_MASTER_PLAN_REVIEW_TH.md#auto-triage-review) ใช้คนยืนยันsmall candidatesก่อนGTignore แยกperson/part scoresและrawdiagnostics ทุกภาพมีhumanreceipt คิว/size gating/part-edit roundtripยังรอimplementation Membershipรุ่นbalancedที่ตรวจแล้วใช้ตามเดิม สถานะก่อนหน้าด้านล่างเป็นประวัติ
+
 > **10 พฤศจิกายน 2026 — BALANCED_MEMBERSHIP_VERIFIED / GT_AND_EVENT_REVIEW_PENDING**
 > ปรับรายชื่อครบ2,200IDs Test440จาก106กลุ่มเวลา/46กล้อง มี19.23–20.14%ต่อSiteที่แบ่งได้ จัดtrain240/val60/Boost550/reserve910ครบพร้อมpilot24ในtrain อ่าน [ผลรายSiteและข้อจำกัด](PSEUDO_LABELING_MASTER_PLAN_REVIEW_TH.md#balanced-split-complete) ขั้นถัดไปevent-context/coverage/schema/ignore/toolroundtripและGTacceptance สถานะก่อนหน้าด้านล่างเป็นประวัติ
 

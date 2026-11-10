@@ -1,3 +1,30 @@
+<a id="auto-triage-review"></a>
+## ตรวจข้อ4.1 Auto-Triage — 10 พฤศจิกายน2026
+
+สถานะ **TRIAGE_SPEC_REVIEW_1_PROPOSED / IMPLEMENTATION_PENDING** ตรวจแผนprivateไฟล์เดิมกับperson_pseudolabel.py, sam3_person_draft.py และlocalSAM3processor revision8330c45f4d47f62588122e462ac3eb7e0a2e6f46 เก็บbackupแล้วปรับเฉพาะข้อ4.1 ส่วนอื่นในแผนตรงกับก่อนแก้
+
+| ประเด็นที่พบ | วิธีปรับข้อกำหนด |
+| --- | --- |
+| ตั้งAUTO-IGNOREจากกรอบโมเดลเล็ก | เก็บSMALL_CANDIDATEพร้อมraw/bboxแล้วให้คนยืนยันกรอบก่อนรับexcluded_under_50px ข้ามpartcallsชั่วคราวได้ตามbudgetและกติกาที่บันทึก |
+| แหล่งbboxมีหลายชนิด | แยกmodel box/mask envelope/human-reviewed box เส้นตัดGTใช้กรอบที่มนุษย์ยืนยันในoriginalpixels กรณีstraddle50ขึ้นflag |
+| score≥0.85ยังไม่มีหลักฐานcalibration | เก็บเป็นค่าร่างสำหรับtriageและแยกperson/part prompt score พร้อมrule revision SAM3scoreเป็นsigmoid(pred_logits)×sigmoid(presence_logit_dec)ตามsourceที่ตรวจ |
+| BoxIoU0/conflict0/outside0ยังอาจคลาสผิดหรือพลาดคน | ทุกภาพต้องดูเต็มภาพและตรวจparts ก่อนบันทึกhumanreceipt NO_AUTO_FLAGSเป็นป้ายอัตโนมัติที่ระบุเงื่อนไขที่ผ่าน |
+| no-proposal/emptyอาจหลุดจากall-passเงื่อนไขว่าง | จัดเข้าคิวneeds-review พร้อมreason เก็บabsence/unobservableแยกหลังมนุษย์ตรวจ |
+| clipทำconflict/outsideหาย | วัดจากrawก่อนintersection/compose sourceปัจจุบันมีrawdiagnosticsแล้ว เก็บraw/ownedทั้งสองแบบ |
+| หลายโฟลเดอร์เสี่ยงคนละrevision | ใช้views/manifestsอ้างsource/annotation revisionเดียว เก็บderivedexportเมื่อeditorจำเป็นและตรวจreadback |
+| แก้bboxแล้วร่างเพิ่มอาจชนattempt/callbudget | สร้างlinkedattempt เก็บbox/source/rule hashes invalidateoldtriage คิดcallsเพิ่มตามbudget/failurepolicy |
+| bbox JSONยังมีเฉพาะrectangle | part PNGมีraw/ownedครบ ต้องมีlossless editor bridgeและactualroundtripก่อนอ้างว่าแก้4partsจากexportได้ |
+
+**Evidenceในcode** person_pseudolabel.pyมีmask_info/save_predictions/run_frame เก็บmodel-regressedboxแยกจากmask envelope, raw/ownedและdiagnosticsก่อนclip รวมbboxdescription ส่วนdriverบันทึกCALLSและมี--person-boxesแบบsource-bound แต่ยังไม่มีsize gating/คิวtriage ส่วนlocalprocessorในapp/models/sam3/model/sam3_image_processor.pyบรรทัด216–245นิยามscoresและmaskthresholdจริง
+
+**เกณฑ์ตรวจถัดไป** expected49/50, small-draft→corrected≥50, missing/no-person, high-scorewrongclass, empty/absence, overlap/outsideก่อนclip, ownerwrong, staleflags/callbudgetและactualeditablepacketreadbackต้องตรวจตามrequirement รอบนี้เป็นreview/designของข้อ4.1 รันdocument/source checks ใช้หลักฐานCPUเดิม ไม่ได้วัดความเร็วหรือคุณภาพใหม่
+
+แผนหลักไฟล์เดิมหลังปรับเฉพาะข้อ4.1 SHA256 `851480e6b7526e9fd145a5106246a68486bb451ffc21934850df9648eda5415c` headerrevision2.5ของแผนยังอยู่เดิม ส่วนข้อ4.1ระบุTRIAGE_SPEC_REVIEW_1_PROPOSEDพร้อมสถานะimplementationpending
+
+---
+
+ประวัติsplitและreviewก่อนหน้าด้านล่าง
+
 <a id="balanced-split-complete"></a>
 ## ปรับ split และจัด helper memberships แล้ว — 10 พฤศจิกายน 2026
 

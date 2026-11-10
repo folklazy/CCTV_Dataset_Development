@@ -239,3 +239,14 @@ Next/blockers:เปิดผ่านSSH tunnelแล้วกดบันท�
 - Docs: ปรับmasterไฟล์เดิมrevision2.5 SHA256 b9520610edcc1ce88761ca1e30cec70588fad6bcebb08ef638bb776112329408 เก็บbeforebackup พร้อมpublicreview/status/guide/QA/README/AGENTSและlogเดิม ข้อมูลจริงprivate
 - Limits/next: Testcamera49เป็น46แลกกับSitebalance รอsource-context/visualcoverage/schema/ignore/toolroundtripและGTacceptanceก่อนfinalfreeze helper/model/resourcebudgetตรวจตามขั้น Auto-Triageเป็นงานถัดไปตามข้อกำหนดที่เก็บไว้
 - Git: ตรวจdiff/staged/privacy/linksและcommit/pushเฉพาะงานเกี่ยวข้อง รักษาREADME/AGENTSworkingchangesเดิมด้วยprefixบนHEAD Gitเก็บcommitidentity
+
+## AUTO-TRIAGE-REVIEW-20261110 / SPEC_REVIEWED_IMPLEMENTATION_PENDING
+
+เวลา 2026-11-10T14:53:28.528410+07:00 (Asia/Bangkok). ผู้ใช้ขอตรวจข้อ4.1ที่เพิ่ม จึงอ่านส่วนนี้กับcode referencesที่จำเป็นและแก้ข้อกำหนดให้ตรงGTscope/หลักฐานจริง
+
+- Inputs: HEAD8f65f05, masterก่อนแก้SHAb9520610edcc1ce88761ca1e30cec70588fad6bcebb08ef638bb776112329408, person_pseudolabel/run_frame/mask_info/save_predictions, sam3driver และlocalSAM3processor revision8330c45f4d47f62588122e462ac3eb7e0a2e6f46
+- Findings: finalignoreจากdraftboxเสี่ยงผิดGTeligibility, scoreเป็นperson/partpromptscoreไม่ใช่ผลตรวจGT, zerooverlapอาจยังพลาด/คลาสผิด, empty-all-passเสี่ยงfalse-negativeacceptance, existingbboxexportมีrectangleเท่านั้น, GPUcallbudgetsและattemptlocksต้องรองรับlinkedcorrections
+- Outputs: เก็บbeforebackupprivateและปรับเฉพาะ4.1เป็นTRIAGE_SPEC_REVIEW_1_PROPOSED SHA256 851480e6b7526e9fd145a5106246a68486bb451ffc21934850df9648eda5415c; SMALL_CANDIDATEก่อนhuman-confirmedexclusion, proposed45–55/0.85triagethresholds, rawdiagnosticsก่อนclip, sharedrevisionviews/descriptiontags/receiptและexpectedacceptancecases; อัปเดตreview/statusเดิม
+- Verification: ตรวจส่วนอื่นของmasterbyte-equivalentก่อน/หลัง, sourcefunctionreferences/scoreformula, links/hash/stagedprivacy ไม่มีcode/config/modelcalls/trainingหรือtestsuiteเพิ่มในreviewนี้
+- Next: Implementtriage/sizegating/linkedcorrection/actual4parteditorbridgeและตรวจexpectedcasesตามbudgetเมื่อถึงขั้นที่อนุมัติ ค่า45–55/0.85ยังเป็นข้อเสนอเพื่อpilot ไม่ถือว่าGTignoreหรือautoacceptanceผ่านแล้ว
+- Git: commit/pushเฉพาะreview/status/logที่เกี่ยวข้อง ข้อมูลจริง/source snapshotsprivate Gitเก็บcommitidentity
