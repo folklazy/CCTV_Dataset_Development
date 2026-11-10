@@ -250,3 +250,13 @@ Next/blockers:เปิดผ่านSSH tunnelแล้วกดบันท�
 - Verification: ตรวจส่วนอื่นของmasterbyte-equivalentก่อน/หลัง, sourcefunctionreferences/scoreformula, links/hash/stagedprivacy ไม่มีcode/config/modelcalls/trainingหรือtestsuiteเพิ่มในreviewนี้
 - Next: Implementtriage/sizegating/linkedcorrection/actual4parteditorbridgeและตรวจexpectedcasesตามbudgetเมื่อถึงขั้นที่อนุมัติ ค่า45–55/0.85ยังเป็นข้อเสนอเพื่อpilot ไม่ถือว่าGTignoreหรือautoacceptanceผ่านแล้ว
 - Git: commit/pushเฉพาะreview/status/logที่เกี่ยวข้อง ข้อมูลจริง/source snapshotsprivate Gitเก็บcommitidentity
+
+## PERSON-MASK-WORKLOAD-20261110 / GT_SCOPE_CLARIFIED
+
+เวลา 2026-11-10T16:05:19.415805+07:00 (Asia/Bangkok). ผู้ใช้ถามว่าต้องแก้person maskเพิ่มหรือไม่ จึงตรวจถ้อยคำและพบคู่มือมีประโยคpersonmasksต้องแก้ที่ขัดscopeoptionalGT
+
+- Inputs: HEAD3677f4b, masterSHA851480e6b7526e9fd145a5106246a68486bb451ffc21934850df9648eda5415c, guideและข้อ4.1 ปัจจุบัน พร้อมสถานะworkingtree
+- Changes: masterเฉพาะ4.1และguideกำหนดbbox/personID/4parts/สีตามที่เห็นเป็นภาระตรวจรับ Person maskเป็นhelperwarning การรับGTผ่านได้แม้helpermaskผิด/outside-personยังมี ปรับqueuewordingให้นอกmaskเป็นwarningแยกและraw4partsเป็นฐานแก้
+- Outputs: masterSHAe66ee428e7d32aa7c53275778bb6bde8f02c59b5b76c8364caa1915308f090caพร้อมbeforebackup, publicreview/status/logเดิม เก็บuntrackedtriageimplementation/testsและงานค้างอื่นครบ
+- Verification: ตรวจmasterนอก4.1ตรงbefore, guideแก้เฉพาะข้อความที่เกี่ยวข้อง, hashes/links/stagedprivacy ไม่มีmodelcallsหรือcodechanges
+- Next: implementation/editorreadbackต้องยึดhumanreceiptสำหรับbbox/4partsและคงhelperwarningแยกจากGTacceptance ไม่เพิ่มงานpersonmaskให้ผู้ใช้

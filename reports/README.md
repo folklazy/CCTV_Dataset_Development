@@ -1,3 +1,5 @@
+> **10 พฤศจิกายน2026 — ยืนยันภาระGTตามscopeเดิม** ผู้ตรวจแก้bbox/personID/4partsและสีเมื่อประเมินได้ Person maskเป็นhelperที่เก็บอัตโนมัติ ค่าoutside-personเป็นwarning การรับGTไม่เพิ่มงานเกลาขอบคนทั้งตัว อ่าน [รายละเอียด](PSEUDO_LABELING_MASTER_PLAN_REVIEW_TH.md#person-mask-workload) สถานะก่อนหน้าด้านล่างเป็นประวัติ
+
 > **ข้อ4.1 Auto-Triageผ่านการreviewข้อกำหนด — 10 พฤศจิกายน2026**
 > TRIAGE_SPEC_REVIEW_1_PROPOSED / IMPLEMENTATION_PENDING อ่าน [สิ่งที่ปรับและหลักฐานcode](PSEUDO_LABELING_MASTER_PLAN_REVIEW_TH.md#auto-triage-review) ใช้คนยืนยันsmall candidatesก่อนGTignore แยกperson/part scoresและrawdiagnostics ทุกภาพมีhumanreceipt คิว/size gating/part-edit roundtripยังรอimplementation Membershipรุ่นbalancedที่ตรวจแล้วใช้ตามเดิม สถานะก่อนหน้าด้านล่างเป็นประวัติ
 

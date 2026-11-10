@@ -1,3 +1,16 @@
+<a id="person-mask-workload"></a>
+## ภาระตรวจรับ person mask — 10 พฤศจิกายน2026
+
+ผู้ใช้ย้ำว่าperson maskทำให้มีงานเพิ่ม จึงยืนยันrequiredGTเป็นbbox/personID/4partsและสีตามที่ประเมินได้ Helper person maskเก็บอัตโนมัติพร้อมwarning ผู้ตรวจรับGTจากbbox/4partsที่ถูกต้องได้แม้helper maskยังผิดหรือoutside_person_pxยังเหลือ
+
+แก้ข้อ4.1ให้outside-personเป็นwarningแยกและเปิดraw4partsเป็นฐานแก้ พร้อมแก้ประโยคเดิมในคู่มือที่เขียนว่าperson masksต้องแก้ตามกฎ การรับงานไม่เพิ่มreceiptหรือภาระเกลาขอบGTคนทั้งตัว ข้อกำหนดtriageและeditorbridgeยังรอตรวจimplementation พบไฟล์annotation_triage.py/testsเป็นงานค้างที่ยังไม่commit รักษาไฟล์เหล่านั้นไว้ตามเดิม
+
+ปรับเฉพาะข้อ4.1ในmaster SHA256 `e66ee428e7d32aa7c53275778bb6bde8f02c59b5b76c8364caa1915308f090ca` ส่วนอื่นคงตามbeforebackup รอบนี้แก้ข้อกำหนด/คู่มือและตรวจdocumentconsistency
+
+---
+
+ประวัติreviewด้านล่าง
+
 <a id="auto-triage-review"></a>
 ## ตรวจข้อ4.1 Auto-Triage — 10 พฤศจิกายน2026
 

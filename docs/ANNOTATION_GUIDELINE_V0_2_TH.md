@@ -10,6 +10,8 @@
 <a id="accepted-gt-scope"></a>
 ## ขอบเขต GT ที่ผู้ใช้รับรองแล้ว — 6 พฤศจิกายน 2026
 
+**คำยืนยันภาระงาน10พฤศจิกายน2026** ผู้ตรวจแก้bbox/personIDและ4parts พร้อมสีเมื่อประเมินได้ Person maskให้โมเดลสร้างเป็นhelper การผ่านGTรับได้แม้helper maskยังผิดหรือค่าoutside_person_pxยังมี โดยตรวจความถูกต้องของbbox/4partsจากภาพจริงและบันทึกreceipt
+
 **GT-SCOPE-20261106-USER-ACCEPTED:** ทำ **bbox คน + person ID ภายในภาพ + masks Hair/Face/Upper/Lower พร้อม validity** ไม่บังคับวาดหรือตรวจรับ **GT mask คนทั้งตัว** การรับรองนี้ยืนยันชนิดข้อมูลและหลักการประเมิน ไม่ใช่การ freeze ขอบคลาส/mapping/matching thresholds หรือรับรองว่า annotation/pilot ผ่านแล้ว
 
 | ขั้น | ข้อมูลและหน้าที่ | สิ่งที่ต้องตรวจรับ |
@@ -194,7 +196,7 @@ Cityscapes มี policy เติมรูภายใน foreground จริ�
 - เส้นทางคนแก้ bbox: `--person-boxes` ใช้กรอบที่คนวาดก่อนเห็นร่าง พร้อม source SHA/reviewer → cropพิกเซลต้นฉบับพร้อมcontext → SAM3 positive-box prompt → parts routeเดิม ช่วยคนเล็ก/ตกหล่นโดยไม่ให้ text detector เป็นgate ไม่เอากรอบYOLOมาแทน human inventory
 - เก็บ raw candidate planes และ raw unions ก่อน intersection แยกจาก `owned_proposal` ที่ตัดด้วย person maskเพื่อช่วยตรวจ พร้อม outside-person pixels และ target-conflict map **intersection นี้เป็น draft ที่แก้ได้** ไม่ใช่ขอบเขต GT; person maskผิดอาจตัด Hair/เสื้อที่ถูกออก จึงต้องดูrawประกอบ
 - ยังไม่ compose เป็นเฉลย4classแบบบังคับชนะทับกัน หาก Face/Hairซ้อนหรือ Upper/Lowerชนกันให้เก็บไว้ตรวจ ไม่ใช้คะแนนสูงสุดแปลเป็น GT ไม่มี proposalคือ “โมเดลไม่เสนอ” ไม่ใช่ absent หรือ verified negative
-- ทุก mask อยู่ original grid; person support ไม่เท่ากับ union4parts เพราะยังมีผิวกาย รองเท้า/ส่วนอื่น person masks ที่รวมกระเป๋าหรือคนข้างเคียงต้องแก้ตามกฎ
+- ทุกmaskอยู่original grid Person supportมีส่วนอื่นนอก4partsด้วย หากhelper person maskรวมกระเป๋า/คนข้างเคียงหรือตัดส่วนจริงออก ให้ผู้ตรวจแก้bboxและ4partsจากภาพต้นฉบับ Person maskเก็บเป็นข้อมูลช่วยพร้อมwarning ไม่มีงานบังคับเกลาขอบหรือรับรองGTคนทั้งตัว
 
 โมเดลมี learned bbox ของตนเอง และ script เก็บ bbox envelope จาก helper mask แยกไว้เป็นร่าง **GT bbox คนต้องให้ผู้ใช้ตรวจ/แก้จากภาพจริงได้โดยตรง ไม่บังคับแก้ person mask ก่อน** ไม่ใช้ union ของ4partsแทน bbox คนเพราะอาจขาดแขนขา และไม่รับ draft model box เป็น GT อัตโนมัติ ประกาศ visible-person bbox policy ให้ชัด ไม่เรียกผลว่า official amodal pedestrian benchmark
 
