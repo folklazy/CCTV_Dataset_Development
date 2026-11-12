@@ -401,3 +401,12 @@ Next/blockers:เปิดผ่านSSH tunnelแล้วกดบันท�
 - Verification CPU18testsผ่าน actualB4/B5nativeCPUloading/labels/depths, B5classifieradaptationและprocessorparitymax0, SOLIDERnativeaffineRGBparitymax0 CPUpreflight5/5ผ่าน source/config/model/input hashesตรึง ไม่มีmodelGPUforwardในreadiness
 - Resource jobadmission4/6/4/10/10GiBตามmodelrolesพร้อมheadroom singleworker/6h/job/diskfree50GiB/output80GiB/noautoretry ไม่มีexternalPIDexclusivegate ไม่ติดตั้ง/downloadเพิ่ม ใช้existingmodelenvs/weights
 - Outputs newcode/config/testsและexistingreview มีprivatehelper-zero4-b5ft freshlinkedrun เก็บข้อมูล/ภาพจริงและpredictsprivate Next commitfreeze/launchdetachedbatch ตรวจpacketแรกแล้วให้controllerทำต่อและreportเมื่อจบ
+
+
+## Work log — 2026-11-12T23:04:50.073169+07:00 (Asia/Bangkok)
+
+- Work ID HELPER-B5-ZERO4-20261112-02. Frozenrunhelper-zero4-b5ft-20261112T155416Z/launchcommite5d51692e2d56d0bf41547ce4e3da4975ae2d4ab เปิดtmuxhelper_zero4_b5ft controllerPID551837 source/protocolhashesตรงcommittedversions พบzeroB4/B5/SOLIDER COMPLETE77/77 savedscorerauditผ่าน SAMzeroactiveและB5FTqueuedตามscope
+- Verification B4native/commonPNGpacketแรก576384 labels/nativeprojection/hashตรง SAMnativepacketแรก5candidates scores/boxesfinite composition/hashesตรง มีatomicmetadata/ledgerจริง ไม่ใช้GTช่วยเลือกpredictions CPU18tests+5preflightsผ่าน
+- Scope4zerohelpers+FTB5เท่านั้น nativeB5weights84.607M params context5bตีความตามB5ที่คุย ไม่ดาวน์โหลด/ติดตั้งเพิ่ม ไม่rerunFTเก่า ไม่เปิดCLASP/CPI/Sapiens2 งานrawdata/artifactsอยู่private
+- Outputs launchverified/immutableprotocol/source+modelbindings/metadata/ledgers; existingreview/status/README/AGENTS/log Routinepublic-safeprotocolJSONถูกforce-addเฉพาะไฟล์กฎfixedlabelsเพื่อversionโดยยังคงignorelocalconfigs
+- Next detachedcontrollerจบSAMzeroแล้วFTB5 เมื่อจบสร้างreportCSVgalleryอัตโนมัติ ตรวจruntimeต่อเฉพาะกรณีfailure ไม่วิเคราะห์rankเพื่อเปลี่ยนmapping/settingsกลางrun

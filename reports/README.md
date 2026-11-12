@@ -1,3 +1,5 @@
+> **12 พฤศจิกายน 2026 — ZERO4 + B5_FT กำลังรัน** Zero-shotB4/B5/SOLIDERครบ77crops SAMzeroกำลังทำงานแล้วต่อB5FT25epochsอัตโนมัติในtmux helper_zero4_b5ft เก็บตารางและgalleryเมื่อจบ อ่าน [สถานะและวิธีดูสด](PSEUDO_LABELING_MASTER_PLAN_REVIEW_TH.md#b5-and-zero-shot-completion)
+
 > **12 พฤศจิกายน 2026 — HELPER_TRAINING_COMPLETE** B4/SOLIDERBGR/SOLIDERRGB/SAM3.1ครบ77validationcropsและindependentmaskscoringผ่าน ParentSTATUSค้างได้รับการreconcileแล้ว SAMช่วง6–15เป็นwarmrestartจากbestcheckpointพร้อมoptimizerใหม่ อ่าน [ผลครบและข้อจำกัดcontinuation](PSEUDO_LABELING_MASTER_PLAN_REVIEW_TH.md#helper-training-complete)
 
 > **12 พฤศจิกายน 2026 — SAM_PAUSED_IN_MEMORY / SOLIDER_RGB_TRAINING** ผู้ใช้ขอดูBGR/RGBก่อน พักSAMworker/controllerด้วยSIGSTOPและเก็บoptimizer/RNGในprocessเดิม เปิดRGB25epochsในtmux helper_solider_rgb ยืนยันtrainingจริง มีwatchdogและautomaticresumeเมื่อจบ/error อ่าน [สถานะและคำสั่งดูสด](PSEUDO_LABELING_MASTER_PLAN_REVIEW_TH.md#solider-rgb-interleave)

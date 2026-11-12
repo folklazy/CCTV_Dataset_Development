@@ -1,3 +1,5 @@
+> **12 พฤศจิกายน 2026 — เติม zero-shot และ fine-tune B5** เปิดคิว4pretrainedhelpers77cropsต่อโมเดลแล้วต่อB5FT25epochs มีตาราง/ภาพเปรียบเทียบอัตโนมัติ อ่าน [สถานะและคำสั่งดูสด](reports/PSEUDO_LABELING_MASTER_PLAN_REVIEW_TH.md#b5-and-zero-shot-completion)
+
 > **12 พฤศจิกายน 2026 — ฝึก helper จบแล้ว** มีB4/SOLIDERBGR/SOLIDERRGB/SAM3.1ครบ77validationcropsต่อconfiguration ตรวจsavedmaskscoringแล้ว อ่าน [ผลและประวัติSAMcontinuation](reports/PSEUDO_LABELING_MASTER_PLAN_REVIEW_TH.md#helper-training-complete)
 
 > **12 พฤศจิกายน 2026 — พัก SAM3.1 เพื่อทดลอง SOLIDER RGB ก่อน** เปิดRGBtrainingพร้อมระบบresumeSAMอัตโนมัติ เก็บสถานะฝึกเดิมไว้ในหน่วยความจำ อ่าน [สถานะและวิธีดูสด](reports/PSEUDO_LABELING_MASTER_PLAN_REVIEW_TH.md#solider-rgb-interleave)
