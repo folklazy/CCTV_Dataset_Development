@@ -1,4 +1,4 @@
-> **13 พฤศจิกายน 2026 — SAM31_FRESH15 PREPARING** ผู้ใช้อนุญาตฝึกใหม่15epochsจากwarmstartเดิม CPU24testsและcache bindingsผ่าน เพิ่มfull-state epoch checkpoints อ่าน [สูตรและวิธีติดตาม](PSEUDO_LABELING_MASTER_PLAN_REVIEW_TH.md#sam31-fresh15) ผลรอบก่อนด้านล่างยังเก็บครบ
+> **13 พฤศจิกายน 2026 เวลา00:30ไทย — SAM31_FRESH15 TRAINING** ยืนยันepoch1/15ผ่าน20/313cropsบนT4แล้ว Controller619585/worker619846อยู่tmux helper_sam31_fresh15 มีLASTfullstateตั้งต้นอ่านกลับได้และbaselineconfusionตรงเดิม อ่าน [สูตรและวิธีดูสถานะ](PSEUDO_LABELING_MASTER_PLAN_REVIEW_TH.md#sam31-fresh15) ผลhelpersเก่ายังเก็บครบ
 
 > **12 พฤศจิกายน 2026 — ZERO4 + B5_FT COMPLETE** ทั้งสี่ pretrained zero-shot configurations และผล fine-tune ห้า configurations มีผลครบตัวละ 77 validation crops B5 ฝึกครบ 25 epochs, best epoch 13 ตรวจผลปิดรอบเมื่อ 23:45 น. เวลาไทย อ่าน [ผลครบและข้อจำกัด](PSEUDO_LABELING_MASTER_PLAN_REVIEW_TH.md#b5-and-zero-shot-completion) และ [IoU / Precision / Recall / F1 รายคลาส](HELPER_COMPARISON.csv)
 

@@ -1,4 +1,4 @@
-> **13 พฤศจิกายน 2026 — SAM3.1 รอบใหม่กำลังเตรียม** เริ่ม15epochsจากwarmstartเดิม พร้อมfull-state checkpointและการกู้optimizer/scheduler/RNG อ่าน [สูตรและวิธีดูสถานะ](reports/PSEUDO_LABELING_MASTER_PLAN_REVIEW_TH.md#sam31-fresh15) ผลเดิมและhelpersอื่นยังเก็บแยกครบ
+> **13 พฤศจิกายน 2026 — SAM3.1 รอบใหม่เริ่มฝึกแล้ว** ตรวจเวลา00:30ไทย epoch1/15ผ่าน20/313cropsบนT4 ในtmux helper_sam31_fresh15 มีfull-state checkpointตั้งต้นแล้ว อ่าน [สูตรและวิธีติดตาม](reports/PSEUDO_LABELING_MASTER_PLAN_REVIEW_TH.md#sam31-fresh15) ผลเดิมและhelpersอื่นเก็บแยกครบ
 
 > **12 พฤศจิกายน 2026 — ZERO4 + B5_FT COMPLETE** Zero-shot สี่โมเดลและผลหลังฝึกห้า configurations มี validation ครบตัวละ 77 crops ตรวจ saved-mask scoring และแหล่งผลแล้ว B5 ฝึกครบ 25 epochs โดย best อยู่ epoch 13 อ่าน [ตารางคะแนนและภาพเปรียบเทียบ](reports/PSEUDO_LABELING_MASTER_PLAN_REVIEW_TH.md#b5-and-zero-shot-completion) พร้อม [ตัวเลขเต็มรายคลาส](reports/HELPER_COMPARISON.csv)
 

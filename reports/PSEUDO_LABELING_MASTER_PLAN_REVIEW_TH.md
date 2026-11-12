@@ -1,7 +1,11 @@
 <a id="sam31-fresh15"></a>
 ## SAM3.1 รอบใหม่จาก warmstart เดิม — 13 พฤศจิกายน 2026
 
-สถานะ **PREPARING / CPU_ACCEPTANCE_PASS** ผู้ใช้อนุญาตให้เริ่มรอบใหม่หลังตรวจพบว่าผลเดิมมี warm restart รอบนี้คงสูตรฝึก 15 epochs เพื่อดูผลของการฝึกต่อเนื่องจากจุดตั้งต้นเดียวกัน เก็บผลเดิม 68.29% และผลของ helpers ตัวอื่นเป็น configuration อ้างอิงแยกกัน
+สถานะ **TRAINING / LAUNCH_VERIFIED** ผู้ใช้อนุญาตให้เริ่มรอบใหม่หลังตรวจพบว่าผลเดิมมี warm restart รอบนี้คงสูตรฝึก 15 epochs เพื่อดูผลของการฝึกต่อเนื่องจากจุดตั้งต้นเดียวกัน เก็บผลเดิม 68.29% และผลของ helpers ตัวอื่นเป็น configuration อ้างอิงแยกกัน
+
+ตรวจเมื่อ `2026-11-13T00:30:06.201571+07:00` งานอยู่ epoch1/15 ผ่าน20/313 training crops แล้ว ใช้ tmux `helper_sam31_fresh15` controllerPID619585/workerPID619846 แยก session จาก Codex ผ่าน tmux serverที่มีparentPID1 จึงทำงานต่อได้หลังจบturn Launchcommit `471b577c1406596de49ad653f18e30f31a81b908`
+
+ตรวจ `LAST.pt` ตั้งต้นอ่านกลับได้397decoderkeys พร้อมoptimizerเริ่มต้น, schedulerตำแหน่ง0 และRNG Python/NumPy/Torch/CUDAครบ RuntimebindingsตรงCPUpreflight และinitial confusionบน77validationcropsตรงbaselineจากwarmstartเดิมทุกcell การตรวจนี้ยืนยันสูตรและการเริ่มงาน ส่วนfullstateของoptimizerที่อัปเดตแล้วจะถูกบันทึกเมื่อจบepochแรกตามนโยบาย
 
 ### สูตรที่เลือกก่อนเปิดงาน
 
@@ -44,7 +48,7 @@ cd ../CCTV_Dataset_Development.local/runs/helper-sam31-fresh15-20261112T171624Z
 python3 source_frozen/helper_training_progress.py --watch
 ```
 
-ดู log ด้วย `tail -f sam31.log` หรือ `tmux attach -t helper_sam31_fresh15` การกด Ctrl+C ใน progress viewer หยุดเฉพาะตัวดูสถานะ เมื่อจบตรวจ `sam31/STATUS.json`, `sam31/SAVED_MASK_AUDIT.json` และ `REPORT_STATUS.json` ก่อนใช้รายงาน
+ดู log ด้วย `tail -f sam31.log` หรือ `tmux attach -t helper_sam31_fresh15` ซึ่งเปิดหน้าต่าง `progress` ที่แสดงสถานะสดให้แล้ว หน้าต่าง `runner` แยกไว้สำหรับตัวควบคุม การกด Ctrl+C ใน progress viewer หยุดเฉพาะตัวดูสถานะ เมื่อจบตรวจ `sam31/STATUS.json`, `sam31/SAVED_MASK_AUDIT.json` และ `REPORT_STATUS.json` ก่อนใช้รายงาน
 
 | ไฟล์ | หน้าที่ |
 | --- | --- |

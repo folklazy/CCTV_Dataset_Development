@@ -435,3 +435,11 @@ Next/blockers:เปิดผ่านSSH tunnelแล้วกดบันท�
 - Verification CPU24testsผ่าน รวมweights/RNG exactหลังrestoreและnormal-entry interruption/resume พบlockretentionในCPUfixtureที่เรียกmainซ้ำในprocessเดียว แก้finallycloseและtestผ่าน ตรวจcache390metadataและparentmodel/data/producerbindingsตรง ไม่มีGPUforwardในreadiness ใช้envเดิมTorch2.14+cu130/T4
 - Resources 10GiBadmission/50GiBdisk/80GiBoutput/6h job/noautoretryตามเดิม Parent41GiBcacheอ่านอย่างเดียว ไม่copyหรือfullrehashทั้งชุด เก็บpreparationcorrection/oldsource snapshotก่อนfinalfreeze ข้อมูลผลเดิมไม่ถูกเขียนทับ
 - Outputs runhelper-sam31-fresh15-20261112T171624Z พร้อมsingle-jobmanifest/wrapper/automaticfreshsavedmaskaudit+report; status/docs/master updated Next commitfreeze, detachedlaunch, verify actual model loading/fullcheckpoint and optimizer progress before ending turn
+
+
+## Work log — 2026-11-13T00:30:06.201571+07:00 (Asia/Bangkok)
+
+- Work ID SAM31-FRESH15-20261113-02. Detachedlaunchจริงrunhelper-sam31-fresh15-20261112T171624Z/launchcommit471b577 tmuxhelper_sam31_fresh15/controller619585/worker619846 ยืนยันprocessparentchainไปtmuxserver556896ที่parentPID1 แยกจากCodexsession
+- Verification workerTRAININGepoch1/15ผ่าน20/313crops actualCUDA/T4 มีinitial77cropconfusionตรงoriginalwarmstartbaselineทุกcell Runtimeinput/model/source/environment/cachebindingsตรงfinalCPUpreflight LASTinitialepoch0readback397keysพร้อมAdamWinitialized/scheduler0/RNGครบและSHAตรง ยังไม่มีcompletedepochใหม่ในเวลาตรวจ fullupdatedoptimizerstateจะcommitเมื่อจบepoch1
+- Outputs LAUNCH/LAUNCH_VERIFIED/binding/contract/recovery/attemptrecordsในprivate run ต่อด้วยautomaticnewmask-audit/reportเมื่อครบ คงGPUworkerตัวเดียว ไม่มีintermediate-rankingหรือปรับsettingsจากคะแนน Modelsอื่นใช้savedresultsเท่านั้น
+- Next detachedworkerฝึกจนครบ15epochsแล้วหยุด REPORT_STATUSบอกผลpost-trainingaudit/report หากเกิดerrorให้เก็บLAST/partial/failuresและใช้controlledreconciliationก่อนเปิดงานต่อ
