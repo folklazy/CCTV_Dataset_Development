@@ -1,7 +1,7 @@
 <a id="b5-and-zero-shot-completion"></a>
 ## เพิ่ม B5 fine-tune และเติม zero-shot สี่ตัว — 12 พฤศจิกายน 2026
 
-สถานะ **FIVE_JOB_BATCH_RUNNING / ZERO3_COMPLETE / SAM_ZERO_ACTIVE / B5_FT_QUEUED** ตีความคำว่า5bตามบริบทเป็นSegFormer-B5ที่ผู้ใช้เสนอไว้ก่อนหน้า native84,607,186parameters ใช้checkpoint18คลาสที่มีอยู่แล้ว ผู้ใช้อนุญาตให้ทำFTและzero-shotส่วนที่ยังขาดให้ครบ
+สถานะ **ZERO4_COMPLETE / B5_FT_TRAINING** ตีความคำว่า5bตามบริบทเป็นSegFormer-B5ที่ผู้ใช้เสนอไว้ก่อนหน้า native84,607,186parameters ใช้checkpoint18คลาสที่มีอยู่แล้ว ผู้ใช้อนุญาตให้ทำFTและzero-shotส่วนที่ยังขาดให้ครบ
 
 | คิว | งาน | Population / recipe |
 | --- | --- | --- |
@@ -23,7 +23,7 @@ CPUfixtures18testsผ่าน ครอบคลุมnativeIDmapping/OTHER FP-
 
 หลังจบสร้างREPORT_TH.md/COMPARISON.csv/RESULT_INDEXและgalleryจากสามvalidationcropsแรกชุดเดิมในprivate fresh run รวมผลFTเดิมที่ตรวจผ่านแล้วของB4/SOLIDERBGR/SOLIDERRGB/SAMwarmrestartโดยอ่านsavedresults NativezeroและFTบางตัวมีadapterต่างกัน รายงานแยกstageและไม่อ้างว่าผลต่างเกิดจากtrainingอย่างเดียว ตารางhighest-per-targetใช้fullprecisionเฉพาะเมื่อครบทุกentry ยังต้องดูภาระการแก้จริงเพื่อเลือกhelperสุดท้าย
 
-ตรวจlaunchเมื่อ `2026-11-12T23:04:50.073169+07:00` Run `helper-zero4-b5ft-20261112T155416Z` tmux `helper_zero4_b5ft` controllerPID551837 launchcommit`e5d51692e2d56d0bf41547ce4e3da4975ae2d4ab` Zero-shotB4/B5/SOLIDERครบ77cropsและindependentsavedmaskauditแล้ว SAMzeroกำลังทำงาน B5FTยังอยู่คิวถัดไป สถานะเป็นsnapshotเวลาตรวจ
+ตรวจlaunchเมื่อ `2026-11-12T23:04:50.073169+07:00` Run `helper-zero4-b5ft-20261112T155416Z` tmux `helper_zero4_b5ft` controllerPID551837 launchcommit`e5d51692e2d56d0bf41547ce4e3da4975ae2d4ab` Zero-shotทั้งสี่ตัวครบ77cropsต่อโมเดลและindependentsavedmaskauditผ่านทุกตัว ตรวจGTsupportตรงกัน B5FTเริ่มฝึกจริงแล้ว ยืนยันepoch1ผ่านอย่างน้อย20/157batches สถานะเป็นsnapshotเวลาตรวจ
 
 ตรวจB4packetแรก nativeinteger/commonmask576×384และprojection/hashตรง ตรวจSAMpacketแรก nativecandidates5masks/score/boxesfinite พร้อมcomposedstrengthและcategoricalmaskตรงทุกpixel มีmetadata/ledgercommitจริง
 

@@ -410,3 +410,10 @@ Next/blockers:เปิดผ่านSSH tunnelแล้วกดบันท�
 - Scope4zerohelpers+FTB5เท่านั้น nativeB5weights84.607M params context5bตีความตามB5ที่คุย ไม่ดาวน์โหลด/ติดตั้งเพิ่ม ไม่rerunFTเก่า ไม่เปิดCLASP/CPI/Sapiens2 งานrawdata/artifactsอยู่private
 - Outputs launchverified/immutableprotocol/source+modelbindings/metadata/ledgers; existingreview/status/README/AGENTS/log Routinepublic-safeprotocolJSONถูกforce-addเฉพาะไฟล์กฎfixedlabelsเพื่อversionโดยยังคงignorelocalconfigs
 - Next detachedcontrollerจบSAMzeroแล้วFTB5 เมื่อจบสร้างreportCSVgalleryอัตโนมัติ ตรวจruntimeต่อเฉพาะกรณีfailure ไม่วิเคราะห์rankเพื่อเปลี่ยนmapping/settingsกลางrun
+
+
+## Work log — 2026-11-12T23:07:16.918495+07:00 (Asia/Bangkok)
+
+- Work ID HELPER-ZERO4-CLOSE-B5-START-20261112-01. ระหว่างปิดlaunchพบทั้ง4zerojobs COMPLETE77/77แล้ว ตรวจAUDITsavedmaskPASS/protocol/weightsrole/GTsupportเหมือนกันทุกmodel เก็บZERO_SHOT_COMPLETION_INDEX ไม่rerun/ไม่วิเคราะห์rankกลางbatch
+- B5FTเริ่มจริง epoch1ผ่าน20batchesและมีoptimizerprogress มีB5_FIRST_TRAINING_VERIFIED การแสดงSAMactive/B5queuedในlaunchdocก่อนหน้าเป็นsnapshotระหว่างคิวเปลี่ยน อัปเดตหน้าสถานะให้ตรงactualrecords
+- Outputs existingreview/status/AGENTS/log และprivateclosureindex PipelineยังรันB5ต่อ25epochs แล้วwrapperรวมตาราง/P-R-F1/support/ภาพfixedsamplesเมื่อครบ ไม่มีmodel/source/mapping/settings changesจากpartialresults
