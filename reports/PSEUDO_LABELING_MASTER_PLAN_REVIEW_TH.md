@@ -1,3 +1,58 @@
+<a id="training-review-20261112"></a>
+## ตรวจคู่มือและงาน helper ที่เริ่มแล้ว — 12 พฤศจิกายน 2026
+
+สถานะ **REVIEW_COMPLETE / TRAINING_ACTIVE / HELPER_SELECTION_METRICS_REQUIRE_REVISION** ตรวจcode/config/manifest/log/checkpointsจริงร่วมกับคำยืนยันผู้ใช้ว่าSeed300ตรวจแก้และรับรองครบแล้ว เก็บhuman confirmationผูกSHA256ของ300JSONในprivate evidence
+
+### งานที่ทำแล้วและนำกลับมาใช้ได้
+
+| รายการ | ผลตรวจ |
+| --- | --- |
+| Annotation | 300ไฟล์ มีbbox390/ignore95 ภาพ31ไฟล์ไม่มีbbox แยกเป็น13ignore-onlyและ18ไม่มีshapes |
+| Train | 313personcrops จาก213ภาพในroleHELPER_TRAIN_INITIAL |
+| Validation | 77personcrops จาก56ภาพในroleHELPER_VALIDATION_FIXED |
+| Isolation | IDs/timegroupsข้ามtrain/valเท่ากับ0 ไม่มีheldoutเข้าtrain/val ขนาดbboxของcropที่ใช้ต่ำสุดtrain52/val51px |
+| Freshness | สร้างexpectedmaskจากannotationปัจจุบันเพื่อเทียบsavedmask390cropsได้ตรงทุกพิกเซล source image bytesที่ใช้ตรงintake เก็บhashesและผลตรวจprivate |
+| SegFormer-B4 | train25epochsจบ เวลา13.20นาทีตามlog bestepoch21 mIoU4จากglobalconfusion=64.5416207143% มีcheckpointและhistory |
+| SAM3.1 | process4111696บนT4 ตั้ง15epochs lr1e-4 trainable32,745,270/frozen820,811,264 Logsnapshotที่ตรวจถึงepoch6/15 มีvalmetric49.75%ตามrun |
+| Triage | รันCPUexpectedfixtures9กรณีผ่าน โค้ด/testsเป็นงานworkingtreeที่ยังไม่commit |
+
+คำยืนยันhumanGTและการตรวจfreshnessตอบคนละส่วน ผู้ใช้รับรองsemanticGT ส่วนreplayเช็กว่าderivedtrainingmasksตรงannotationรุ่นที่ตรวจ การอ่านpreviewจริงสองคู่ช่วยตรวจตัวอย่างgeometryและความชัดในภาพ ยังไม่ขยายเป็นการรับรองpixelboundaryของทั้งชุดโดยผู้ตรวจคนที่สอง
+
+### ประเด็นที่ต้องแก้ก่อนนำผลมาเลือก helper
+
+| ความสำคัญ | หลักฐานที่พบ | ผลกระทบและงานที่ควรทำ |
+| --- | --- | --- |
+| MUST_FIXก่อนเทียบmetric | SAM3.1sourceปัจจุบันevaluate_sam31เฉลี่ยIoUรายcropและให้empty/empty=1 SegFormerใช้globalconfusionIoU | กำหนดcommonvaliddomain/aggregation/absentclassและoutputcontractก่อนประเมินเทียบ checkpointด้วยmetricเดียว |
+| MUST_FIXในtrainingrevisionถัดไป | compute_part_lossให้loss0เมื่อtargetว่าง และpred_scoresไม่ได้ถูกใช้ในloss มีCPUfixtureยืนยัน | เพิ่มnegative/unmatched-query/score supervisionให้สัมพันธ์กับเส้นทางเลือกqueryด้วยscoreตอนinfer วัดFPและการตรวจส่วนที่ไม่มีด้วย |
+| MUST_FIXprovenanceก่อนอ้างrunreproduction | SAM3.1processเริ่ม05:06:41UTC แต่sourcemtime05:09:24UTC มีเพียงไฟล์ปัจจุบันและlog | เก็บsource snapshot/hash/config/environment/inputbindingsตอนlaunchในfreshattempt ข้อค้นพบloss/metricที่ตรวจเป็นของsourceบนดิสก์ ยังผูกกับruntimecodeแน่ชัดไม่ได้ |
+| MUST_FIXcacheidentityก่อนใช้cacheข้ามrevision | cache_featuresข้ามไฟล์ที่มีsample_id.ptอยู่แล้ว cachemetadataไม่มีimage/checkpoint/preprocesshash | เพิ่มfingerprintsและreconciliationก่อนreuse cachedfeatures ความเป็นfreshของsavedGTmaskยังไม่ยืนยันidentityของfeaturecache |
+| MUST_FIXlauncherก่อนเปิดattemptถัดไป | train_helper.shมีtmuxkill-sessionแล้วnew-session และteeไปlogชื่อเดิม trainingเขียนbestcheckpointทับpathเดิม | ให้คำสั่งstartตรวจsessionที่มีอยู่และใช้freshattempt/log/checkpoints เก็บhistoryและbindingsของattemptปัจจุบัน |
+| CONTROL_AND_REPORT | 31ภาพไม่เกิดpersoncrop จึงvalidationที่เกิดcropมาจาก56/60ภาพ ทั้งสองhelperใช้77cropsเดียวกัน | แสดงจำนวนภาพทั้งหมด/ภาพที่มีcrop/ignore-only/negativeและcropdenominatorชัด คะแนนอธิบายhelpervalidationบนGTpersoncrops |
+| CONTROL_AND_REPORT | baselineFASHNในeval_helper_v1กำหนดDress4→Upper และclassifierinitializationเฉลี่ยtop/dress | ประกาศmappingของbaselineและแยกinitializationจากนิยามGT ปิดขอบDress/cross-zoneตามกฎโครงการก่อนอ้างcommonbenchmark |
+| CONTROL_AND_REPORT | seedmanagerverifyปรับlabel/group_idด้วยgeometry และใช้49.5pxในQA ขณะที่เกณฑ์GTคือ50px | เก็บnormalizationdiff/receiptsและทำcutoffให้ตรงdeclaredGTpolicy สำหรับcroppingชุดที่ตรวจทุกbboxที่ใช้≥51px |
+| CONTROL_AND_REPORT | materialize_pilot24_xanyใช้morphology/largestcontour/approximationกับmaskก่อนส่งeditor | เก็บrawและยืนยันlossless/editedGTreadbackตามหน้าที่ โครงสร้างQAในmanagerตรวจschema เจ้าของsemanticอ้างhumanreview |
+
+### ตรวจสูตรและขอบเขตตัวเลข
+
+บนval77crops มีGTว่างสำหรับHair16, Face40, Upper4, Lower9 crops SourceSAM3.1ปัจจุบันให้1เมื่อทั้งGT/predว่าง จึงมีน้ำหนักของcropที่ไม่มีคลาสนั้นอยู่ในค่าเฉลี่ย ตัวอย่างอิสระ2crops ที่cropแรกพลาดtargetทั้งหมดและcropสองว่างถูกต้อง จะได้sample-mean0.5 ขณะที่globalclassIoU0 ความต่างของ49.75%ในlogกับ64.54%จึงใช้จัดอันดับตรงกันไม่ได้จากสูตรที่ตรวจ
+
+CPUfixtureของlossที่อ่านจากsourceปัจจุบัน ทำนายpositiveบนtargetว่างได้loss0และไม่มีmask/score gradient ส่วนtargetที่มีGTให้masklossแต่ไม่มีgradientเข้าตัวแปรpred_scores นี่เป็นหลักฐานobjectiveของsourceที่ตรวจ เก็บresultsและsourcehashesprivate ข้อจำกัดsource-at-launchยังคงตามตาราง
+
+FASHNconfigจริงมี18classes sourceindicesface1/hair2/top3/dress4/skirt5/pants6ตรงโค้ดที่อ่าน การเฉลี่ยclassifierweightsเป็นการinitializationซึ่งต้องประเมินผลจากvalidationจริง ข้อความในคู่มือhelperที่รับประกันว่าเริ่มแล้วเก่งทันทีหรือแก้เร็วขึ้นควรแก้เป็นสิ่งที่วัดและรายงาน
+
+### ลำดับทำต่อ
+
+1. จัดเก็บattempt/source/input/checkpoint/cachebindingsของสิ่งที่มีให้ตรวจย้อนกลับ และประกาศความไม่แน่ชัดของruntimecodeรอบนี้
+2. ทำcommonhelpervalidationกับsavedcheckpointsตามrouteและvaliddomainเดียวกันเมื่อถึงรอบประเมิน ตรวจpositive/absent/ignore/overlapด้วยexpectedcases
+3. แก้loss/cache/launcherในrevisionใหม่ พร้อมfreshattemptและbudgetที่กำหนดก่อนฝึก
+4. เลือกhelperด้วยvalidation60ภาพตามกติกาและรายงาน77crop/56imagepopulationจริง แล้วจึงขยายBoost550ตามแผน
+
+ปรับคู่มือหลักเฉพาะสถานะล่าสุดและcanonicalignoreในข้อ4.1 SHA256 `d400c1265c1802877e58a9aaec2051ee19ef963f359752f4990669faf1259c0c` เก็บsnapshotก่อนแก้ คำสั่งและหลักฐานดิบอยู่private training-review run งานรอบนี้ตรวจCPU/metadata/source/logs
+
+---
+
+ประวัติreviewก่อนหน้าด้านล่าง
+
 <a id="person-mask-workload"></a>
 ## ภาระตรวจรับ person mask — 10 พฤศจิกายน2026
 

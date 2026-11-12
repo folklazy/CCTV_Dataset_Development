@@ -1,3 +1,6 @@
+> **12 พฤศจิกายน2026 — REVIEW_COMPLETE / TRAINING_ACTIVE / METRIC_REVISION_REQUIRED**
+> ผู้ใช้รับรองSeed300แล้ว ตรวจ313train/77valcropsจาก213/56ภาพ roles/timegroupsถูกต้อง savedmasks390ตรงannotationปัจจุบัน SegFormer25epochsจบ SAM3.1กำลังtrainบนT4 อ่าน [สถานะจริงและประเด็นก่อนเลือกhelper](PSEUDO_LABELING_MASTER_PLAN_REVIEW_TH.md#training-review-20261112) source-at-launch/cache/loss/metric/launcherมีงานที่ต้องปิดตามรายงาน สถานะก่อนหน้าด้านล่างเป็นประวัติ
+
 > **10 พฤศจิกายน2026 — ยืนยันภาระGTตามscopeเดิม** ผู้ตรวจแก้bbox/personID/4partsและสีเมื่อประเมินได้ Person maskเป็นhelperที่เก็บอัตโนมัติ ค่าoutside-personเป็นwarning การรับGTไม่เพิ่มงานเกลาขอบคนทั้งตัว อ่าน [รายละเอียด](PSEUDO_LABELING_MASTER_PLAN_REVIEW_TH.md#person-mask-workload) สถานะก่อนหน้าด้านล่างเป็นประวัติ
 
 > **ข้อ4.1 Auto-Triageผ่านการreviewข้อกำหนด — 10 พฤศจิกายน2026**

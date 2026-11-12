@@ -260,3 +260,15 @@ Next/blockers:เปิดผ่านSSH tunnelแล้วกดบันท�
 - Outputs: masterSHAe66ee428e7d32aa7c53275778bb6bde8f02c59b5b76c8364caa1915308f090caพร้อมbeforebackup, publicreview/status/logเดิม เก็บuntrackedtriageimplementation/testsและงานค้างอื่นครบ
 - Verification: ตรวจmasterนอก4.1ตรงbefore, guideแก้เฉพาะข้อความที่เกี่ยวข้อง, hashes/links/stagedprivacy ไม่มีmodelcallsหรือcodechanges
 - Next: implementation/editorreadbackต้องยึดhumanreceiptสำหรับbbox/4partsและคงhelperwarningแยกจากGTacceptance ไม่เพิ่มงานpersonmaskให้ผู้ใช้
+
+## TRAINING-REVIEW-20261112 / REVIEW_COMPLETE_TRAINING_ACTIVE
+
+เวลา 2026-11-12T13:57:52.275542+07:00 (Asia/Bangkok). ผู้ใช้ขอตรวจคู่มือใหม่และงานที่เริ่มฝึก จึงตรวจboundedsource/config/metadata/process/log/checkpointsและpreviewจริงสองคู่ ผู้ใช้ตอบโดยตรงว่าSeed300ตรวจแก้และรับรองครบแล้ว
+
+- Inputs: HEADa8cf640, masterล่าสุดและtraininghelperprivatecode/logs/MANIFEST/sourceannotations, balancedmembershipเดิมและsourceintakebindings เก็บsnapshot/hashesก่อนแก้
+- Actual: SAM3.1PID4111696บนT415epochs logที่auditถึง6/15 trainable32,745,270 frozen820,811,264 SegFormer25epochsจบbest21/globalmIoU4=0.6454162071434428 RuntimeSAMsourcefilemtimeหลังprocessstartจึงไม่อ้างcurrentondiskhashเป็นlaunchbinding
+- GT/source: directuserconfirmationผูก300JSONhashes; actual313train/77valcropsจาก213/56ภาพ อีก31เป็น13ignore-only+18empty; IDs/timegroupsข้ามsplit0 rolesผิด0 actualusedbboxต่ำสุด52/51px Savedmask390ตรงcurrentannotationทุกpixel sourceimagecopiesตรงintakebytes
+- Findings: currentSAMsourceใช้sample-IoUempty/empty1 ต่างSegglobalconfusion, absenttargetsไม่ส่งmasklossและpred_scoresunused, cacheidเป็นsamplefilename, launcherkill-session/logoverwrite และruntimeprovenanceขาดแยกsource-at-launch พบหลายcode/readinessstatusในmasterยังเป็นhistory
+- Verification: CPUlossfixtureยืนยันabsentloss0/scoregradientNone; val77GTabsentHair16Face40Upper4Lower9และอิสระcounterexamplesample0.5/global0 รันexistingtriageCPU9casesผ่าน ไม่มีmodelinferenceหรือtrainingprocessใหม่
+- Outputs: อัปเดตexistingreview/status/masterlatestsectionและcanonicalignore4.1 ส่วนข้อมูลจริง/snapshots/hashes/confirmation/freshnessauditprivate Masterหลังแก้SHA256 d400c1265c1802877e58a9aaec2051ee19ef963f359752f4990669faf1259c0c
+- Next: commonhelpervalidation/provenance/cache/loss/launcherrevisionsก่อนเลือกhelperและBoost550 รักษาactiveattempt/outputs/sourceและworkingchangesอื่นไว้ Gitเก็บcommitidentity ตรวจstaged/push/remoteตามworkflow

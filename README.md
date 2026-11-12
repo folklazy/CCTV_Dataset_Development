@@ -1,3 +1,5 @@
+> **ตรวจงาน helper ล่าสุด — 12 พฤศจิกายน2026** ผู้ใช้รับรองSeed300แล้ว ตรวจsplitและsavedmasks390cropsตรงannotationจริง SegFormer25epochsจบ SAM3.1กำลังtrainบนT4 อ่าน [สถานะและข้อแก้ก่อนเลือกhelper](reports/PSEUDO_LABELING_MASTER_PLAN_REVIEW_TH.md#training-review-20261112) ต้องใช้validationสูตรเดียวกันและผูกsource-at-launch/cache/attemptให้ตรวจย้อนกลับได้ สถานะก่อนหน้าด้านล่างเป็นประวัติ
+
 > **ปรับสมดุลและแบ่ง helper แล้ว — 10 พฤศจิกายน2026** Development1,760/Test440 โดยSiteที่แบ่งได้มีTest19.23–20.14% รายชื่อtrain240/validation60/Boost550/reserve910ครบและpilot24อยู่train อ่าน [ตารางรายSiteและผลตรวจ](reports/PSEUDO_LABELING_MASTER_PLAN_REVIEW_TH.md#balanced-split-complete) รายชื่อจริงอยู่private รอevent-context/GT/toolreadinessตามขั้น สถานะก่อนหน้าด้านล่างเป็นประวัติ
 
 > **แบ่งข้อมูลก่อนannotationแล้ว — 10 พฤศจิกายน 2026:** Development1,760ภาพ มีseed300ซึ่งรวมpilot24 และheldouttestcandidate440ภาพ อ่าน [ผลแบ่งและการตรวจรับ](reports/PSEUDO_LABELING_MASTER_PLAN_REVIEW_TH.md#time-block-split) รายชื่อจริงเก็บprivateพร้อมhash; รอตรวจบริบทเหตุการณ์/coverage/เครื่องมือก่อนfinalfreeze สถานะก่อนหน้าด้านล่างเป็นประวัติ
