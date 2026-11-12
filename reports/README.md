@@ -1,4 +1,6 @@
-> **12 พฤศจิกายน 2026 — ZERO4 + B5_FT กำลังรัน** Zero-shotทั้งสี่ตัวครบ77cropsต่อโมเดลแล้ว B5FT25epochsกำลังฝึกจริงในtmux helper_zero4_b5ft เก็บตารางและgalleryเมื่อจบ อ่าน [สถานะและวิธีดูสด](PSEUDO_LABELING_MASTER_PLAN_REVIEW_TH.md#b5-and-zero-shot-completion)
+> **12 พฤศจิกายน 2026 — ZERO4 + B5_FT COMPLETE** ทั้งสี่ pretrained zero-shot configurations และผล fine-tune ห้า configurations มีผลครบตัวละ 77 validation crops B5 ฝึกครบ 25 epochs, best epoch 13 ตรวจผลปิดรอบเมื่อ 23:45 น. เวลาไทย อ่าน [ผลครบและข้อจำกัด](PSEUDO_LABELING_MASTER_PLAN_REVIEW_TH.md#b5-and-zero-shot-completion) และ [IoU / Precision / Recall / F1 รายคลาส](HELPER_COMPARISON.csv)
+
+รายการถัดไปเป็นประวัติระหว่างดำเนินงาน สถานะล่าสุดอยู่ในผลปิดรอบข้างต้น
 
 > **12 พฤศจิกายน 2026 — HELPER_TRAINING_COMPLETE** B4/SOLIDERBGR/SOLIDERRGB/SAM3.1ครบ77validationcropsและindependentmaskscoringผ่าน ParentSTATUSค้างได้รับการreconcileแล้ว SAMช่วง6–15เป็นwarmrestartจากbestcheckpointพร้อมoptimizerใหม่ อ่าน [ผลครบและข้อจำกัดcontinuation](PSEUDO_LABELING_MASTER_PLAN_REVIEW_TH.md#helper-training-complete)
 

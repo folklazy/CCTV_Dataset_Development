@@ -417,3 +417,12 @@ Next/blockers:เปิดผ่านSSH tunnelแล้วกดบันท�
 - Work ID HELPER-ZERO4-CLOSE-B5-START-20261112-01. ระหว่างปิดlaunchพบทั้ง4zerojobs COMPLETE77/77แล้ว ตรวจAUDITsavedmaskPASS/protocol/weightsrole/GTsupportเหมือนกันทุกmodel เก็บZERO_SHOT_COMPLETION_INDEX ไม่rerun/ไม่วิเคราะห์rankกลางbatch
 - B5FTเริ่มจริง epoch1ผ่าน20batchesและมีoptimizerprogress มีB5_FIRST_TRAINING_VERIFIED การแสดงSAMactive/B5queuedในlaunchdocก่อนหน้าเป็นsnapshotระหว่างคิวเปลี่ยน อัปเดตหน้าสถานะให้ตรงactualrecords
 - Outputs existingreview/status/AGENTS/log และprivateclosureindex PipelineยังรันB5ต่อ25epochs แล้วwrapperรวมตาราง/P-R-F1/support/ภาพfixedsamplesเมื่อครบ ไม่มีmodel/source/mapping/settings changesจากpartialresults
+
+
+## Work log — 2026-11-12T23:48:16.870783+07:00 (Asia/Bangkok)
+
+- Work ID HELPER-ZERO4-B5-FINAL-20261112-01. ตรวจ process/GPU และ canonical records พบ batch จบเมื่อ 23:39:03 น. เวลาไทย ไม่มี training worker เหลือ Zero-shot B4/B5/SOLIDER/SAM3.1 ครบ 77/77 และ B5 fine-tune ครบ 25 epochs, best epoch 13
+- Verification FINAL_COMPLETION_AUDIT PASS. คำนวณ B5 confusion จาก saved masks ครบ exact77 IDs ได้ตรง metrics ทุก cell ตรวจ labels/shape/checkpoint SHA, history25, optimizer3925 updates, AMP skips0 ตรวจ arithmetic ของทั้ง9 configurations, canonical source hashes, CSV full precision, GT support และ data hashes780ไฟล์ ใช้ audit ที่ยังตรงของ zero4/FTเก่า4ต่อ ตรวจ gallery input/output hashes และเปิดดูสองแผง geometry/labels
+- Results pretrained SOLIDER mIoU4 57.9563885602%. หลังฝึก SAM3.1 68.2916955552%, SOLIDER RGB 67.7016809407%, B5 67.1627096838%, SOLIDER BGR 65.5541324044%, B4 65.2874595303%. SAM มี warm restart และ custom adapter ตามประวัติ ยังไม่มี human correction-time measurements หรือ independent heldout estimate
+- Outputs อัปเดตรายงานเดิม, reports/HELPER_COMPARISON.csv พร้อม metrics/binding hashes, README, reports status, AGENTS และ private master ที่ backup ก่อนแก้ เก็บภาพ/weights/raw results private ใช้ CPU ปิดรอบ ไม่มี model calls เพิ่ม ไม่มี install/download และไม่มีการเปลี่ยน frozen protocol
+- Next ใช้ selected checkpoint/configuration ตรวจร่าง annotation และภาระแก้ตามเป้าหมาย helper ก่อนขยายงาน ชุดนี้ไม่มี ensemble draft หรือผลทั้ง2200ภาพ

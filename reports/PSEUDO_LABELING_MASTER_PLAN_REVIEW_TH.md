@@ -1,40 +1,89 @@
 <a id="b5-and-zero-shot-completion"></a>
-## เพิ่ม B5 fine-tune และเติม zero-shot สี่ตัว — 12 พฤศจิกายน 2026
+## ผลครบทั้ง zero-shot สี่โมเดลและ B5 fine-tune — 12 พฤศจิกายน 2026
 
-สถานะ **ZERO4_COMPLETE / B5_FT_TRAINING** ตีความคำว่า5bตามบริบทเป็นSegFormer-B5ที่ผู้ใช้เสนอไว้ก่อนหน้า native84,607,186parameters ใช้checkpoint18คลาสที่มีอยู่แล้ว ผู้ใช้อนุญาตให้ทำFTและzero-shotส่วนที่ยังขาดให้ครบ
+สถานะ **COMPLETE / FINAL_SAVED_MASK_CHECK_PASS** งานจบเมื่อ **23:39:03 น. เวลาไทย** และตรวจปิดเมื่อ **23:45:26 น. เวลาไทย** บน Tesla T4 มีผล zero-shot สี่ configuration และผลหลัง fine-tune ห้า configuration ครบตัวละ 77 person crops B5 ฝึกครบ 25 epochs และเลือก checkpoint จาก epoch 13 ผล B4, SOLIDER BGR/RGB และ SAM3.1 หลังฝึกนำกลับมาจากรอบเดิมที่ตรวจรับแล้ว
 
-| คิว | งาน | Population / recipe |
+เป้าหมายคือเลือกตัวช่วยร่าง annotation ที่มีคุณภาพและแก้ง่าย ใช้ train 313 crops จาก 213 ภาพ และ validation 77 crops จาก 56 ภาพ ภายใน seed 300 ภาพที่ผู้ใช้รับรองแล้ว ภาพ seed อีก 31 ภาพไม่มี person crop ตามกติกาสร้างข้อมูล การประเมินนี้ใช้กรอบคนจาก GT จึงครอบคลุมงาน parsing ของ helper บน crop ที่เตรียมไว้ การตรวจจับคนอัตโนมัติและผลทั้งชุด 2,200 ภาพยังเป็นขั้นถัดไป
+
+### ก่อน fine-tune ด้วย CCTV Seed300
+
+| Configuration | Hair IoU % | Face IoU % | Upper IoU % | Lower IoU % | mIoU4 % | Best epoch | ครบ |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| B4_native_zero | 46.54 | 29.83 | 48.96 | 38.81 | 41.03 | — | 77/77 |
+| B5_native_zero | 30.99 | 29.70 | 55.74 | 33.67 | 37.52 | — | 77/77 |
+| SOLIDER_native_zero | 57.89 | 47.02 | 69.61 | 57.31 | 57.96 | — | 77/77 |
+| SAM31_native_zero | 50.83 | 37.77 | 64.93 | 3.58 | 39.28 | — | 77/77 |
+
+SOLIDER Swin-Small ได้ IoU สูงสุดทั้งสี่ส่วนและ mIoU4 สูงสุด **57.96%** ในกลุ่ม pretrained ที่ทดสอบ สูตร input, native labels และ prompt ของแต่ละตัวถูกตรึงก่อนคำนวณคะแนนตาม [protocol ที่ใช้จริง](../config/helper_zero_shot_v1.json)
+
+### หลัง fine-tune
+
+| Configuration | Hair IoU % | Face IoU % | Upper IoU % | Lower IoU % | mIoU4 % | Best epoch | ครบ |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| B4_refined | 74.24 | 46.65 | 77.36 | 62.89 | 65.29 | 12 | 77/77 |
+| B5_finetuned | 75.04 | 51.73 | 77.28 | 64.59 | 67.16 | 13 | 77/77 |
+| SOLIDER_BGR | 73.41 | 46.92 | 75.46 | 66.42 | 65.55 | 18 | 77/77 |
+| SOLIDER_RGB | 71.98 | 51.94 | 77.93 | 68.97 | 67.70 | 11 | 77/77 |
+| SAM31_warm_restarted | 74.29 | 54.79 | 80.11 | 63.98 | 68.29 | 6 | 77/77 |
+
+SAM3.1 มี mIoU4 สูงสุด **68.29%** สูงกว่า SOLIDER RGB **0.59 percentage points** และ B5 **1.13 percentage points** ส่วนคะแนนสูงสุดรายส่วนเป็นดังนี้
+
+| ส่วน | Configuration | IoU % |
 | --- | --- | --- |
-| 1 | B4 pretrained zero-shot | 77validationcrops native18, RGB576×384/INTER_AREA/ImageNet |
-| 2 | B5 pretrained zero-shot | 77validationcrops native18, boundprocessor512×512/RGB/ImageNet |
-| 3 | SOLIDER pretrained zero-shot | 77validationcrops native20, sourceaffine572×384/RGB/inverse-logit-map-back |
-| 4 | SAM3.1 pretrained zero-shot | 77validationcrops, originaldetector/native1008processor/fixed4prompts/allacceptedqueries |
-| 5 | B5 fine-tune | train313crops/val77cropsจากseed300เดิม 25epochs AMPbatch2 LRbackbone1e-5/head1e-4 cosine/seed20261112 |
+| ผม | B5_finetuned | 75.04 |
+| ใบหน้า | SAM31_warm_restarted | 54.79 |
+| เสื้อผ้าส่วนบน | SAM31_warm_restarted | 80.11 |
+| เสื้อผ้าส่วนล่าง | SOLIDER_RGB | 68.97 |
 
-B5FTเริ่มจากnative18headแล้วinitializehelper5เป็นBG0/Hair2/Face11/Upper4/Lowerเฉลี่ยSkirt5+Pants6 ก่อนเรียนรู้GTโดยตรง INITIAL_METRICSของheadใหม่นี้ติดป้ายhead-initializeddiagnostic แยกจากzero-shotnative18 เก็บepoch0เป็นcandidate เลือกbestด้วยvalidationmIoU4และเก็บHFexportที่loadต่อได้เพื่อใช้draftsภายหลัง
+คำนวณค่าสูงสุดและส่วนต่างจากตัวเลขเต็มก่อนปัดเศษ SAM3.1 เป็นตัวเลือกหลักตามคุณภาพ mask โดยเฉลี่ยใน validation นี้ B5 และ SOLIDER RGB เป็นตัวเลือกสำหรับส่วนผมและส่วนล่างตามลำดับ การใช้หลายตัวร่วมกันยังต้องตรวจร่างและกติกาทับซ้อนเพิ่มเติม ตารางนี้ยังไม่มีผลของระบบผสมโมเดล เวลาที่ผู้ใช้ต้องใช้ตรวจแก้ยังไม่ได้วัด
 
-ใช้ [protocolที่freezeก่อนรัน](../config/helper_zero_shot_v1.json), [zero-shot worker](../scripts/evaluate_helper_zero_shot.py), [trainerที่เพิ่มB5](../scripts/train_annotation_helper.py) และ [reporter](../scripts/report_helper_comparison.py) NativeทุกIDมีfixedprojectionครบ Dress/Hat/Glassesและnativeอื่นนอกสี่targetsเป็นbackground/OTHERตามprotocol GT255เป็นvoidร่วม ไม่มีการตั้งignoreรายโมเดล Nativeargmax/map-backมาก่อนtargetlookup คะแนนคำนวณจากmappedpixelsและglobalconfusion
+### ตัวเลขวัดอะไรและคำนวณอย่างไร
 
-SAMเก็บnativepromptcandidatesที่ผ่านthresholdพร้อมhardmasks/scores/boxes และderivedcategoricalmaskกับcomposedstrength Nativeperquerylogits/rejectedqueriesไม่ได้เก็บเต็ม Denseโมเดลเก็บnativeintegerPNGทุกclassและcommonmaskแยกกัน Atomicmetadata/ledgercommitผูกsource/config/input/checkpoint/output hashesเมื่อแต่ละcropเขียนครบ ถ้าerrorหยุดและเก็บprimarynull ไม่retry/fallbackอัตโนมัติ
+รวมจำนวนพิกเซลจากทั้ง 77 crops เป็น confusion matrix แถวเป็น GT และคอลัมน์เป็น prediction มีห้าค่าคือ background/OTHER, Hair, Face, Upper, Lower เฉพาะ GT255 เป็น VOID และถูกข้ามเหมือนกันทุกโมเดล พื้นที่ GT0 ยังใช้คิดความผิดพลาด การทำนาย Hair บน GT0 จึงนับเป็น FP ของ Hair
 
-CPUfixtures18testsผ่าน ครอบคลุมnativeIDmapping/OTHER FP-FN/union/empty/nativeprobabilitycomposition/B5classifierinit/targetgeometry/JSONnull/reportstage separationและtrainer/controllerเดิม โหลดnativeB4/B5/SOLIDERด้วยCPUได้ตรงhead/architecture ตรวจB5traininginputกับnativeprocessorบนcropจริงได้maxabsdiff0.0 และSOLIDERofficialaffineRGBreaderกับreferenceได้ตรงทุกค่า CPUinputpreflightผ่าน5/5 ไม่มีGPUforwardในreadinessนี้
+สำหรับแต่ละส่วน TP คือพิกเซลที่ GT และ prediction ตรงกัน FP คือทำนายส่วนนั้นบน GT ส่วนอื่น FN คือ GT เป็นส่วนนั้นแต่โมเดลทำนายอย่างอื่น
 
-คิวใช้GPUworkerเดียวต่อครั้ง พิจารณาfreeVRAMจริง ไม่ใช้externalPIDเป็นเหตุblockลำพัง Admissionแต่ละjobเป็น4/6/4/10/10GiBตามคิว อิงขนาดmodel/inputและheadroom พร้อมวัดpeakallocated/reservedในzero jobs คงdiskfree50GiB/output80GiBต่อjob/6hต่อjob การมีmemoryตามguardยังไม่รับประกันว่าจะไม่มีOOM
+- **IoU = TP / (TP + FP + FN)** วัดว่าพื้นที่ที่ทำนายตรงกับ GT มากเพียงใด โดยลงโทษทั้งส่วนเกินและส่วนที่ขาด
+- **Precision = TP / (TP + FP)** วัดว่าส่วนที่โมเดลระบายมาเป็นส่วนนั้นจริงเท่าไร
+- **Recall = TP / (TP + FN)** วัดว่าเก็บพื้นที่ GT ของส่วนนั้นมาได้ครบเท่าไร
+- **F1 / Dice = 2TP / (2TP + FP + FN)** สรุปทั้งส่วนเกินและส่วนที่ขาดในสเกลเดียวกัน
+- **mIoU4** คือค่าเฉลี่ย IoU ของ Hair, Face, Upper, Lower ที่คำนวณจาก confusion รวม ไม่นับ background ในค่าเฉลี่ย และไม่เฉลี่ยคะแนนแยกภาพ หากตัวหารของ metric เป็นศูนย์ให้คง null ตาม protocol ค่าเฉลี่ยใช้คลาสที่ union มากกว่าศูนย์ ซึ่งในรอบนี้ครบทั้งสี่คลาส
+- **GT support / prediction support / union** คือจำนวนพิกเซล GT, จำนวนพิกเซลที่ทำนาย และจำนวนพิกเซลในพื้นที่รวมของคลาสนั้นตามลำดับ
 
-หลังจบสร้างREPORT_TH.md/COMPARISON.csv/RESULT_INDEXและgalleryจากสามvalidationcropsแรกชุดเดิมในprivate fresh run รวมผลFTเดิมที่ตรวจผ่านแล้วของB4/SOLIDERBGR/SOLIDERRGB/SAMwarmrestartโดยอ่านsavedresults NativezeroและFTบางตัวมีadapterต่างกัน รายงานแยกstageและไม่อ้างว่าผลต่างเกิดจากtrainingอย่างเดียว ตารางhighest-per-targetใช้fullprecisionเฉพาะเมื่อครบทุกentry ยังต้องดูภาระการแก้จริงเพื่อเลือกhelperสุดท้าย
+ค่ารายคลาสเต็มทั้ง IoU, Precision, Recall, F1, support และ union อยู่ใน [ตาราง CSV พร้อม hashes ของ canonical metrics และ binding](HELPER_COMPARISON.csv) สูตรคำนวณอยู่ใน [ตัวประเมิน zero-shot](../scripts/evaluate_helper_zero_shot.py) และ [trainer](../scripts/train_annotation_helper.py) ค่าข้างต้นเป็น pixel metrics ของ helper validation ส่วนการเลือก checkpoint ใช้ validation mIoU4 จึงยังต้องแยกผลนี้จากการทดสอบ held-out
 
-ตรวจlaunchเมื่อ `2026-11-12T23:04:50.073169+07:00` Run `helper-zero4-b5ft-20261112T155416Z` tmux `helper_zero4_b5ft` controllerPID551837 launchcommit`e5d51692e2d56d0bf41547ce4e3da4975ae2d4ab` Zero-shotทั้งสี่ตัวครบ77cropsต่อโมเดลและindependentsavedmaskauditผ่านทุกตัว ตรวจGTsupportตรงกัน B5FTเริ่มฝึกจริงแล้ว ยืนยันepoch1ผ่านอย่างน้อย20/157batches สถานะเป็นsnapshotเวลาตรวจ
+### เงื่อนไขที่ต้องอ่านประกอบคะแนน
 
-ตรวจB4packetแรก nativeinteger/commonmask576×384และprojection/hashตรง ตรวจSAMpacketแรก nativecandidates5masks/score/boxesfinite พร้อมcomposedstrengthและcategoricalmaskตรงทุกpixel มีmetadata/ledgercommitจริง
+- Zero-shot ใช้ pretrained weights ต้นฉบับก่อนฝึกด้วย CCTV พร้อม native head ของ B4/B5/SOLIDER หรือ native prompt detector ของ SAM3.1 แล้ว map เข้าสี่ส่วน Native classes นอกเป้าหมายเป็น OTHER ตามกฎคงที่ เก็บ native outputs แยกจาก common masks
+- B5 เริ่มจาก native 18 classes แล้วสร้าง helper head ห้าค่า ใช้ Hair2, Face11, Upper4 และค่าเฉลี่ยน้ำหนัก Skirt5/Pants6 สำหรับ Lower ก่อนฝึก 25 epochs ด้วย AMP, batch 2, backbone LR 1e-5, head LR 1e-4, cosine และ seed 20261112 Input RGB 512×512 และ map logits กลับ 576×384 ค่า epoch 0 ของ head ที่สร้างใหม่เป็น initialization diagnostic
+- SAM3.1 หลังฝึกใช้ custom float resize, single-query และ joint-score policy ส่วน pretrained zero-shot ใช้ native processor และหลาย query ตาม source จริง ดังนั้นผลต่างก่อน–หลังสะท้อนทั้ง weights และ adapter ที่ใช้ร่วมกัน
+- SAM3.1 หลังฝึกมี warm restart ช่วง epoch labels 6–15 จาก best epoch 3 และเริ่ม AdamW ใหม่ ผลที่เลือกอยู่ epoch 6 หลักฐาน saved masks และ checkpoint ตรวจผ่าน แต่ไม่มี continuation launch-source hash และ starting checkpoint bytes แยกที่ยืนยันเส้นทางการฝึกช่วงต่อได้ครบ
+- SOLIDER BGR และ RGB เป็นคนละ configuration ที่คงไว้ตามผลจริง Native Swin ใช้ RGB ส่วน BGR เป็น recipe ที่ฝึกและประเมินสอดคล้องกันภายในรอบของตัวเอง
+- ชื่อ 5b ถูกตีความเป็น **SegFormer-B5** ตามบริบทก่อนหน้า มี native parameters 84,607,186 ตัว เวลาที่บันทึกเป็น diagnostics ตามขอบเขต adapter ของแต่ละตัว การทดสอบนี้ยังไม่มีการประเมิน statistical significance หรือเวลาคนแก้
 
-```bash
-cd /home/skyaidev/folk/CCTV_Dataset_Development.local/runs/helper-zero4-b5ft-20261112T155416Z
-python3 /home/skyaidev/folk/CCTV_Dataset_Development/scripts/helper_training_progress.py --watch
-```
+### สิ่งที่ตรวจปิดและตำแหน่งผลจริง
 
-คำสั่งดูlogของงานที่กำลังทำใช้ `tail -f zero_sam31.log` และเมื่อถึงFTใช้ `tail -f b5_ft.log` เมื่อทุกjobจบ wrapperสร้างREPORT_TH.md/COMPARISON.csv/RESULT_INDEX.jsonและgallery/index.htmlในrunนี้ Source/reportwrapperและlaunchmanifestแยกจากผลเดิม หากjobfailureให้รายงานPARTIALและเก็บtraceback ไม่มีautorerunและไม่คัดsubsetเป็นผลครบ
+Run `helper-zero4-b5ft-20261112T155416Z` ใช้ launch commit `e5d51692e2d56d0bf41547ce4e3da4975ae2d4ab` เปิดคิวแบบเรียงลำดับใน tmux `helper_zero4_b5ft` controller PID 551837 และ B5 worker PID 556837 จบแล้ว ขณะตรวจปิดไม่มี worker ฝึกเหลือ และ GPU ใช้หน่วยความจำประมาณ 3 MiB ประวัติเปิดงานและ snapshots อยู่ใน private run เดิม
 
-ผลและภาพเก็บprivate ไม่ติดตั้งdependenciesหรือดาวน์โหลดweightsใหม่ในงานนี้ Fixedprotocolเป็นไฟล์publicsafeที่versionไว้โดยเฉพาะภายใต้configซึ่งปกติignoremachine-localJSON Nativeclassnamesและกฎนี้ไม่มีimageIDs/credentials/privatepaths
+- B5 มี saved predictions ตรงรายชื่อ validation 77 IDs ครบ ไม่มี missing หรือ invalid label/shape คำนวณ confusion ใหม่จาก saved masks ด้วย `np.add.at` ตรง canonical metrics ทุก cell
+- B5 มี history epoch 1–25 ครบ รวม 3,925 optimizer updates และ AMP skipped updates 0 ตรวจ best epoch กับประวัติและ checkpoint SHA256 แล้ว ต้นฉบับโมเดลและผลเดิมยังอยู่
+- ใช้ audit saved masks เดิมของ zero-shot ทั้งสี่ตัวและผล FT เก่าทั้งสี่ configuration ตรวจ arithmetic IoU/P/R/F1 และ GT support ของทั้งเก้าแถวตรงกัน ตรวจ hashes ของ canonical sources และ CSV full precision แล้ว
+- ตรวจไฟล์ crop/GT ทั้ง 780 hashes ตรง data binding และตรวจ hashes ของ gallery inputs/PNGs ครบหกแผง เปิดดูแผง FT ของ crop แรกและ zero-shot ของ crop ที่สองเพื่อตรวจชื่อโมเดลกับตำแหน่ง overlay การตรวจภาพนี้เป็นการตรวจการแสดงผลและ geometry
+- การตรวจปิดใช้ CPU และไฟล์เดิมทั้งหมด มี model-frame calls เพิ่ม 0 ครั้ง หลักฐานอยู่ใน `FINAL_COMPLETION_AUDIT.json` ของ run นี้
+
+ผล private อยู่ใต้ `CCTV_Dataset_Development.local/runs/helper-zero4-b5ft-20261112T155416Z/` ซึ่งเป็นโฟลเดอร์ข้าง checkout นี้
+
+| ไฟล์หรือโฟลเดอร์ | เปิดดูอะไร |
+| --- | --- |
+| `REPORT_TH.md` | รายงานอัตโนมัติจาก canonical results พร้อมสองตารางและผู้ได้คะแนนสูงสุด |
+| `COMPARISON.csv` / `RESULT_INDEX.json` | ตัวเลขเต็มและ paths/hashes ของแหล่งผลแต่ละ configuration |
+| `gallery/index.html` | ภาพเปรียบเทียบ crop เดียวกัน แยก pretrained กับ fine-tuned มีภาพต้นฉบับและ GT ทุกแผง |
+| `gallery/MANIFEST.json` | provenance และ SHA256 ของภาพต้นทางกับภาพที่สร้าง |
+| `b5_ft/` | history, binding, metrics และ validation predictions ของ B5 |
+
+ภาพเลือกจากสาม validation crops แรกตามกฎเดิมก่อนดูคะแนน มีสองแผงต่อ crop รวมหกแผง สีผมเหลือง ใบหน้าฟ้า ส่วนบนแดง ส่วนล่างเขียว และ GT VOID สีเทา ภาพข้อมูลจริงเก็บ private
+
+B5 checkpoint ที่เลือกอยู่ใน workspace หลักใต้ `models/human_parsing/cctv_helpers/helper-zero4-b5ft-20261112T155416Z/b5/BEST.pt` พร้อม `huggingface/` export ผลนี้พร้อมนำไปตรวจร่าง annotation ต่อ โดยต้องผูกการโหลด weights และการแปลง mask กลับภาพกับ configuration ที่เลือก
 
 ---
 
