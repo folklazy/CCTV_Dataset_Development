@@ -42,6 +42,10 @@ def render(root):
                 dataset = Path(command[command.index('--dataset')+1])
                 manifest = read_json(dataset/'MANIFEST.json')
                 cached = {p.stem for p in (output/'features').glob('*.pt')}
+                if '--feature-cache-parent' in command:
+                    parent = Path(command[command.index('--feature-cache-parent')+1])
+                    cached |= {p.stem for p in (parent/'features').glob('*.pt')}
+                    description += ' | parent feature cache read-only'
                 counts = []
                 for split in ['val', 'train']:
                     expected = {item['sample_id'] for item in manifest[split]}
@@ -69,6 +73,10 @@ def render(root):
                     live = False
             description += f' | PID {pid} '+('alive' if live else 'exited; inspect controller/log')
         lines.append(f'{job["model"]}: {description}')
+        recovery = read_json(output/'RECOVERY.json')
+        if recovery:
+            lines.append(f'  Full-state checkpoint: completed epoch {recovery["epoch_completed"]}; '
+                         'model/optimizer/scheduler/RNG saved')
     if batch.get('state') == 'STOPPED':
         lines.append(f'Stop reason: {batch.get("reason")}')
     return '\n'.join(lines)

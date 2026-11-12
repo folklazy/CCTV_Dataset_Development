@@ -426,3 +426,12 @@ Next/blockers:เปิดผ่านSSH tunnelแล้วกดบันท�
 - Results pretrained SOLIDER mIoU4 57.9563885602%. หลังฝึก SAM3.1 68.2916955552%, SOLIDER RGB 67.7016809407%, B5 67.1627096838%, SOLIDER BGR 65.5541324044%, B4 65.2874595303%. SAM มี warm restart และ custom adapter ตามประวัติ ยังไม่มี human correction-time measurements หรือ independent heldout estimate
 - Outputs อัปเดตรายงานเดิม, reports/HELPER_COMPARISON.csv พร้อม metrics/binding hashes, README, reports status, AGENTS และ private master ที่ backup ก่อนแก้ เก็บภาพ/weights/raw results private ใช้ CPU ปิดรอบ ไม่มี model calls เพิ่ม ไม่มี install/download และไม่มีการเปลี่ยน frozen protocol
 - Next ใช้ selected checkpoint/configuration ตรวจร่าง annotation และภาระแก้ตามเป้าหมาย helper ก่อนขยายงาน ชุดนี้ไม่มี ensemble draft หรือผลทั้ง2200ภาพ
+
+
+## Work log — 2026-11-13T00:23:52.576996+07:00 (Asia/Bangkok)
+
+- Work ID SAM31-FRESH15-20261113-01. ผู้ใช้อนุญาตเริ่มSAM3.1รอบใหม่หลังwarmrestartreview คงoriginalwarmstart metadataepoch9/SHA5aeb67b1..., FP32batch1/15epochs/LR3e-5/cosine/seed20261112/train313val77 ไม่เปลี่ยนloss/prompts/mappingตามคะแนน
+- Implementation เพิ่มepoch-boundary LAST fullstate, strictresume bindings, RNG/optimizer/scheduler restore, beststate/history reconciliation, worker lockและatomicmaskwrites เก็บattempt/recoveryrecords Reporterเพิ่มoptionalindependentnp.add.at auditสำหรับผลใหม่ตัวเดียว Progressแสดงparentcacheและrecoveryepoch
+- Verification CPU24testsผ่าน รวมweights/RNG exactหลังrestoreและnormal-entry interruption/resume พบlockretentionในCPUfixtureที่เรียกmainซ้ำในprocessเดียว แก้finallycloseและtestผ่าน ตรวจcache390metadataและparentmodel/data/producerbindingsตรง ไม่มีGPUforwardในreadiness ใช้envเดิมTorch2.14+cu130/T4
+- Resources 10GiBadmission/50GiBdisk/80GiBoutput/6h job/noautoretryตามเดิม Parent41GiBcacheอ่านอย่างเดียว ไม่copyหรือfullrehashทั้งชุด เก็บpreparationcorrection/oldsource snapshotก่อนfinalfreeze ข้อมูลผลเดิมไม่ถูกเขียนทับ
+- Outputs runhelper-sam31-fresh15-20261112T171624Z พร้อมsingle-jobmanifest/wrapper/automaticfreshsavedmaskaudit+report; status/docs/master updated Next commitfreeze, detachedlaunch, verify actual model loading/fullcheckpoint and optimizer progress before ending turn

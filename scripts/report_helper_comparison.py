@@ -35,6 +35,35 @@ def main():
             if reference_support is not None and support!=reference_support:
                 raise ValueError('GT valid-domain support differs across configurations')
             reference_support=support
+            if entry.get('verify_saved_masks'):
+                predictions = out/'validation_predictions'
+                expected = {item['sample_id'] for item in items}
+                actual = {path.stem for path in predictions.glob('*.png')}
+                if len(expected) != len(items) or actual != expected:
+                    raise ValueError('Saved prediction membership mismatch')
+                independent = np.zeros((5, 5), dtype=np.int64)
+                for item in items:
+                    with Image.open(predictions/(item['sample_id']+'.png')) as image:
+                        prediction = np.array(image)
+                    target_path = data/item['mask_path']
+                    if hashlib.sha256(target_path.read_bytes()).hexdigest() != existing_binding['dataset']['files'][item['mask_path']]:
+                        raise ValueError('GT changed after training')
+                    with Image.open(target_path) as image:
+                        truth = np.array(image)
+                    if prediction.shape != truth.shape or not set(np.unique(prediction)) <= set(range(5)):
+                        raise ValueError('Invalid saved prediction contract')
+                    valid = truth != 255
+                    np.add.at(independent, (truth[valid], prediction[valid]), 1)
+                if independent.tolist() != metrics['confusion']:
+                    raise ValueError('Independent saved-mask confusion mismatch')
+                checkpoint = Path(status['checkpoint'])
+                if hashlib.sha256(checkpoint.read_bytes()).hexdigest() != status['checkpoint_sha256']:
+                    raise ValueError('Selected checkpoint hash mismatch')
+                (out/'SAVED_MASK_AUDIT.json').write_text(json.dumps({
+                    'state': 'PASS', 'exact_ids': len(expected), 'missing': 0, 'invalid': 0,
+                    'confusion': 'EXACT_MATCH', 'checkpoint_sha256': status['checkpoint_sha256'],
+                    'metrics_sha256': hashlib.sha256((out/'METRICS.json').read_bytes()).hexdigest(),
+                }, indent=2)+'\n')
             sources[entry['key']]={'metrics_path':str(out/'METRICS.json'),
                 'metrics_sha256':hashlib.sha256((out/'METRICS.json').read_bytes()).hexdigest(),
                 'binding_sha256':hashlib.sha256((out/'BINDING.json').read_bytes()).hexdigest()}

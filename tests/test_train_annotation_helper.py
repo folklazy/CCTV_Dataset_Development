@@ -7,6 +7,9 @@ from unittest import mock
 from types import SimpleNamespace
 import json
 import sys
+import random
+import contextlib
+import io
 
 import numpy as np
 from PIL import Image
@@ -22,6 +25,131 @@ BATCH_SPEC.loader.exec_module(batch)
 
 
 class TrainingRequirements(unittest.TestCase):
+    def test_normal_entry_resume_releases_lock_and_preserves_history(self):
+        class TinyModel(torch.nn.Module):
+            def __init__(self):
+                super().__init__()
+                self.backbone = torch.nn.Identity()
+                self.head = torch.nn.Linear(1, 1)
+
+        class TinyHelper:
+            def __init__(self, args, device, cache, bindings):
+                self.model, self.device = TinyModel(), torch.device('cpu')
+            def optimizer(self, args):
+                return torch.optim.AdamW(self.model.parameters(), lr=args.lr_head)
+            def features(self, image, item):
+                return {}
+            def forward(self, features, label):
+                value = self.model.head(torch.ones(1, 1)).reshape(1)
+                return value[:, None, None].expand(1, 2, 2), value, value
+
+        original_to = torch.Tensor.to
+        def cpu_to(tensor, *args, **kwargs):
+            if args and isinstance(args[0], torch.device) and args[0].type == 'cuda':
+                args = (torch.device('cpu'), *args[1:])
+            return original_to(tensor, *args, **kwargs)
+
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            data = root/'data'
+            data.mkdir()
+            Image.new('RGB', (2, 2), (30, 80, 120)).save(data/'image.png')
+            Image.new('L', (2, 2), 1).save(data/'mask.png')
+            items = {split: [{'sample_id': split, 'img_path': 'image.png', 'mask_path': 'mask.png'}]
+                     for split in ['train', 'val']}
+            bindings = {'manifest_sha256': 'fixture', 'membership_sha256': 'fixture',
+                        'files': {path.name: trainer.file_hash(path) for path in data.iterdir()}}
+            checkpoint = root/'base.pt'
+            checkpoint.write_bytes(b'base fixture')
+            arguments = ['trainer', '--model', 'sam31', '--dataset', str(data),
+                         '--membership', str(root/'membership.csv'), '--checkpoint', str(checkpoint),
+                         '--output', str(root/'output'), '--weights-directory', str(root/'weights'),
+                         '--repository-root', str(root/'source'), '--epochs', '2',
+                         '--batch-size', '1', '--save-training-state']
+            with mock.patch.object(trainer, 'PromptHelper', TinyHelper), \
+                 mock.patch.object(trainer, 'bind_data', return_value=(items, bindings)), \
+                 mock.patch.object(torch.Tensor, 'to', cpu_to), \
+                 mock.patch.object(torch.cuda, 'set_device'), \
+                 mock.patch.object(torch.cuda, 'reset_peak_memory_stats'), \
+                 mock.patch.object(torch.cuda, 'max_memory_allocated', return_value=0), \
+                 contextlib.redirect_stdout(io.StringIO()):
+                with mock.patch.object(sys, 'argv', arguments), \
+                     mock.patch.object(trainer, 'guard', side_effect=[None, None, InterruptedError('fixture')]):
+                    with self.assertRaises(InterruptedError):
+                        trainer.main()
+                saved = torch.load(root/'weights/LAST.pt', map_location='cpu', weights_only=True)
+                self.assertEqual(saved['epoch_completed'], 1)
+                previous_history = (root/'output/HISTORY.jsonl').read_text()
+                with mock.patch.object(sys, 'argv', arguments+['--resume-training']), \
+                     mock.patch.object(trainer, 'guard'):
+                    trainer.main()
+            history = [json.loads(line) for line in (root/'output/HISTORY.jsonl').read_text().splitlines()]
+            self.assertEqual([row['epoch'] for row in history], [1, 2])
+            self.assertTrue((root/'output/HISTORY.jsonl').read_text().startswith(previous_history))
+            self.assertEqual(json.loads((root/'output/STATUS.json').read_text())['state'], 'COMPLETE')
+            attempts = [json.loads(line) for line in (root/'output/ATTEMPTS.jsonl').read_text().splitlines()]
+            self.assertEqual([(row['resume'], row['first_epoch']) for row in attempts], [(False, 1), (True, 2)])
+
+    def test_sam_full_state_resume_matches_uninterrupted_cpu_updates(self):
+        def make_helper():
+            helper = SimpleNamespace(model=torch.nn.Linear(2, 1), device=torch.device('cpu'))
+            optimizer = torch.optim.AdamW(helper.model.parameters(), lr=.01)
+            schedule = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, 4)
+            return helper, optimizer, schedule
+
+        def update(helper, optimizer, schedule):
+            image = torch.rand(1, 2)
+            target = torch.tensor([[random.random()+float(np.random.random())]])
+            optimizer.zero_grad(set_to_none=True)
+            (helper.model(image)-target).square().mean().backward()
+            optimizer.step()
+            schedule.step()
+
+        random.seed(13)
+        np.random.seed(13)
+        torch.manual_seed(13)
+        original, optimizer, schedule = make_helper()
+        for _ in range(2):
+            update(original, optimizer, schedule)
+        best = {'epoch': 1, 'model': 'sam31', 'state_dict': trainer.sam_decoder_state(original.model),
+                'metrics': {'miou4': .5}}
+        with tempfile.TemporaryDirectory() as folder:
+            path = Path(folder)/'LAST.pt'
+            trainer.save_sam_training_state(path, original, optimizer, schedule, 'bound', 2,
+                                             {'epoch': 2}, best)
+            for _ in range(2):
+                update(original, optimizer, schedule)
+            expected = trainer.sam_decoder_state(original.model)
+            expected_next = (random.random(), np.random.random(), torch.rand(1))
+            resumed, new_optimizer, new_schedule = make_helper()
+            state = trainer.restore_sam_training_state(path, resumed, new_optimizer, new_schedule, 'bound')
+            self.assertEqual(state['epoch_completed'], 2)
+            self.assertEqual(new_schedule.last_epoch, 2)
+            for _ in range(2):
+                update(resumed, new_optimizer, new_schedule)
+            for key, value in resumed.model.state_dict().items():
+                torch.testing.assert_close(value, expected[key], rtol=0, atol=0)
+            self.assertEqual(random.random(), expected_next[0])
+            self.assertEqual(np.random.random(), expected_next[1])
+            torch.testing.assert_close(torch.rand(1), expected_next[2], rtol=0, atol=0)
+            with self.assertRaisesRegex(ValueError, 'binding mismatch'):
+                trainer.restore_sam_training_state(path, resumed, new_optimizer, new_schedule, 'changed')
+            state['state_dict'] = {}
+            torch.save(state, path)
+            with self.assertRaisesRegex(ValueError, 'decoder keys mismatch'):
+                trainer.restore_sam_training_state(path, resumed, new_optimizer, new_schedule, 'bound')
+
+    def test_epoch_commit_reconciles_once_and_rejects_conflict(self):
+        with tempfile.TemporaryDirectory() as folder:
+            path = Path(folder)/'HISTORY.jsonl'
+            trainer.append_epoch_record(path, {'epoch': 1, 'loss': .7})
+            trainer.append_epoch_record(path, {'epoch': 1, 'loss': .7})
+            self.assertEqual(len(path.read_text().splitlines()), 1)
+            with self.assertRaisesRegex(ValueError, 'Conflicting'):
+                trainer.append_epoch_record(path, {'epoch': 1, 'loss': .5})
+            with self.assertRaisesRegex(ValueError, 'out of order'):
+                trainer.append_epoch_record(path, {'epoch': 3, 'loss': .5})
+
     def test_absent_prompt_supervises_false_positive_and_scores(self):
         masks = torch.ones(3, 2, 2, requires_grad=True)
         scores = torch.ones(3, requires_grad=True)

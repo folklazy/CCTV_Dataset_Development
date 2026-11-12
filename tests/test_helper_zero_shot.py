@@ -108,20 +108,25 @@ class ZeroShotRequirements(unittest.TestCase):
             (data/'MANIFEST.json').write_text(json.dumps({'val':items}))
             out=root/'zero'
             out.mkdir()
-            predictions=out/'predictions'
+            predictions=out/'validation_predictions'
             predictions.mkdir()
             for idx in range(3):Image.new('L',(2,2),1).save(predictions/f'{idx}.png')
-            metrics={'crop_count':3,'per_class_iou':{},'per_class_statistics':{},'miou4':.5,'confusion':[[0]*5 for _ in range(5)]}
+            confusion=[[0]*5 for _ in range(5)]
+            confusion[1][1]=12
+            metrics={'crop_count':3,'per_class_iou':{},'per_class_statistics':{},'miou4':1.,'confusion':confusion}
             for label in ['hair','face','upper','lower']:
-                metrics['per_class_iou'][label]=.5
-                metrics['per_class_statistics'][label]=dict.fromkeys(['precision','recall','f1_dice'],.5)
-                metrics['per_class_statistics'][label].update(dict.fromkeys(['gt_pixels','prediction_pixels','union'],1))
+                metrics['per_class_iou'][label]=1. if label=='hair' else None
+                metrics['per_class_statistics'][label]=dict.fromkeys(['precision','recall','f1_dice'],1. if label=='hair' else None)
+                metrics['per_class_statistics'][label].update(dict.fromkeys(['gt_pixels','prediction_pixels','union'],12 if label=='hair' else 0))
             (out/'METRICS.json').write_text(json.dumps(metrics))
-            (out/'STATUS.json').write_text(json.dumps({'state':'COMPLETE'}))
-            binding={'dataset':{'manifest_sha256':hashlib.sha256((data/'MANIFEST.json').read_bytes()).hexdigest()},'protocol_sha256':'fixture','weights_role':'PRETRAINED_NO_CCTV_FINETUNING'}
+            checkpoint=root/'BEST.pt'
+            checkpoint.write_bytes(b'fixture checkpoint')
+            (out/'STATUS.json').write_text(json.dumps({'state':'COMPLETE','checkpoint':str(checkpoint),'checkpoint_sha256':hashlib.sha256(checkpoint.read_bytes()).hexdigest()}))
+            binding={'dataset':{'manifest_sha256':hashlib.sha256((data/'MANIFEST.json').read_bytes()).hexdigest(),
+                                'files':{item['mask_path']:hashlib.sha256((data/item['mask_path']).read_bytes()).hexdigest() for item in items}},'protocol_sha256':'fixture','weights_role':'PRETRAINED_NO_CCTV_FINETUNING'}
             (out/'BINDING.json').write_text(json.dumps(binding))
             config={'dataset':str(data),'zero_shot_protocol_sha256':'fixture','comparison_entries':[
-                {'key':'B4','stage':'ZERO_SHOT','output':str(out),'mask_folder':'predictions'},
+                {'key':'B4','stage':'ZERO_SHOT','output':str(out),'mask_folder':'validation_predictions','verify_saved_masks':True},
                 {'key':'B5','stage':'FINE_TUNED','output':str(root/'not_started'),'mask_folder':'validation_predictions'}]}
             path=root/'manifest.json'
             path.write_text(json.dumps(config))
@@ -130,6 +135,10 @@ class ZeroShotRequirements(unittest.TestCase):
             self.assertEqual(result['state'],'PARTIAL')
             self.assertIsNone(result['rows'][1]['miou4'])
             self.assertEqual(len(list((root/'gallery').glob('*.png'))),6)
+            self.assertEqual(json.loads((out/'SAVED_MASK_AUDIT.json').read_text())['exact_ids'],3)
+            Image.new('L',(2,2),0).save(predictions/'0.png')
+            with mock.patch.object(sys,'argv',['report',str(path)]), self.assertRaisesRegex(ValueError,'confusion mismatch'):
+                reporter.main()
 
 
 if __name__=='__main__':unittest.main()

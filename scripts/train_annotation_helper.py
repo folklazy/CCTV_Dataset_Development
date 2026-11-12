@@ -10,6 +10,7 @@ import sys
 import tempfile
 import time
 import importlib.metadata
+import fcntl
 
 import numpy as np
 from PIL import Image
@@ -55,6 +56,83 @@ def atomic_weights(path, value):
     with open(temp, 'rb') as stream:
         os.fsync(stream.fileno())
     os.replace(temp, path)
+
+
+def sam_decoder_state(model):
+    return {key: value.detach().cpu().clone() for key, value in model.state_dict().items()
+            if not key.startswith('backbone.')}
+
+
+def save_sam_training_state(path, helper, optimizer, schedule, binding_sha256,
+                            epoch, record, best_state):
+    numpy_state = np.random.get_state()
+    atomic_weights(path, {
+        'format_version': 1, 'binding_sha256': binding_sha256,
+        'epoch_completed': epoch, 'epoch_record': record,
+        'state_dict': sam_decoder_state(helper.model),
+        'optimizer': optimizer.state_dict(), 'scheduler': schedule.state_dict(),
+        'best_state': best_state,
+        'python_rng': random.getstate(),
+        'numpy_rng': (numpy_state[0], numpy_state[1].tolist(), *numpy_state[2:]),
+        'torch_rng': torch.get_rng_state(),
+        'cuda_rng': torch.cuda.get_rng_state_all() if helper.device.type == 'cuda' else [],
+    })
+    return {'epoch_completed': epoch, 'path': str(path), 'sha256': file_hash(path),
+            'binding_sha256': binding_sha256,
+            'resume_policy': 'Restore full state at the last completed epoch; repeat any uncommitted partial epoch'}
+
+
+def restore_sam_training_state(path, helper, optimizer, schedule, binding_sha256):
+    state = torch.load(path, map_location='cpu', weights_only=True)
+    if state['format_version'] != 1 or state['binding_sha256'] != binding_sha256:
+        raise ValueError('Training checkpoint binding mismatch')
+    expected = set(sam_decoder_state(helper.model))
+    if set(state['state_dict']) != expected or set(state['best_state']['state_dict']) != expected:
+        raise ValueError('Training checkpoint decoder keys mismatch')
+    loaded = helper.model.load_state_dict(state['state_dict'], strict=False)
+    if loaded.unexpected_keys or any(not key.startswith('backbone.') for key in loaded.missing_keys):
+        raise ValueError('Training checkpoint decoder readback failed')
+    optimizer.load_state_dict(state['optimizer'])
+    schedule.load_state_dict(state['scheduler'])
+    random.setstate(state['python_rng'])
+    numpy_state = state['numpy_rng']
+    np.random.set_state((numpy_state[0], np.asarray(numpy_state[1], dtype=np.uint32),
+                         *numpy_state[2:]))
+    torch.set_rng_state(state['torch_rng'])
+    if state['cuda_rng']:
+        torch.cuda.set_rng_state_all(state['cuda_rng'])
+    return state
+
+
+def append_epoch_record(path, record):
+    records = [json.loads(line) for line in path.read_text().splitlines()] if path.exists() else []
+    existing = [row for row in records if row['epoch'] == record['epoch']]
+    if existing:
+        if existing != [record]:
+            raise ValueError('Conflicting committed epoch record')
+        return
+    if len(records) != record['epoch']-1:
+        raise ValueError('Epoch history is incomplete or out of order')
+    with path.open('a') as stream:
+        stream.write(json.dumps(record, allow_nan=False)+'\n')
+        stream.flush()
+        os.fsync(stream.fileno())
+
+
+def bind_parent_feature_cache(parent, binding):
+    parent = Path(parent).resolve(strict=True)
+    previous = json.loads((parent/'BINDING.json').read_text())
+    for key in ['dataset', 'checkpoint_sha256', 'warmstart_sha256', 'model_source_sha256']:
+        if previous[key] != binding[key]:
+            raise ValueError(f'Parent feature cache binding mismatch: {key}')
+    # This audited producer uses the same frozen-backbone RGB/1008 float-resize recipe.
+    producer = parent.parent/'source_frozen/train_annotation_helper.py'
+    approved = '8791132941ef7a8ba1be7e6c9fb9e4f1c18e85ea4091cef585b3c4736607926d'
+    if previous['script_sha256'] != approved or file_hash(producer) != approved:
+        raise ValueError('Unsupported parent feature-cache producer')
+    return {'parent': str(parent), 'binding_sha256': file_hash(parent/'BINDING.json'),
+            'producer_sha256': approved, 'mode': 'READ_ONLY',
+            'compatibility': 'same backbone, source, warmstart, dataset and RGB float-resize recipe'}
 
 
 def tree_hash(root):
@@ -283,7 +361,8 @@ class PromptHelper:
             if result.unexpected_keys or any(not k.startswith('backbone.') for k in result.missing_keys):
                 raise ValueError('Invalid decoder warmstart')
         self.device, self.cache, self.bindings = device, cache, bindings
-        cache.mkdir()
+        cache.mkdir(exist_ok=args.resume_training)
+        self.parent_cache = Path(args.feature_cache_parent)/'features' if args.feature_cache_parent else None
         self.shared_position = None
         self.stage = FindStage(img_ids=torch.tensor([0], device=device),
                                text_ids=torch.tensor([0], device=device),
@@ -295,6 +374,10 @@ class PromptHelper:
 
     def features(self, image, item):
         path = self.cache/(item['sample_id']+'.pt')
+        position_path = self.cache/'SHARED_POSITION.pt'
+        if self.parent_cache and (self.parent_cache/path.name).exists():
+            path = self.parent_cache/path.name
+            position_path = self.parent_cache/'SHARED_POSITION.pt'
         key = self.bindings['files'][item['img_path']]
         if not path.exists():
             guard(self.cache, self.device)
@@ -318,7 +401,7 @@ class PromptHelper:
         data = torch.load(path, map_location='cpu', weights_only=True)
         if data.pop('image_sha256') != key:
             raise ValueError('Feature cache image identity mismatch')
-        position = torch.load(self.cache/'SHARED_POSITION.pt', map_location='cpu', weights_only=True)
+        position = torch.load(position_path, map_location='cpu', weights_only=True)
         data['vision_pos_enc'] = [value.to(self.device) for value in position]
         data['vision_features'] = data['vision_features'].to(self.device)
         data['backbone_fpn'] = [value.to(self.device) for value in data['backbone_fpn']]
@@ -376,7 +459,12 @@ def evaluate(helper, dataset, output=None):
         valid = truth != 255
         cm += np.bincount(truth[valid]*5+pred[valid], minlength=25).reshape(5, 5)
         if output:
-            Image.fromarray(pred).save(output/(dataset.items[index]['sample_id']+'.png'))
+            with tempfile.NamedTemporaryFile('wb', dir=output, delete=False) as stream:
+                Image.fromarray(pred).save(stream, format='PNG')
+                stream.flush()
+                os.fsync(stream.fileno())
+                temporary = Path(stream.name)
+            temporary.replace(output/(dataset.items[index]['sample_id']+'.png'))
     return metrics_from_confusion(cm, len(dataset))
 
 
@@ -418,6 +506,9 @@ def main():
     parser.add_argument('--seed', type=int, default=20261112)
     parser.add_argument('--amp', action='store_true')
     parser.add_argument('--preflight', action='store_true')
+    parser.add_argument('--save-training-state', action='store_true')
+    parser.add_argument('--resume-training', action='store_true')
+    parser.add_argument('--feature-cache-parent', type=Path)
     args = parser.parse_args()
     if args.epochs < 1 or args.batch_size < 1 or min(args.lr_backbone, args.lr_head)<=0:
         parser.error('Invalid training budget')
@@ -425,18 +516,22 @@ def main():
         parser.error('The cached SAM3.1 recipe uses FP32')
     if args.model=='sam31' and args.batch_size != 1:
         parser.error('SAM3.1 cached decoder training uses batch size one')
+    if (args.save_training_state or args.resume_training or args.feature_cache_parent) and args.model!='sam31':
+        parser.error('Training-state resume and parent feature cache are supported for SAM3.1')
+    if args.resume_training and (not args.save_training_state or args.preflight):
+        parser.error('Resume requires --save-training-state and a real training invocation')
     random.seed(args.seed)
     np.random.seed(args.seed)
     torch.manual_seed(args.seed)
     manifest, bindings = bind_data(args.dataset, args.membership)
     output = Path(args.output).resolve()
-    if output.exists():
+    if output.exists() and not args.resume_training:
         raise ValueError('Choose a fresh attempt directory')
     if output.is_relative_to(Path(args.repository_root).resolve()) or output.is_relative_to(Path(args.dataset).resolve()):
         raise ValueError('Training outputs must be outside source and repository')
-    output.mkdir(parents=True)
+    output.mkdir(parents=True, exist_ok=args.resume_training)
     weights_directory = Path(args.weights_directory).resolve()
-    if weights_directory.exists():
+    if weights_directory.exists() and not args.resume_training:
         raise ValueError('Choose a fresh weights directory')
     binding = {'arguments': vars(args), 'dataset': bindings,
                'script_sha256': file_hash(__file__),
@@ -452,15 +547,33 @@ def main():
                'selection_metric_role': 'helper_diagnostic; inspect_saved_drafts_for_correction_effort',
                'initial_metrics_role': 'B5 head-initialized diagnostic, separate from native zero-shot' if args.model=='b5' else 'recipe-specific starting checkpoint diagnostic',
                'created_at_utc': __import__('datetime').datetime.now(__import__('datetime').timezone.utc).isoformat()}
-    atomic_json(output/'BINDING.json', binding)
+    if args.feature_cache_parent:
+        binding['feature_cache_reuse'] = bind_parent_feature_cache(args.feature_cache_parent, binding)
+    if args.resume_training:
+        if json.loads((output/'STATUS.json').read_text())['state']=='COMPLETE':
+            raise ValueError('This training run already completed')
+        previous = json.loads((output/'BINDING.json').read_text())
+        current = json.loads(json.dumps(binding, default=str))
+        for value in [previous, current]:
+            value.pop('created_at_utc', None)
+            value['arguments'].pop('resume_training', None)
+        if current != previous:
+            raise ValueError('Resume changed source, data, environment or training configuration')
+    else:
+        # argparse's optional cache path is serialized explicitly, alongside the other paths.
+        binding['arguments']['feature_cache_parent'] = str(args.feature_cache_parent) if args.feature_cache_parent else None
+        atomic_json(output/'BINDING.json', binding)
+    binding_sha256 = file_hash(output/'BINDING.json')
     if args.preflight:
         atomic_json(output/'STATUS.json', {'state': 'CPU_INPUT_PREFLIGHT_PASS', 'model_calls': 0})
         return
-    weights_directory.mkdir(parents=True)
+    weights_directory.mkdir(parents=True, exist_ok=args.resume_training)
     def stop_requested(signum, frame):
         raise InterruptedError(f'Training received signal {signum}')
     signal.signal(signal.SIGTERM, stop_requested)
     helper = None
+    worker_lock = (output/'WORKER.lock').open('a')
+    fcntl.flock(worker_lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
     try:
         device = torch.device('cuda:0')
         guard(output, device)
@@ -488,14 +601,39 @@ def main():
         optimizer = helper.optimizer(args)
         schedule = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, args.epochs)
         scaler = torch.amp.GradScaler('cuda', enabled=args.amp, init_scale=1024.)
-        initial = evaluate(helper, validation)
-        atomic_json(output/'INITIAL_METRICS.json', initial)
-        best = initial['miou4'] if initial['miou4'] is not None else -1.
-        state = {k: v.cpu() for k, v in helper.model.state_dict().items()
-                 if args.model!='sam31' or not k.startswith('backbone.')}
-        atomic_weights(weights_directory/'BEST.pt', {'epoch': 0, 'model': args.model,
-                                                      'state_dict': state, 'metrics': initial})
-        for epoch in range(1, args.epochs+1):
+        first_epoch = 1
+        if args.resume_training:
+            resumed = restore_sam_training_state(weights_directory/'LAST.pt', helper,
+                                                   optimizer, schedule, binding_sha256)
+            best_state = resumed['best_state']
+            first_epoch = resumed['epoch_completed']+1
+            if resumed['epoch_record']:
+                append_epoch_record(output/'HISTORY.jsonl', resumed['epoch_record'])
+            history_path = output/'HISTORY.jsonl'
+            history = [json.loads(line) for line in history_path.read_text().splitlines()] if history_path.exists() else []
+            if [row['epoch'] for row in history] != list(range(1, first_epoch)):
+                raise ValueError('History does not match the recoverable checkpoint')
+            atomic_weights(weights_directory/'BEST.pt', best_state)
+        else:
+            initial = evaluate(helper, validation)
+            atomic_json(output/'INITIAL_METRICS.json', initial)
+            state = {k: v.cpu() for k, v in helper.model.state_dict().items()
+                     if args.model!='sam31' or not k.startswith('backbone.')}
+            best_state = {'epoch': 0, 'model': args.model, 'state_dict': state, 'metrics': initial}
+            atomic_weights(weights_directory/'BEST.pt', best_state)
+            if args.save_training_state:
+                recovery = save_sam_training_state(weights_directory/'LAST.pt', helper, optimizer,
+                                                   schedule, binding_sha256, 0, None, best_state)
+                atomic_json(output/'RECOVERY.json', recovery)
+        best = best_state['metrics']['miou4'] if best_state['metrics']['miou4'] is not None else -1.
+        with (output/'ATTEMPTS.jsonl').open('a') as stream:
+            stream.write(json.dumps({'pid': os.getpid(), 'time_utc': __import__('datetime').datetime.now(__import__('datetime').timezone.utc).isoformat(),
+                                      'resume': args.resume_training, 'first_epoch': first_epoch,
+                                      'binding_sha256': binding_sha256,
+                                      'training_state_sha256': file_hash(weights_directory/'LAST.pt') if args.save_training_state else None})+'\n')
+            stream.flush()
+            os.fsync(stream.fileno())
+        for epoch in range(first_epoch, args.epochs+1):
             guard(output, device)
             # SAM multiplex training mode invokes its own target matcher and DAC.
             # This helper uses external prompt losses with gradients enabled.
@@ -561,16 +699,17 @@ def main():
                       'optimizer_updates': steps-skipped_updates, 'amp_skipped_updates': skipped_updates,
                       'seconds': time.time()-start,
                       'peak_allocated_bytes': torch.cuda.max_memory_allocated(device)}
-            with (output/'HISTORY.jsonl').open('a') as stream:
-                stream.write(json.dumps(record, allow_nan=False)+'\n')
-                stream.flush()
-                os.fsync(stream.fileno())
             if score is not None and score>best:
                 best = score
                 state = {k: v.cpu() for k, v in helper.model.state_dict().items()
                          if args.model!='sam31' or not k.startswith('backbone.')}
-                atomic_weights(weights_directory/'BEST.pt', {'epoch': epoch, 'model': args.model,
-                                                  'state_dict': state, 'metrics': metrics})
+                best_state = {'epoch': epoch, 'model': args.model, 'state_dict': state, 'metrics': metrics}
+                atomic_weights(weights_directory/'BEST.pt', best_state)
+            if args.save_training_state:
+                recovery = save_sam_training_state(weights_directory/'LAST.pt', helper, optimizer,
+                                                   schedule, binding_sha256, epoch, record, best_state)
+                atomic_json(output/'RECOVERY.json', recovery)
+            append_epoch_record(output/'HISTORY.jsonl', record)
             atomic_json(output/'STATUS.json', {'state': 'RUNNING', 'pid': os.getpid(),
                                                'epoch_completed': epoch, 'epochs': args.epochs,
                                                'best_diagnostic_miou4': best})
@@ -582,7 +721,7 @@ def main():
         if args.model in ['b4', 'b5']:
             helper.model.save_pretrained(weights_directory/'huggingface')
         predictions = output/'validation_predictions'
-        predictions.mkdir()
+        predictions.mkdir(exist_ok=args.resume_training)
         final = evaluate(helper, validation, predictions)
         atomic_json(output/'METRICS.json', final)
         atomic_json(output/'STATUS.json', {'state': 'COMPLETE', 'pid': os.getpid(),
@@ -596,6 +735,8 @@ def main():
         atomic_json(output/'STATUS.json', {'state': 'FAILED', 'pid': os.getpid(),
                                            'error_type': type(error).__name__, 'message': str(error)})
         raise
+    finally:
+        worker_lock.close()
 
 
 if __name__ == '__main__':

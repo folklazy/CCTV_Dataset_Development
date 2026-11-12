@@ -1,3 +1,63 @@
+<a id="sam31-fresh15"></a>
+## SAM3.1 รอบใหม่จาก warmstart เดิม — 13 พฤศจิกายน 2026
+
+สถานะ **PREPARING / CPU_ACCEPTANCE_PASS** ผู้ใช้อนุญาตให้เริ่มรอบใหม่หลังตรวจพบว่าผลเดิมมี warm restart รอบนี้คงสูตรฝึก 15 epochs เพื่อดูผลของการฝึกต่อเนื่องจากจุดตั้งต้นเดียวกัน เก็บผลเดิม 68.29% และผลของ helpers ตัวอื่นเป็น configuration อ้างอิงแยกกัน
+
+### สูตรที่เลือกก่อนเปิดงาน
+
+| รายการ | เงื่อนไข |
+| --- | --- |
+| โมเดล | SAM3.1 Multiplex detector เดิม พร้อมฝึก decoder และคง backbone แบบ frozen |
+| จุดเริ่ม | `sam31_warmstart.pt` ตั้งต้นของ batch เดิม SHA256 `5aeb67b165ef7c229331065442c206a82cd2e520fbcac2c464202ae730d08bbb` มี metadata epoch9 จากรอบก่อนหน้า |
+| รอบใหม่ | 15 epochs เริ่ม optimizer และ cosine schedule จากตำแหน่ง 0 ของรอบใหม่นี้ |
+| ข้อมูล | train313 crops / validation77 crops จาก seed300 ที่ตรวจรับแล้ว ใช้ split เดิม |
+| Training | FP32, batch1, AdamW LR3e-5, weight decay1e-4, cosine15epochs, seed20261112, gradient clipping1.0 |
+| Input / loss | RGB576×384 crop → float bilinear1008×1008 / normalize0.5 ตามสูตร helper เดิม ใช้ prompts/loss เดิมครบสี่ส่วน |
+| Validation | global pixel confusion, IoU/P/R/F1 และ mIoU4 บน GT domain เดิม เลือก best รวม epoch0 ด้วย |
+| ทรัพยากร | T4 GPU0, SHARED_GPU_QUALITY_ONLY, admission free VRAM10GiB, disk free50GiB, output80GiB และ6hต่อjobตามเดิม |
+| Scope | ฝึก SAM3.1 หนึ่งตัว ใช้ผล helpers เดิมเพื่อออกรายงานเมื่อจบ |
+
+การเริ่มใหม่นี้ใช้ warmstart ที่เคยเรียนรู้แล้ว และเริ่มนับ 15 epochs เพิ่มจากจุดนั้น Native pretrained zero-shot ยังคงเป็นผลอีก stage ในตารางเดิม การเลือก checkpoint ใช้ validation ซึ่งเป็นข้อมูลที่ใช้พัฒนา helper อยู่แล้ว
+
+### การกู้สถานะที่เพิ่มในรอบนี้
+
+[Trainer](../scripts/train_annotation_helper.py) เพิ่ม `--save-training-state` และ `--resume-training` สำหรับ SAM3.1 โดยเก็บ `LAST.pt` หลัง initial evaluation และเมื่อจบแต่ละ epoch ภายในมี model state, AdamW state, cosine scheduler, Python/NumPy/Torch/CUDA RNG, best weights/metrics และ binding hash ควบคู่กับ `BEST.pt` ที่ใช้เลือกผล validation
+
+หากงานหยุด การเปิด controlled continuation สามารถกลับจาก epoch ที่จบล่าสุดได้ งานที่ทำค้างกลาง epoch ยังอาจต้องทำซ้ำจาก checkpoint นั้น `ATTEMPTS.jsonl` แยกการเปิด process แต่ละครั้ง `RECOVERY.json` บอก epoch/path/hash ล่าสุด มี worker lock ป้องกันการเปิดซ้ำ และตรวจ source/data/environment/config bindings ก่อนกู้สถานะ
+
+CPU acceptance ผ่าน **24 tests** รวม tiny fixture ที่ผล weights และ RNG หลัง restore ตรงกับการฝึกต่อเนื่อง, การเรียก main ผ่าน interruption/resume จริงบน CPU, history reconciliation, binding mismatch และ saved-mask reporter ที่ปฏิเสธ confusion ผิด การทดสอบ CPU นี้ครอบคลุมกลไกกู้สถานะ ส่วนการประมวลผลบน T4 ตรวจหลัง launch
+
+### Feature cache และการตรวจปิดอัตโนมัติ
+
+อ่าน frozen-backbone features จาก parent แบบ read-only เพื่อประหยัดการคำนวณซ้ำ ตรวจ producer source, checkpoint/warmstart, model source และ data bindings แล้ว ตรวจ metadata ของ cache390ไฟล์ว่าตรง SHA ของภาพต้นทางและชนิด/รูปทรง tensors ตาม contract การตรวจครั้งนี้ไม่ได้ full rehash เนื้อหา cache41GiB ทั้งชุด Parent cache และผลเดิมยังอยู่ที่เดิม
+
+เมื่อจบ worker จะประเมิน selected checkpoint และบันทึก masks ครบ77 crops จากนั้น [reporter](../scripts/report_helper_comparison.py) คำนวณ confusion จาก saved masks ด้วย `np.add.at` ตรวจ exact IDs/labels/shape/GT hashes และ selected checkpoint SHA ก่อนออกรายงานรวม โดยอ่าน canonical metrics ของ configuration เดิมต่อ ผลใหม่ใช้ชื่อ `SAM31_fresh15` แยกจาก `SAM31_warm_restarted`
+
+คิวมีหนึ่ง job และหยุดเมื่อจบ มีการเก็บ failures และ checkpoint ล่าสุด ไม่มี automatic model/OOM restart การกลับมาทำต่อหลัง interruption ต้องตรวจเหตุผล, full-state checkpoint และงบเวลาคงเหลือก่อนเปิด continuation
+
+### ตำแหน่งและการติดตาม
+
+Run `helper-sam31-fresh15-20261112T171624Z` เก็บ private ใต้ `CCTV_Dataset_Development.local/runs/` เปิดจากโฟลเดอร์ repo ด้วยคำสั่งนี้
+
+```bash
+cd ../CCTV_Dataset_Development.local/runs/helper-sam31-fresh15-20261112T171624Z
+python3 source_frozen/helper_training_progress.py --watch
+```
+
+ดู log ด้วย `tail -f sam31.log` หรือ `tmux attach -t helper_sam31_fresh15` การกด Ctrl+C ใน progress viewer หยุดเฉพาะตัวดูสถานะ เมื่อจบตรวจ `sam31/STATUS.json`, `sam31/SAVED_MASK_AUDIT.json` และ `REPORT_STATUS.json` ก่อนใช้รายงาน
+
+| ไฟล์ | หน้าที่ |
+| --- | --- |
+| `BATCH_MANIFEST.json` / `LAUNCH.json` | สูตร/คำสั่ง/bindings และ process/session identifiers |
+| `sam31/STATUS.json` / `HISTORY.jsonl` | สถานะจริงและผลแต่ละ epoch |
+| `sam31/RECOVERY.json` / `ATTEMPTS.jsonl` | จุดกู้สถานะและประวัติเปิด process |
+| `REPORT_STATUS.json` | สถานะการตรวจ saved masks และสร้างรายงานหลังฝึก |
+| `REPORT_TH.md` / `COMPARISON.csv` / `gallery/index.html` | รายงานอัตโนมัติ ตารางเต็ม และภาพชุดเดิมเมื่อคิวจบ |
+
+Weights อยู่ใน workspace หลักใต้ `models/human_parsing/cctv_helpers/helper-sam31-fresh15-20261112T171624Z/sam31/` ภาพ, masks, cache และ weights เก็บ private ส่วน source/configuration summary นี้อยู่ใน Git
+
+---
+
 <a id="b5-and-zero-shot-completion"></a>
 ## ผลครบทั้ง zero-shot สี่โมเดลและ B5 fine-tune — 12 พฤศจิกายน 2026
 
