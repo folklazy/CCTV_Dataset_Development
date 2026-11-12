@@ -272,3 +272,13 @@ Next/blockers:เปิดผ่านSSH tunnelแล้วกดบันท�
 - Verification: CPUlossfixtureยืนยันabsentloss0/scoregradientNone; val77GTabsentHair16Face40Upper4Lower9และอิสระcounterexamplesample0.5/global0 รันexistingtriageCPU9casesผ่าน ไม่มีmodelinferenceหรือtrainingprocessใหม่
 - Outputs: อัปเดตexistingreview/status/masterlatestsectionและcanonicalignore4.1 ส่วนข้อมูลจริง/snapshots/hashes/confirmation/freshnessauditprivate Masterหลังแก้SHA256 d400c1265c1802877e58a9aaec2051ee19ef963f359752f4990669faf1259c0c
 - Next: commonhelpervalidation/provenance/cache/loss/launcherrevisionsก่อนเลือกhelperและBoost550 รักษาactiveattempt/outputs/sourceและworkingchangesอื่นไว้ Gitเก็บcommitidentity ตรวจstaged/push/remoteตามworkflow
+
+## HELPER-RETRAIN-DECISION-20261112 / B4_REUSABLE_SAM_REVISION_RECOMMENDED
+
+เวลา 2026-11-12T14:07:51.781675+07:00 (Asia/Bangkok). ผู้ใช้ถามว่าต้องปรับและฝึกใหม่ทั้งB4/SAM3.1หรือไม่ จึงตรวจB4loss/preprocessing/evaluatorเพิ่มก่อนแนะนำretrain
+
+- Inputs: HEAD78f7a90, currenttrain_segformer_helper/eval_helper_v1/SAMsourceและlogs, acceptedGT300และ390derivedcropsเดิม
+- Verification: AST-extractedB4lossบนCPUให้wrongabsentclassloss8.40786171>correctbackground0.01022014, ignoredpixelperturbationinvarianceผ่าน, globalconfusionmiss/VOIDcaseผ่าน พบall-VOIDcompositeNaN แต่ตรวจ390savedmasksพบall-VOID0; train/evalnormalizationตรงกัน ผลอยู่privateCPU_CHECKS
+- Decision: B4checkpointคงใช้ประเมินต่อโดยอิงbindings/metricเดิมเมื่อใช้ได้ SAMsourceปัจจุบันควรแก้trainingobjectiveและvalidationแล้วทำfreshattemptหากใช้เส้นทางนี้ต่อ ไม่เหมารวมว่าmetricchangeทำให้weightsทั้งสองตัวต้องฝึกใหม่ RuntimeSAMsourceidentityยังunknownตามหลักฐานmtimeก่อนหน้า
+- Outputs: อัปเดตexistingreview/status/log พร้อมsourcehashesและCPUevidenceprivate ไม่มีtraining/inferenceprocessใหม่หรือactive-sourcechanges
+- Next: เตรียมcommonhelpervalidationและrevisionที่แก้SAMloss/score/cache/launcher พร้อมfreshattemptและงบงานตามขอบเขตที่จะดำเนินการ

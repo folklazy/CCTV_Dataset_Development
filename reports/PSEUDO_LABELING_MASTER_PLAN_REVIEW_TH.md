@@ -1,3 +1,26 @@
+<a id="helper-retrain-decision"></a>
+## ต้องฝึก helper ใหม่ตัวใด — 12 พฤศจิกายน 2026
+
+ตรวจloss/preprocessing/validationของB4เพิ่มเติมด้วยCPUexpectedfixturesและอ่านเส้นทางtrain/evalจริง ข้อสรุปแยกตามผลที่ตรวจ
+
+| ระบบ | การดำเนินงานที่มีหลักฐานรองรับ |
+| --- | --- |
+| SegFormer-B4 | เก็บcheckpointเดิมเพื่อประเมินต่อ lossมีCE/DiceลงโทษFPของคลาสที่ไม่มีและmaskignoreถูกต้อง evaluatorใช้globalconfusion การตรวจครั้งนี้ยังไม่พบเหตุที่บังคับretraincheckpointเดิม |
+| SAM3.1 | sourceปัจจุบันควรปรับobjectiveสำหรับabsent/unmatchedqueries/score supervisionและใช้commonvalidation ก่อนเปิดfreshtrainingattemptฉบับแก้เพื่อยืนยันการเรียนรู้ตามกติกาใหม่ ความตรงกันของsourceกับruntimeรอบปัจจุบันยังเป็นข้อจำกัดตามreviewก่อนหน้า |
+| ทั้งสองระบบ | เก็บrun/source/config/input/checkpoint/environment/cachefingerprintsตั้งแต่launch ใช้freshattempt/logและvalidationdomain/aggregationที่ประกาศร่วมกันเพื่อตรวจเทียบ |
+
+**B4ที่ตรวจเพิ่ม** กรณีGTbackgroundถูกต้องให้compositeloss0.01022014 แต่ทำนายHairบนbackgroundให้8.40786171 การเปลี่ยนlogitsเฉพาะพิกเซล255ไม่เปลี่ยนloss Globalconfusionนับmissedtargetและข้ามVOIDถูกต้อง Train/evalใช้ImageNetnormalizationชุดเดียวและvalidationไม่มีrandomaugmentation
+
+**B4กรณีขอบที่ควรแก้ก่อนการฝึกครั้งถัดไป** เมื่อทั้งbatchเป็น255 CrossEntropymeanให้NaN ขณะที่Diceคืน0 ชุดปัจจุบันตรวจครบ313train+77valcropsแล้วพบall-VOID0ทั้งสองฝั่ง จึงเป็นการเพิ่มความทนทานสำหรับinputรุ่นถัดไป ผลนี้ไม่ได้ชี้ว่าการฝึกB4ที่จบแล้วมีNaNจากกรณีนี้
+
+**Metricร่วมที่เสนอใช้ต่อ** globalper-targetTP/FP/FN→IoU/P/R/Dice บนvaliddomainเดียวและชุด77validationcropsที่ผูกhash ใช้ผลB4เดิมเมื่อbindingsและนิยามตรง ตรวจabsentclassesตามglobalunion การตรวจSAMเพิ่มต้องมีoutputcontractเรื่องqueryselection/overlap/thresholdที่กำหนดก่อนประเมิน ใช้GTเพื่อให้คะแนนและtrainingmatchingตามหน้าที่
+
+เปลี่ยนvalidationสูตรใหม่มีผลต่อการเลือกcheckpoint ส่วนการเปลี่ยนtraininglossมีผลต่อweightsที่เรียนรู้ การพิจารณาretrainจึงอิงข้อผิดพลาดที่กระทบแต่ละระบบ เก็บattemptและผลเก่าทั้งหมดพร้อมข้อจำกัดที่ทราบ
+
+---
+
+ประวัติreviewก่อนหน้าด้านล่าง
+
 <a id="training-review-20261112"></a>
 ## ตรวจคู่มือและงาน helper ที่เริ่มแล้ว — 12 พฤศจิกายน 2026
 

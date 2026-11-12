@@ -1,3 +1,5 @@
+> **12 พฤศจิกายน2026 — ผลตรวจเงื่อนไขretrain** B4checkpointเดิมนำไปประเมินต่อได้ CPUloss/VOID/globalconfusionchecksผ่านบนกรณีที่เกี่ยวข้อง ส่วนSAM3.1sourceปัจจุบันควรแก้objectiveและvalidationก่อนfreshtrainingattempt อ่าน [รายละเอียดและกรณีall-VOIDของB4](PSEUDO_LABELING_MASTER_PLAN_REVIEW_TH.md#helper-retrain-decision) สถานะก่อนหน้าด้านล่างเป็นประวัติ
+
 > **12 พฤศจิกายน2026 — REVIEW_COMPLETE / TRAINING_ACTIVE / METRIC_REVISION_REQUIRED**
 > ผู้ใช้รับรองSeed300แล้ว ตรวจ313train/77valcropsจาก213/56ภาพ roles/timegroupsถูกต้อง savedmasks390ตรงannotationปัจจุบัน SegFormer25epochsจบ SAM3.1กำลังtrainบนT4 อ่าน [สถานะจริงและประเด็นก่อนเลือกhelper](PSEUDO_LABELING_MASTER_PLAN_REVIEW_TH.md#training-review-20261112) source-at-launch/cache/loss/metric/launcherมีงานที่ต้องปิดตามรายงาน สถานะก่อนหน้าด้านล่างเป็นประวัติ
 
