@@ -1,3 +1,69 @@
+<a id="helper-impact-review"></a>
+## ตรวจผลกระทบครบเส้นทาง helper — 12 พฤศจิกายน 2026
+
+**ข้อมูลและB4ใช้ต่อได้ ต้องทำรอบSOLIDER RGBใหม่เพื่อให้ได้ผลจากrecipeที่แก้แล้ว ส่วนSAM3.1ปัจจุบันทำต่อได้** ข้อผิดพลาดคือCodexเลือกBGRจากResNet101simple_extractorให้Swin-Smallโดยไม่ได้ตรวจmodel attributes/train/evaluateของarchitectureนั้นก่อน และCPUfixtureเดิมรับรองสมมติฐานBGRที่ผิด
+
+### ผลตรวจและงานที่ต้องทำต่อ
+
+| ส่วน | หลักฐานที่ตรวจจริง | ข้อสรุปเรื่องทำใหม่ |
+| --- | --- | --- |
+| Annotation300 | SHA256ตรงreceiptที่ผู้ใช้รับรองครบ300ไฟล์ | ใช้ต่อ ไม่มีเหตุให้ทำGTใหม่จากข้อผิดพลาดpreprocessingนี้ |
+| Splitและtrainingdata | membership/manifestตรงhashเดิม ไฟล์crop+mask780ตรงbinding แบ่ง313train/77val คงroleและtimegroup isolation เกณฑ์bboxต่ำสุด52/51px ไม่มีall-VOIDcrop | ใช้ต่อ ไม่มีเหตุให้แบ่งใหม่หรือmaterializeใหม่จากข้อผิดพลาดนี้ |
+| B4เดิมและรอบปรับปรุง | RGB/ImageNet normalization สอดคล้องกับupstreamFASHN โหลดhelperห้าคลาสตรงorder มี15epochs/157updatesต่อepoch ไม่มีAMPskipหรือnonfinite loss | ใช้checkpointเดิมและรอบปรับปรุงต่อ ไม่พบเหตุให้เริ่มฝึกB4ใหม่ |
+| B4savedresults | exact77PNGs แยกreadbackคำนวณconfusionด้วยnp.add.atได้ตรงMETRICSทุกcell IoU/TP/FP/FN/P/R/F1ตรงสูตร checkpoint hash/bestepochตรง | ผลhelper validation65.2874595303%ใช้ได้ตามcrop/routeนี้ |
+| SOLIDER | architectureต้นทางRGB แต่runเดิมใช้BGR กลุ่มlogits/resize/map-backยังต่างจากnativepostprocessing มี25epochsและAMPskip2updatesตามGradScaler ไม่มีnonfinite history | ทำfreshRGBattemptจากpretrainedต้นฉบับเมื่อเข้าสู่ขั้นแก้training เก็บBGRweightsและประวัติเป็นอีกrecipe เพื่อดูร่างจริงได้ |
+| SOLIDERsavedresults | 77PNGs/GTmembershipครบ การคำนวณย้อนหลังตรงconfusion/metricsและcheckpointbestepoch18ทุกส่วน | 65.5541324044%เป็นผลrecipeBGRที่วัดได้ ส่วนinitial42.76%ต้องประเมินRGBใหม่ก่อนใช้เป็นnativebaseline |
+| SAM3.1กำลังฝึก | source snapshot/inputsตรงlaunch ไม่มีAMP ค่าlosshistoryที่ปิดepochแล้วfiniteและมี313optimizerupdates/epoch cache390entries มีsampletrain/valbindingsตรงและtensorFP32/finite | ยังไม่พบเหตุให้หยุดหรือเริ่มtrainingปัจจุบันใหม่ สถานะยังไม่ครบ15epochs |
+| SAM3.1warmstart | ใช้decoderจากbestepoch9ที่หยุดรอบเก่า พร้อมpretrainedbackboneและhashที่ระบุแน่นอน | ผลinitial63.6939527947%เป็นwarmstartedhelper baseline ต้องติดป้ายให้ตรง ใช้purezero-shotต้องโหลดpretrainedโดยไม่warmstart |
+| B5 | CPUโหลดweights/config/processorlocalได้ มี84,607,186parameters native18labels และprocessor512×512 RGB/ImageNet/labelreductionfalse | ยังไม่มีFTในbatchนี้ จึงไม่มีงานretrainB5 ผลzero-shot77cropsยังต้องทำให้ครบ |
+| Legacyzero-shotB4/B5/SOLIDER | mappingรวมHat/Sunglasses/Dress/Scarf/Jumpsuitบางกลุ่ม และB5scriptเก่าไม่ได้ใช้resize512×512ของprocessor | ทำzero-shot evaluationใหม่ตามcontractที่ประกาศก่อนคะแนน ทั้งสี่ตัวใช้77validationcropsชุดเดิม แยกจากtraining |
+| LegacySAMzero-shot | มีJPEGoverlay3ตัวอย่าง ผลscalarครบ77ยังขาด | ต้องเก็บผลpurepretrainedและnativeoutputsครบ77เพื่อทำตารางzero-shotเต็ม |
+
+การตรวจsavedmasksย้อนกลับตอบเรื่องexport/GTmembership/คณิตศาสตร์ของscorer ส่วนการตรวจpreprocessingตอบเรื่องinputตรงmodelหรือไม่ เป็นหลักฐานคนละส่วน จึงพบได้ว่าSOLIDERmaskscoringถูกต้องแต่inputrecipeไม่ตรงpretrainedarchitecture
+
+ไฟล์crop/mask780หมายถึง390cropsที่มีภาพและmaskอย่างละไฟล์ การยืนยันhash300annotationsและ780derivedfilesทำให้reuseผลrasterizationfreshnessเดิมได้ B4เดิมเฉลี่ยclassifierweightsของTop/Dressตอนinitialization แล้วเรียนรู้ห้าคลาสจากGTโดยตรง ขั้นตอนinitializationนี้แยกจากlegacyzero-shotmappingที่รวมDressในUpper จึงไม่มีเหตุให้ล้มผลB4fine-tuneเพียงเพราะต้องแก้mappingของตารางzero-shot
+
+ValidpixelsกำหนดจากGT255เดียวกันทุกระบบ และนับpredictedtargetบนGTbackgroundเป็นFP พื้นที่ของคนอื่นที่annotationกำหนดเป็นVOIDพ้นตัวหาร จึงใช้cropIoUรับรองcross-personownershipในพื้นที่ที่ไม่ได้ให้คะแนนไม่ได้ Nativeclassชื่อใกล้GTยังมีความต่างด้านannotationboundaryได้ ต้องเก็บFP/FNตามGTที่ประกาศและไม่เลือกmappingเพื่อช่วยคะแนน
+
+### รายละเอียด SAM3.1 ที่ต้องประกาศให้ตรง
+
+1. Native Sam3Processorทำuint8resize1008×1008แล้วแปลงfloat/normalize0.5 ส่วนhelperปัจจุบันresizefloatแบบbilinear/antialiasแล้วnormalize0.5 FixtureRGBแบบasymmetricที่คำนวณอิสระให้maxabsolute normalizeddifference0.0039217472 และmean0.0019501935 ทั้งคู่คงRGB/ขนาด/ช่วงค่าเดียวกัน ตัวเลขนี้เป็นfixtureเดียว ต้องไม่ใช้ยืนยันoutputequivalenceทั้งdataset
+2. Builderตั้งsupervise_joint_box_scores=True แต่nativeprocessorยังคูณpresenceเพิ่มและเก็บqueriesที่ผ่านthresholdหลายอัน Helperปัจจุบันใช้jointscoreหนึ่งครั้ง เลือกqueryเดียวต่อtargetและresolveoverlapด้วยmaskprobability×score CPUtestของเราเช็กhelperpolicyนี้ ไม่ได้รับรองว่าเป็นnativeprocessorpolicy การเรียกการคูณpresenceเพิ่มในnativeว่าbugจึงเกินหลักฐาน
+3. Helperlossใช้single-targettrainingmatching เพิ่มabsent/unmatched-query/score/presencesupervision มีgradientเปิดแม้forwardเป็นevalmodeเพื่อข้ามnativeDAC/matcherที่ใช้targetอีกcontract ตรึงbackboneและใช้cacheในattemptเดียวกัน การฝึกด้วยrecipeที่ประกาศนี้ยังทำต่อได้
+
+ข้อแตกต่างของSAMข้างต้นต้องคงไว้ในlabels/routeของผลปัจจุบัน การทำpurepretrainedzero-shotครั้งถัดไปใช้processorที่เลือกและบันทึกให้ครบก่อนดูคะแนน พร้อมประกาศquery/overlap policy การเปลี่ยนnative-likepostprocessingตอนประเมินสามารถใช้weightsเดิมได้ ส่วนการเปลี่ยนtraining objectiveหรือinputrecipeเป็นอีกtrainingattempt
+
+### จุดส่งต่อไป annotation ที่ยังต้องแก้ แต่ไม่ต้องฝึกโมเดลเพื่อแก้
+
+| จุดส่งต่อ | สิ่งที่พบ | งานที่ต้องทำก่อนขยายpseudo-labeling |
+| --- | --- | --- |
+| เลือกweights | generate_drafts_helper_v1.pyมีdefaultชี้B4v1เดิมและอ่านHFdirectory ส่วนรอบใหม่เก็บBEST.pt | export/loaderที่ตรวจstrictstateและhashได้ แล้วส่งmodel pathชัดเจน ป้องกันการใช้v1โดยไม่รู้ตัว |
+| Polygonexport | ใช้RETR_EXTERNAL, contourarea≥12pxและsimplifyepsilon1px | รักษาrawhardmasks ตรวจsmallparts/holes/ownershipและrasterizeกลับก่อนรับdraft ไม่ใช้IoUก่อนpolygonexportอ้างคุณภาพหลังexportโดยตรง |
+| Map-back | draftsourceมีunpad→nearestresize→offsetตามbboxcontext15% | ตรวจasymmetricfixtureและภาพจริงกับnativecoordinatesในรอบintegrationก่อนbulk |
+| ขอบเขตคะแนน | 77GT-personcropsจาก56validationimages | บอกcropdenominatorและGTbboxconditioning ใช้ภาพเดียวกันตรวจงานแก้จริงเพิ่มเติม คะแนนนี้ยังไม่วัดmissedpersonหรือbboxdraftgenerationทั้ง2,200ภาพ |
+
+### ข้อสรุปการทำซ้ำและลำดับงาน
+
+- เก็บannotation300, split, materializeddata และB4checkpoints/resultsต่อทั้งหมด
+- ปล่อยSAM3.1ปัจจุบันจบตามguardเดิม เก็บhistoryและระบุcustomhelperrouteที่ตรวจพบ
+- จัดpurezero-shotครบB4/B5/SOLIDER/SAM3.1บน77cropsต่อโมเดล ใช้pretrainedก่อนCCTVFTและตรึงmapping/input/outputcontractก่อนเปิดงาน เนื่องจากผลเก่าส่วนใหญ่มีเพียงoverlay/roundedreport จึงต้องinferenceเฉพาะzero-shotที่ไม่มีrawoutputsเพียงพอ ไม่ใช่งานtraining
+- ทำfreshSOLIDERRGBtrainingattemptจากpretrainedเดิมเพื่อแก้recipe ตามงบที่ตรวจแล้ว ผลBGRเดิมยังเก็บเป็นcandidateภายใต้recipeเดิม การฝึกRGBใหม่ยังไม่รับประกันคะแนนสูงกว่า
+- ตรวจcheckpointexport/geometry/polygonroundtripก่อนสร้างdraftชุดใหญ่ แล้วจึงใช้ผลร่าง/ภาระแก้จริงเลือกhelper
+
+ในworkunitตรวจผลกระทบนี้ไม่มีmodel-forwardหรือtraininglaunchเพิ่ม ใช้CPUอ่านsavedartifactsและตรวจmetadata/scorer/source CurrentSAM3.1workerคงsource_frozenเดิม ตรวจprocessจริงถึงepoch3/15แล้ว ตัวเลขepochในreviewนี้เป็นsnapshot การตรวจนี้ไม่ใช่คำรับรองว่าทุกภาพหรือทุกrouteผ่านproductionacceptance
+
+### หลักฐานและขอบเขตที่ยังยืนยันไม่ได้
+
+Privateevidenceอยู่ในrunเดิมใต้impact_review_20261112 มีRESULTS, SOURCE_CHECK, ARITHMETIC_EXTENDED และB5_CPU_IDENTITY sourcePythonที่ใช้launchยังตรงทั้งหมด B4 2files / SOLIDER267 / SAM158 files ใช้auditfreshnessเดิมประกอบการตรวจannotation/cropbindingปัจจุบัน ไม่rasterizeGTใหม่ซ้ำ
+
+ยังไม่มีเวลาผู้ใช้แก้draftจริง ไม่มีrawzero-shotครบทั้งสี่ตัว และยังไม่ได้รับไฟล์SOLIDER_HUMAN_PARSING_BENCHMARK_TH.mdที่อ้าง56.34%/154ms จึงยังผูกแถวนั้นกับrun/processor/timingboundaryไม่ได้ Epochsecondsในtraininghistoryรวมtrain/validationและI/O/cacheบางช่วง ใช้เป็นoperationaldiagnostics เวลา154msต้องตรวจต้นฉบับก่อนนำมาเทียบ
+
+อ้างอิงB4inputจาก[upstreamFASHNparser](https://github.com/fashn-AI/fashn-human-parser/blob/main/src/fashn_human_parser/parser.py) และB5จาก[processorของcheckpointที่เลือก](https://huggingface.co/matei-dorian/segformer-b5-finetuned-human-parsing/blob/fb3404cf7ab68cb62f78885cdf9b992864d080db/preprocessor_config.json) SOLIDER/SAMอ้างsourceที่ผูกrevision/hashในrun ส่วนmean/std/resize/querypolicyตรวจจากarchitectureและprocessorจริง
+
+---
+
+ส่วนถัดไปเป็นประวัติการพบและแก้ปัญหาในแต่ละช่วง
+
 <a id="solider-rgb-correction"></a>
 ## แก้ข้อผิดพลาด preprocessing ของ SOLIDER Swin — 12 พฤศจิกายน 2026
 

@@ -126,7 +126,7 @@ class TrainingRequirements(unittest.TestCase):
             with self.assertRaises(ValueError):
                 trainer.source_file(Path(folder), '../secret')
 
-    def test_sam_joint_score_is_not_multiplied_by_presence_twice(self):
+    def test_sam_helper_uses_single_joint_score_policy(self):
         class Samples:
             items = [{'sample_id': 'synthetic'}]
             def __len__(self):

@@ -209,15 +209,15 @@ class DenseHelper:
             state = {k.removeprefix('module.'): v for k, v in state.items()}
             self.model.load_state_dict(state, strict=True)
             self.input_space = self.model.input_space
-            if self.input_space not in ['RGB', 'BGR']:
-                raise ValueError('Unsupported native model input space')
+            if self.input_space != 'RGB':
+                raise ValueError('Selected Swin-Small source contradicts its reviewed RGB contract')
             self.mean, self.std = self.model.mean, self.model.std
+            if self.mean != [.485, .456, .406] or self.std != [.229, .224, .225]:
+                raise ValueError('Selected Swin-Small normalization differs from the reviewed source')
         self.model.to(device)
 
     def logits(self, image):
         if self.kind == 'solider':
-            if self.input_space == 'BGR':
-                image = image[:, [2, 1, 0]]
             image = F.interpolate(image, size=(572, 384), mode='bilinear', align_corners=False)
         mean = image.new_tensor(self.mean)[None, :, None, None]
         std = image.new_tensor(self.std)[None, :, None, None]
@@ -332,7 +332,8 @@ def evaluate(helper, dataset, output=None):
                 planes = []
                 for label in range(1, 5):
                     masks, scores, presence = helper.forward(features, label)
-                    # The bound SAM builder already uses joint box/presence scores.
+                    # Helper policy consumes joint logits once. Native Sam3Processor
+                    # applies a further presence factor and keeps multiple queries.
                     confidence = scores.sigmoid()
                     best = int(confidence.argmax())
                     probability = masks[best].sigmoid()
@@ -435,6 +436,18 @@ def main():
         atomic_json(output/'STATUS.json', {'state': 'LOADING', 'pid': os.getpid()})
         helper = (PromptHelper(args, device, output/'features', bindings) if args.model=='sam31'
                   else DenseHelper(args, device))
+        contract = {'color_order': 'RGB', 'model': args.model,
+                    'native_processor_equivalence_claim': False}
+        if args.model == 'sam31':
+            contract.update({'mean': [.5]*3, 'std': [.5]*3, 'input_hw': [1008, 1008],
+                             'resize': 'float bilinear, align_corners=False, antialias=True',
+                             'selection': 'one highest joint-score query per target; threshold0.2',
+                             'native_differences': 'uint8 resize quantization; extra presence factor; query retention'})
+        else:
+            contract.update({'mean': helper.mean, 'std': helper.std,
+                             'input_hw': [572, 384] if args.model=='solider' else [576, 384],
+                             'output': 'grouped native logits' if args.model=='solider' else 'five-class logits'})
+        atomic_json(output/'EFFECTIVE_INPUT_OUTPUT_CONTRACT.json', contract)
         root = Path(args.dataset).resolve()
         train = Crops(root, manifest['train'], bindings['files'], training=args.model!='sam31')
         validation = Crops(root, manifest['val'], bindings['files'])

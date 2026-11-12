@@ -338,3 +338,15 @@ Next/blockers:เปิดผ่านSSH tunnelแล้วกดบันท�
 - Verification CPU10testsผ่านและactualSwinmodelmetadata+strictcheckpointloadผ่าน RGB/[.485,.456,.406]/[.229,.224,.225] modelcalls0 EvidenceprivateSOLIDER_RGB_CORRECTION_CPU.json
 - Outputs existingreview/status/AGENTS/master และgallerycorrectionrecord ถอน42.76%จากcurrentnativezero-shottable ผลFTBGR65.55%เก็บพร้อมrecipe ไม่อ้างเป็นnativeRGBbaseline Userquotedreportยังต้องรับpath/ไฟล์เพื่อผูกคะแนน56.34/154ms
 - Next รอsourceรายงานที่ผู้ใช้ระบุและกำหนดnativeRGB→nativeargmax→fixedmappingสำหรับpurezero-shotครบสี่ตัว ไม่มีการเลือกmappingจากคะแนน
+
+
+## Work log — 2026-11-12T16:24:28.775456+07:00 (Asia/Bangkok)
+
+- Work ID HELPER-IMPACT-REVIEW-20261112-01. ผู้ใช้ขอตรวจทั้งหมดว่าอะไรต้องเริ่มใหม่ ตรวจcheckpoint/source/data/modelpreprocessing/loss/cache/scorer/history/draftintegrationของB4/SOLIDER/SAM3.1และB5จากactualfilesและprimarysources
+- Data verification annotationhash300/300และcropfilehash780/780ตรง prior acceptedreceipts membership/manifestตรงและroles/timegroupsแยก minbboxtrain52/val51px ไม่มีallVOIDcrop ใช้freshnessauditเดิมร่วมกับhashปัจจุบัน
+- Independent CPU rescore np.add.at จาก77savedmasksต่อB4/SOLIDERตรงcanonicalconfusionทุกcell IoU/TP/FP/FN/P/R/F1และbestcheckpointsha/epochตรง Pythonmodelsourceก่อนlaunchตรงB4 2/SOL267/SAM158files historiesfinite B4 AMPskip0 SOL2updatesตามGradScaler
+- SAM cache390ตรวจbindings/FP32/finiteเฉพาะsampletrain+val Sourceprocessorเทียบasymmetricfixtureพบfloatresizeกับuint8resizeไม่bitwise maxnormalizeddiff0.0039217472 Nativeprocessorใช้presenceเพิ่ม+multiplequeries ส่วนcurrenthelperonequery/jointscoreครั้งเดียว เป็นcustomchoice ไม่อ้างnativeequivalenceหรือเรียกnativepolicyว่าbug ยังไม่พบเหตุrestartactiveSAM
+- B5โหลดcheckpoint/config/512processorด้วยCPUสำเร็จ84607186params ไม่มีforward B4RGB/ImageNet/576×384เทียบupstreamFASHNตรงตามส่วนที่ตรวจ NativeSOLIDERsourceยืนยันRGB; เตรียมRGBfreshtrainingproposalไม่launch ส่วนinitial/FTBGRเก็บตามrecipe
+- Gap exportdraftยังdefaultB4v1/HFformat และpolygonRETR_EXTERNAL/minarea12/simplify1px ต้องตรวจweightbinding/holes/smallparts/mapbackก่อนbulk การแก้ส่วนนี้ไม่ต้องtrainเพื่อเปลี่ยนcode
+- Outputs existingreview/status/AGENTS/master/log; privateimpact_review_20261112 evidence/decision/proposal ไม่มีper-imageIDsหรือdatasetimagesขึ้นGit CPU10testsผ่าน model-forward/newtraininglaunchในreview0 เก็บSAMprocessและfrozenartifactsเดิม
+- Next ทำpurezero-shot4helpers77cropsตามcontract ตรวจผลเมื่อครบ แล้วทำSOLIDERRGBfreshattemptและdraftintegrationตามscopeที่รับรอง ไม่เริ่มข้อมูล/ฝึกทุกตัวใหม่เพราะข้อผิดเฉพาะSOLIDER
