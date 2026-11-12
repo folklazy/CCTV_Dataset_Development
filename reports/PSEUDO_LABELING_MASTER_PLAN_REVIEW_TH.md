@@ -1,7 +1,7 @@
 <a id="helper-training-revision2"></a>
 ## ฝึกตัวช่วยฉบับปรับปรุง — 12 พฤศจิกายน 2026
 
-สถานะ **CPU_ACCEPTANCE_PASS / BATCH_READY_TO_LAUNCH** ผู้ใช้อนุญาตหยุด SAM3.1 รอบเดิมและให้เริ่มตัวที่เร็วกว่า จัดลำดับ SegFormer-B4 → SOLIDER → SAM3.1 ทีละตัวบน Tesla T4 เป้าหมายคือร่าง annotation ที่ผู้ใช้แก้น้อยลง
+สถานะ **B4_TRAINING / SOLIDER_PENDING / SAM31_PENDING** ผู้ใช้อนุญาตหยุด SAM3.1 รอบเดิมและให้เริ่มตัวที่เร็วกว่า จัดลำดับ SegFormer-B4 → SOLIDER → SAM3.1 ทีละตัวบน Tesla T4 เป้าหมายคือร่าง annotation ที่ผู้ใช้แก้น้อยลง
 
 ### สิ่งที่เก็บจากรอบเดิม
 
@@ -46,7 +46,27 @@ SOLIDER แบ่ง native IDs ครบ20เป็น `Hair={2}`, `Face={13}`,
 
 CPU expected fixtures ตรวจ absent-target gradients, positive/negative query scores, VOID invariance, all-VOID finite loss, exhaustive native projection, BGR channel order, global confusion, joint-score handling และ controller sequencing/stop-on-failure แยกจาก GPU forward/backward ที่ต้องตรวจเมื่อเปิด worker โหลด B4 ห้าคลาสและ SOLIDER pretrained20 ด้วย CPU ผ่าน การตรวจข้อมูลก่อนเปิดงานผ่านครบสาม recipe และ CPU expected fixtures ผ่าน10 tests
 
-Run และคำสั่งติดตามจริงจะระบุในสถานะล่าสุดหลังยืนยัน worker เริ่มแล้ว
+ตรวจเริ่มงานเมื่อ `2026-11-12T14:40:33.997309+07:00` ยืนยัน controller PID71234 และ B4 worker PID71265 มี session leader แยกจากบทสนทนา อยู่ใน tmux `helper_seed300_r2` และผ่าน training batch20/157 ของ epoch1 แล้ว Run `helper-refinement-20261112T073106Z` ใช้ launch commit `99a55ea14ce833e8c65a7eef6c9e0817cf9c98b8` Source snapshot และ manifest อยู่ใน private run เดิม
+
+| ระบบ | สถานะที่ตรวจหลังเปิด batch |
+| --- | --- |
+| B4 | TRAINING 15epochs, ได้ INITIAL_METRICS และบันทึกสถานะหลัง backward/optimizer steps แล้ว |
+| SOLIDER | PENDING อยู่ลำดับถัดไป ยังไม่มี GPU calls ของรอบใหม่ |
+| SAM3.1 | PENDING รันหลัง SOLIDER สำเร็จ รอบเก่าเก็บ best epoch9 ไว้ |
+
+Baseline ก่อนปรับ B4 รอบนี้ global mIoU4=0.645484405181 จาก evaluator FP32 สูตรที่ประกาศ ขณะที่ log ฝึกเดิมประเมินภายใต้ AMP และแสดง0.6454162071 จึงเก็บค่าทั้งสองพร้อม evaluator bindings ไม่ใช้ความต่างนี้อ้างว่ารอบใหม่ได้เรียนรู้ดีขึ้นก่อนเริ่มฝึก
+
+สถานะ controller อ่าน `runs/helper-refinement-20261112T073106Z/STATUS.json` ใน private workspace และดูความคืบหน้า B4 จาก `b4/STATUS.json` กับ `b4.log` เมื่อแต่ละโมเดลจบจะมี METRICS.json, validation_predictions77ไฟล์ และ STATUS=COMPLETE ของตนเอง Controller=COMPLETE เมื่อทั้งสามจบ Controller=STOPPED ให้ตรวจ error/history ก่อนทำต่อ ไม่มี automatic retry
+
+คำสั่งบน server ต่อไปนี้อ้าง path ของ private workspace ที่ใช้งานจริง
+
+```bash
+cat /home/skyaidev/folk/CCTV_Dataset_Development.local/runs/helper-refinement-20261112T073106Z/STATUS.json
+cat /home/skyaidev/folk/CCTV_Dataset_Development.local/runs/helper-refinement-20261112T073106Z/b4/STATUS.json
+tail -f /home/skyaidev/folk/CCTV_Dataset_Development.local/runs/helper-refinement-20261112T073106Z/b4.log
+```
+
+ข้อมูลผล train ใหม่ยังไม่ครบสามโมเดล การเลือกตัวช่วยที่ทำให้แก้น้อยที่สุดต้องตรวจร่างและเก็บภาระการแก้เมื่อผลพร้อม
 
 ---
 

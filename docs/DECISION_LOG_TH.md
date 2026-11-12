@@ -303,3 +303,12 @@ Next/blockers:เปิดผ่านSSH tunnelแล้วกดบันท�
 - Outputs existing review/status/README/AGENTS, scripts/tests และprivate run helper-refinement-20261112T073106Z; master SHA256 5bca8569c7ae3ccb0db31eed350d804aca5081574e234ec74dcb8321f0925fb1 ไม่มีผลใหม่ให้สรุปwinner ยังต้องยืนยัน GPU forward/backward และตรวจร่าง/ภาระแก้จริงหลังฝึก
 - Preparation issue pip moduleไม่มีในB4environment จึงเก็บinstalled-package inventoryผ่านimportlib.metadataแทน โดยคงenvironmentเดิม
 - Next freeze sourceและlaunch detached batchตามลำดับ เก็บlaunchcommit/firstprogress และอัปเดตสถานะจริง
+
+
+## Work log — 2026-11-12T14:40:33.997309+07:00 (Asia/Bangkok)
+
+- Work ID HELPER-RETRAIN-20261112-02. Freeze source/manifest จากlaunchcommit99a55ea เปิดtmux helper_seed300_r2 controllerPID71234 workerPID71265 บนT4 โดยไม่มีworkerฝึกซ้ำ เก็บLAUNCH/LAUNCH_VERIFIED private
+- Verification frozen CPU tests10/10, input preflights3/3, source/weight/input hashesและresource admissionผ่าน ยืนยันGPU B4ทำtraining20/157batchesของepoch1 สถานะใหม่ไม่อ้างว่าSOLIDER/SAMเริ่มแล้ว
+- Baseline B4 FP32 evaluator mIoU4=0.6454844051808025 ส่วนold trainingvalidationใช้AMP เก็บผลทั้งสองตามแหล่งข้อมูล ไม่มีการปรับrecipeตามคะแนนนี้
+- Outputs existingreview/status/README พร้อมrun/log/status locations คิว15/25/15epochs ลำดับB4→SOLIDER→SAM3.1 stop-on-failure/zero retries ตามmanifest ไม่ติดตั้ง/ดาวน์โหลด ไม่ใช้heldout/Boost และไม่เปลี่ยนGT
+- Next detachedcontrollerทำงานต่อโดยไม่ต้องมีCodexค้าง ตรวจMETRICS/savedvalidationdraftsและภาระการแก้หลังจบ ก่อนเลือกhelperหรือขยายpseudo-labeling

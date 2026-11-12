@@ -1,4 +1,4 @@
-> **12 พฤศจิกายน 2026 — ปรับ helper training** เตรียม B4 → SOLIDER → SAM3.1 ตามผู้ใช้ให้เริ่มตัวเร็วกว่า เก็บผลเก่าครบ อ่าน [สถานะและ recipe ปัจจุบัน](reports/PSEUDO_LABELING_MASTER_PLAN_REVIEW_TH.md#helper-training-revision2)
+> **12 พฤศจิกายน 2026 — B4 เริ่มฝึกรอบปรับปรุงแล้ว** คิวต่อ SOLIDER → SAM3.1 อัตโนมัติเมื่อสำเร็จทีละตัว ตรวจ GPU training progressแล้ว เก็บผลเก่าครบ อ่าน [สถานะและวิธีติดตาม](reports/PSEUDO_LABELING_MASTER_PLAN_REVIEW_TH.md#helper-training-revision2)
 
 > **เลือกhelperเพื่อช่วยannotation — 12พฤศจิกายน2026** ใช้คุณภาพร่างและเวลาคนแก้เป็นหลัก โมเดลใช้เทคนิคที่เหมาะกับตัวเองและเลือกตามส่วนได้ IoUเป็นข้อมูลประกอบ ใช้outputs/checkpointsที่มีเริ่มตรวจ แล้วฝึกเพิ่มเมื่อคุ้มภาระงาน อ่าน [เป้าหมายที่แก้ให้ตรงงาน](reports/PSEUDO_LABELING_MASTER_PLAN_REVIEW_TH.md#helper-purpose-correction) ข้อความreviewก่อนหน้าด้านล่างเป็นประวัติ
 

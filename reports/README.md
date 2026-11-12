@@ -1,4 +1,4 @@
-> **12 พฤศจิกายน 2026 — HELPER_BATCH_READY_TO_LAUNCH** หยุด SAM3.1 รอบเดิมตามผู้ใช้ เก็บ best epoch9 และผล B4 เดิมครบ เตรียมฝึก B4 → SOLIDER → SAM3.1 ทีละตัว CPU10 tests/3 input preflights ผ่าน อ่าน [recipe, งบ และนิยามคะแนน](PSEUDO_LABELING_MASTER_PLAN_REVIEW_TH.md#helper-training-revision2)
+> **12 พฤศจิกายน 2026 — B4_TRAINING / SOLIDER_PENDING / SAM31_PENDING** หยุด SAM3.1 รอบเก่าตามผู้ใช้ เก็บ best epoch9 และผล B4 เดิมครบ เปิด detached batchตามลำดับ B4 → SOLIDER → SAM3.1 ยืนยัน B4ผ่านtraining20/157batchesแล้ว CPU10 tests/3 preflightsผ่าน อ่าน [สถานะ, วิธีติดตาม และ recipe](PSEUDO_LABELING_MASTER_PLAN_REVIEW_TH.md#helper-training-revision2)
 
 > **เป้าหมายhelperล่าสุด12พฤศจิกายน2026** เลือกตัวช่วยที่ทำให้แก้GTน้อยลงจากร่างจริง ใช้วิธีที่เหมาะกับแต่ละโมเดลและเลือกตามส่วนได้ Metricsเป็นข้อมูลประกอบ Fine-tuningทำเมื่อช่วยลดข้อผิดพลาดที่เสียเวลา อ่าน [คำชี้แจงและกติกาที่ปรับ](PSEUDO_LABELING_MASTER_PLAN_REVIEW_TH.md#helper-purpose-correction) คำแนะนำbenchmark-styleก่อนหน้าด้านล่างเป็นประวัติ
 
