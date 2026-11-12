@@ -1,3 +1,35 @@
+<a id="helper-training-complete"></a>
+## ปิดรอบฝึก helper และตรวจผล — 12 พฤศจิกายน 2026
+
+สถานะ **COMPLETE / SAVED_MASK_SCORING_VERIFIED** SAM3.1บันทึกผลจบเมื่อ21:30ไทย ตรวจปิดรอบจากartifactsภายหลัง พบB4/SOLIDERBGR/SOLIDERRGB/SAM3.1มีvalidation77cropsครบทุกตัว แยกประเมินสองrecipeของSOLIDER จึงเป็นสามโมเดล/สี่configuration ส่วนB5ยังไม่มีFTในbatchนี้
+
+| Configuration | Hair IoU % | Face IoU % | Upper IoU % | Lower IoU % | mIoU4 % | Saved outputs |
+| --- | --- | --- | --- | --- | --- | --- |
+| B4 | 74.24 | 46.65 | 77.36 | 62.89 | 65.29 | 77/77 |
+| SOLIDER_BGR | 73.41 | 46.92 | 75.46 | 66.42 | 65.55 | 77/77 |
+| SOLIDER_RGB | 71.98 | 51.94 | 77.93 | 68.97 | 67.70 | 77/77 |
+| SAM3.1 | 74.29 | 54.79 | 80.11 | 63.98 | 68.29 | 77/77 |
+
+คะแนนเป็นhelper validationบน77GT-personcropsจาก56ภาพตามsplitเดิม ใช้input/outputrecipeของแต่ละตัวและGT255เดียวกัน เป้าหมายเลือกตัวช่วยจากร่างจริงและภาระแก้ ตารางนี้แยกจากpurezero-shotที่ผู้ใช้ขอ ซึ่งยังมีผลขาด โดยเฉพาะB5และSAMpretrainedครบ77crops
+
+### สิ่งที่ตรวจปิดจริง
+
+- คำนวณconfusionจากsavedhardmasksครบ77cropsต่อconfigurationด้วยnp.add.atได้ตรงMETRICSทุกcell ตรวจlabels/dimensions/exactmembership ไม่มีmissing/invalidexport IoU/TP/FP/FN/P/R/F1ตรงสูตรและcheckpointSHAตรงcompletion
+- ตรวจmanifestและcrop/image/mask780hashesยังตรงbindingเดิม เก็บprivateclosureevidenceในrunเดิมใต้final_closure_20261112 และเชื่อมmetricspath/hashทุกconfiguration
+- ขณะตรวจไม่มีtrainingGPUworkerเหลือ ParentSTATUSเคยค้างTRAINING แก้เป็นderivedCOMPLETEจากหลักฐานโดยเก็บSTATUS_BEFOREและappendCOMPLETION_RECONCILED ไม่เขียนทับscientificconfig/BINDINGเดิม
+
+### ประวัติ SAM3.1 ที่ต้องกำกับ
+
+ภายหลังการพักในmemoryที่ตรวจไว้ก่อนหน้า พบcontrollerเดิมรับSIGINTและworkerรับSIGTERMตามtraceback แล้วมีresume_sam31_training.pyกับworkerPID389286มาฝึกช่วงepochlabels6–15ต่อ LogระบุโหลดBESTจากepoch3 mIoU67.82% เริ่มAdamWใหม่ เลื่อนcosineschedule5steps และreseedตามepoch ประวัติHISTORYมีlabels1–15ครบ แต่trajectoryไม่ได้เก็บoptimizerต่อเนื่องตลอดทั้งรอบ ต้องเรียกผลนี้ว่าwarm-restartedhelperconfiguration
+
+Sourceปัจจุบันของcontinuationมีprompt_lossASTตรงoriginalหลังตัดdocstring และevaluatorใช้globalconfusion/query/thresholdpolicyเดิม Sourcehashตรวจหลังrunแล้ว แต่ไม่มีlaunchsourcehashของcontinuationและไม่ได้เก็บbytesของBESTที่โหลดก่อนถูกอัปเดตเป็นbestepoch6 จึงมีข้อจำกัดprovenanceช่วงเริ่มต่อ เก็บCONTINUATION_RECONCILIATIONแยกจากBINDINGของoriginalsegment คะแนนfinal77masksตรวจได้ครบตามข้างต้น
+
+งานปรับเพดาน8hยังไม่ได้launchก่อนกลับมาตรวจพบcompletionผ่านcontinuationแล้ว จึงเก็บdraftตัวคุมที่ไม่ได้ใช้ไว้ในprivateclosureและปิดสถานะตามactualrecords ไม่อ้างว่าเคยเปลี่ยนcapหรือรักษาoptimizerตลอดช่วงcontinuationนี้
+
+ผลทั้งหมดพร้อมดูrasterdraftsและตรวจnewweight→editor/polygonexportต่อ ยังไม่มีเวลาผู้ใช้แก้จริงเพื่อรับรองว่าconfigurationที่IoUสูงสุดลดภาระแก้ได้มากที่สุด
+
+---
+
 <a id="clasp-candidate-review"></a>
 ## CLASP จาก paper ที่ผู้ใช้เสนอ — 12 พฤศจิกายน 2026
 

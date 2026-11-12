@@ -1,3 +1,5 @@
+> **12 พฤศจิกายน 2026 — HELPER_TRAINING_COMPLETE** B4/SOLIDERBGR/SOLIDERRGB/SAM3.1ครบ77validationcropsและindependentmaskscoringผ่าน ParentSTATUSค้างได้รับการreconcileแล้ว SAMช่วง6–15เป็นwarmrestartจากbestcheckpointพร้อมoptimizerใหม่ อ่าน [ผลครบและข้อจำกัดcontinuation](PSEUDO_LABELING_MASTER_PLAN_REVIEW_TH.md#helper-training-complete)
+
 > **12 พฤศจิกายน 2026 — SAM_PAUSED_IN_MEMORY / SOLIDER_RGB_TRAINING** ผู้ใช้ขอดูBGR/RGBก่อน พักSAMworker/controllerด้วยSIGSTOPและเก็บoptimizer/RNGในprocessเดิม เปิดRGB25epochsในtmux helper_solider_rgb ยืนยันtrainingจริง มีwatchdogและautomaticresumeเมื่อจบ/error อ่าน [สถานะและคำสั่งดูสด](PSEUDO_LABELING_MASTER_PLAN_REVIEW_TH.md#solider-rgb-interleave)
 
 > **12 พฤศจิกายน 2026 — ยืนยันเป้าหมาย practical helper** เลือกวิธีที่ร่างดีและแก้น้อยที่สุด ปรับแต่งแต่ละโมเดลและเลือกต่อส่วนได้ SOLIDER BGRที่ฝึกแล้วเป็นcandidate ส่วนRGBtrainingเป็นทางเลือกปรับปรุง อ่าน [เกณฑ์ที่แก้ให้ตรงเป้าหมาย](PSEUDO_LABELING_MASTER_PLAN_REVIEW_TH.md#helper-practical-selection-reaffirmed)
