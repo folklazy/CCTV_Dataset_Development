@@ -1,3 +1,16 @@
+<a id="clasp-candidate-review"></a>
+## CLASP จาก paper ที่ผู้ใช้เสนอ — 12 พฤศจิกายน 2026
+
+สถานะ **PAPER_REVIEWED / RELEASE_UNVERIFIED / PROPOSED_HELPER_CANDIDATE** อ่านarXiv2601.13133v1และค้นreleaseแบบเจาะจง งานเสนอDINO+CLIPsemanticpseudolabelsและPrompt-ControlledMoEสำหรับhuman-centricpretraining ส่วนhumanparsingใช้CLASPbackboneร่วมกับSCHPและฝึกdownstreamบนLIP [ต้นฉบับและวิธีทดลอง](https://arxiv.org/html/2601.13133v1#S4)
+
+TableVIIIรายงานCLASP(SCHP)Swin-T59.31/Swin-S60.93/Swin-B61.74 เทียบSOLIDERSwin-B60.50 บนLIP ตัวบทระบุmetricparsingเป็นmIoU แต่หัวคอลัมน์TableVIIIพิมพ์mA จึงบันทึกความคลาดเคลื่อนนี้ไว้ คะแนนเหล่านี้ยังไม่ตอบeditingburdenหรือfour-targetCCTVvalidationของเรา [TableVIII](https://arxiv.org/html/2601.13133v1#S4.T8)
+
+ข้อเสนอคือเก็บเป็นcandidateที่น่าลองเมื่อมีsource/weightsพร้อม ค้นรอบนี้ยังไม่พบofficialimplementation/checkpointที่ยืนยันได้ ต้องแยกpretrainedbackboneกับparsingcheckpointที่มีheadพร้อม และตรวจPC-MoE/config/normalization/nativeclasscontractก่อนโหลด การนำCLASPไปใส่SOLIDERloaderเดิมต้องมีหลักฐานความเข้ากันได้
+
+ทางที่คุ้มกับงานปัจจุบันคือเริ่มจากparsingcheckpointที่ผู้เขียนฝึกไว้แล้วเพื่อดูร่างบนfixeddevelopmentcrops แล้วปรับวิธีหรือfine-tuneSeed300เมื่อมีเหตุรองรับ การใช้pretrainingrecipeทั้งหมดต้องใช้ทรัพยากรอีกขอบเขต ขณะนี้ยังไม่มีmodelcall, dependencyinstallation, weightsdownload หรือT4memorymeasurementของCLASP
+
+---
+
 <a id="solider-rgb-interleave"></a>
 ## พัก SAM3.1 เพื่อดู SOLIDER RGB ก่อน — 12 พฤศจิกายน 2026
 
