@@ -292,3 +292,14 @@ Next/blockers:เปิดผ่านSSH tunnelแล้วกดบันท�
 - Outputs: masterไฟล์เดิมSHAdea61f81a8b32528643975e2f9d9228fe8fc117789dd145b52fca815011db4b1พร้อมbackup, existingreview/status/README/AGENTS/log ไม่สร้างmasterplanใหม่ ข้อมูลผลฝึกและsourcehistoryเก็บไว้
 - Verification: sourceชี้ว่าsam31_testsเป็นzero-shot จึงไม่ตีความเป็นผลfine-tunedSAM; currentlyไม่มีhumaneditingtimemeasurement ไม่อ้างผู้ชนะทั่วไป ตรวจmasterhash/links/stageddiffและรักษาunrelatedworkingchanges
 - Next: ดูร่างที่ใช้จริงจากsavedoutputs/checkpointsบนdevelopment ระบุผ่าน/แก้เล็ก/วาดใหม่รายpartและbboxmiss/ownererrors ใช้ข้อมูลคนแก้เลือกhelper/recipeแล้วค่อยฝึกเพิ่มตามประโยชน์ ไม่บังคับvalidationใหญ่ก่อนขั้นนี้
+
+
+## Work log — 2026-11-12T14:37:27.378962+07:00 (Asia/Bangkok)
+
+- Work ID HELPER-RETRAIN-20261112-01. ผู้ใช้ยอมปรับ recipe/retrain และอนุญาตหยุด SAM3.1 เดิมเพื่อเริ่ม B4 ก่อน ทำ SIGINTเฉพาะPID4111696ที่ตรวจidentity เก็บ best epoch9/log/old failures และ receipts private
+- Implement trainer/serial controller แยกfreshattempt แก้ absent-query/score/presence supervision, SOLIDER BGR และ native-logit union, B4 all-VOID/drop-last, hash-bound cache/atomic output/strict loading/AMP skip accounting
+- Verification CPU10 testsผ่าน รวม actual CPU subprocess sequencing/failure-stop และ model loading B4/SOLIDER ผ่าน Input preflight3/3บน313train+77valcrops ไม่ใช้heldout ไม่ติดตั้งหรือดาวน์โหลด
+- Recipe ที่ Codex กำหนด B4 15epochs/AMPbatch2/2e-6+2e-5; SOLIDER25/AMPbatch2/1e-5+1e-4; SAM3.1 15/FP32batch1/3e-5 อ้าง best epoch9เดิม หยุดเมื่อerror ไม่retry cap6h/output80GiB/model free disk50GiB admissionfreeVRAM14GiB
+- Outputs existing review/status/README/AGENTS, scripts/tests และprivate run helper-refinement-20261112T073106Z; master SHA256 5bca8569c7ae3ccb0db31eed350d804aca5081574e234ec74dcb8321f0925fb1 ไม่มีผลใหม่ให้สรุปwinner ยังต้องยืนยัน GPU forward/backward และตรวจร่าง/ภาระแก้จริงหลังฝึก
+- Preparation issue pip moduleไม่มีในB4environment จึงเก็บinstalled-package inventoryผ่านimportlib.metadataแทน โดยคงenvironmentเดิม
+- Next freeze sourceและlaunch detached batchตามลำดับ เก็บlaunchcommit/firstprogress และอัปเดตสถานะจริง

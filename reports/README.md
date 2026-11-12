@@ -1,3 +1,5 @@
+> **12 พฤศจิกายน 2026 — HELPER_BATCH_READY_TO_LAUNCH** หยุด SAM3.1 รอบเดิมตามผู้ใช้ เก็บ best epoch9 และผล B4 เดิมครบ เตรียมฝึก B4 → SOLIDER → SAM3.1 ทีละตัว CPU10 tests/3 input preflights ผ่าน อ่าน [recipe, งบ และนิยามคะแนน](PSEUDO_LABELING_MASTER_PLAN_REVIEW_TH.md#helper-training-revision2)
+
 > **เป้าหมายhelperล่าสุด12พฤศจิกายน2026** เลือกตัวช่วยที่ทำให้แก้GTน้อยลงจากร่างจริง ใช้วิธีที่เหมาะกับแต่ละโมเดลและเลือกตามส่วนได้ Metricsเป็นข้อมูลประกอบ Fine-tuningทำเมื่อช่วยลดข้อผิดพลาดที่เสียเวลา อ่าน [คำชี้แจงและกติกาที่ปรับ](PSEUDO_LABELING_MASTER_PLAN_REVIEW_TH.md#helper-purpose-correction) คำแนะนำbenchmark-styleก่อนหน้าด้านล่างเป็นประวัติ
 
 > **12 พฤศจิกายน2026 — ผลตรวจเงื่อนไขretrain** B4checkpointเดิมนำไปประเมินต่อได้ CPUloss/VOID/globalconfusionchecksผ่านบนกรณีที่เกี่ยวข้อง ส่วนSAM3.1sourceปัจจุบันควรแก้objectiveและvalidationก่อนfreshtrainingattempt อ่าน [รายละเอียดและกรณีall-VOIDของB4](PSEUDO_LABELING_MASTER_PLAN_REVIEW_TH.md#helper-retrain-decision) สถานะก่อนหน้าด้านล่างเป็นประวัติ

@@ -1,3 +1,57 @@
+<a id="helper-training-revision2"></a>
+## ฝึกตัวช่วยฉบับปรับปรุง — 12 พฤศจิกายน 2026
+
+สถานะ **CPU_ACCEPTANCE_PASS / BATCH_READY_TO_LAUNCH** ผู้ใช้อนุญาตหยุด SAM3.1 รอบเดิมและให้เริ่มตัวที่เร็วกว่า จัดลำดับ SegFormer-B4 → SOLIDER → SAM3.1 ทีละตัวบน Tesla T4 เป้าหมายคือร่าง annotation ที่ผู้ใช้แก้น้อยลง
+
+### สิ่งที่เก็บจากรอบเดิม
+
+ส่ง SIGINT ให้ SAM3.1 PID4111696 หลังตรวจคำสั่งและเวลาเริ่ม process แล้ว ยืนยัน process ออกและ VRAM คืน เก็บ checkpoint ที่อ่านกลับได้จาก best epoch9 พร้อม log และเหตุผล `USER_INTERRUPTED_FOR_REVISED_HELPER_BATCH` ค่า mIoU_parts ของรอบเดิม 0.6041766173 เป็นค่าเฉลี่ยราย crop ตาม evaluator เดิม ส่วน B4 เดิมมี global mIoU4 0.6454162071 เก็บทั้งสอง checkpoint เป็นตัวเลือกต่อ พร้อมนิยามของแต่ละค่า
+
+### วิธีฝึกที่จัดเตรียม
+
+| ตัวช่วย | จุดเริ่มต้นและสิ่งที่ปรับ | งบรอบใหม่ |
+| --- | --- | --- |
+| SegFormer-B4 | เริ่มจาก helper ห้าคลาสที่ฝึกแล้ว ลด learning rate เพื่อปรับละเอียด เก็บ batch สุดท้ายและรองรับ batch ที่เป็น VOID ทั้งหมด ประเมิน epoch0 ก่อนฝึก | 15 epochs, batch2, AMP FP16, backbone LR2e-6 / head LR2e-5 |
+| SOLIDER Swin-Small | โหลด pretrained LIP20 ตรงทุก key ใช้ BGR และ normalization ตาม local official extractor รวม logits เป็นห้ากลุ่มเพื่อเรียนรู้ GT ของงานนี้ คง running statistics ของ BatchNorm ระหว่างฝึก batch เล็ก | 25 epochs, batch2, AMP FP16, backbone LR1e-5 / head LR1e-4 |
+| SAM3.1 | เริ่มจาก detector และ decoder best epoch9 เดิม ตรึง backbone เพิ่ม loss สำหรับคลาสที่ไม่มี, unmatched queries, query score และ presence ใช้ joint score ที่ builder สร้างแล้วหนึ่งครั้ง | 15 epochs, batch1, FP32, decoder LR3e-5 |
+
+ค่าข้างต้นเป็น recipe เริ่มต้นที่ Codex เลือกสำหรับรอบปรับปรุง ยังไม่มีผลยืนยันว่าเป็นค่าที่ดีที่สุดในทุกทางเลือก ใช้ cosine learning-rate schedule, horizontal flip/ColorJitter สำหรับ B4/SOLIDER และ seed20261112 บันทึก flags จริงใน manifest แต่ละระบบ
+
+SAM3.1 ใช้ forward ใน eval mode โดยเปิด autograd และฝึก parameters นอก backbone ด้วย objective ของ helper เอง เพราะ native training mode เรียก matcher/DAC ซึ่งต้องการ target contract อีกแบบ Feature cache ใหม่ผูก image/checkpoint/source/preprocessing กับ attempt และเก็บ positional encoding ร่วมเมื่อเทียบ tensor ได้ตรงกัน ไม่เปลี่ยน FP32 เพื่อประหยัด cache
+
+SOLIDER แบ่ง native IDs ครบ20เป็น `Hair={2}`, `Face={13}`, `Upper={5,7}`, `Lower={9,12}` และกลุ่มอื่น `{0,1,3,4,6,8,10,11,14,15,16,17,18,19}` ใช้ logsumexp รวม logits การจับกลุ่มนี้เป็น output ของ helper ที่ฝึกกับ GT งานนี้ ต้องตรวจร่าง Dress/Jumpsuit ที่ยังผิดจริงจากตัวอย่างต่อ
+
+### ข้อมูลและความหมายของผล
+
+ใช้ seed300 ที่ผู้ใช้รับรองแล้ว มี313 train crops จาก213ภาพ และ77 validation crops จาก56ภาพ ตาม train240/validation60 ที่กัน time blocks ไว้ รายการ300ภาพและ390 masks ตรวจ freshness แล้วใน review ก่อนหน้า ชุด heldout440 และ Boost550 ยังพ้นการฝึกรอบนี้
+
+ประเมินบน valid pixels ของ77 validation crops โดยข้าม GT255 รวม confusion ทั้งชุดก่อนคิด IoU ต่อ Hair/Face/Upper/Lower มี background เป็น negative สำหรับ FP ค่าเฉลี่ย mIoU4 ใช้คลาส foreground ที่ union มากกว่า0 คลาส union0 แสดง null พร้อมจำนวน support เก็บ TP/FP/FN, Precision, Recall และ F1/Dice ไว้ใน metrics ด้วย
+
+- IoU = TP ÷ (TP+FP+FN) แสดงพื้นที่ทับ GT เทียบพื้นที่รวมที่เกี่ยวข้อง
+- Precision = TP ÷ (TP+FP) แสดงความถูกต้องของพื้นที่ที่ร่างออกมา
+- Recall = TP ÷ (TP+FN) แสดงส่วนของ GT ที่ร่างได้ครบ
+- F1/Dice = 2TP ÷ (2TP+FP+FN) รวมความครบและพื้นที่เกินในค่าเดียว ตัวหาร0แสดง null
+
+เลือก best epoch จาก diagnostic mIoU4 โดยรวม epoch0 และ export validation masks ให้ตรวจร่างจริง การเลือก helper ขั้นสุดท้ายยังต้องดูงานแก้ ขอบ mask, missing parts และ ownership ที่ภาพเดียวกัน ตอนนี้ยังไม่มีเวลาคนแก้ที่วัดจริงสำหรับประกาศผู้ชนะด้านความเร็ว annotation
+
+### การทำงานอัตโนมัติและขอบเขตทรัพยากร
+
+ใช้ [trainer](../scripts/train_annotation_helper.py) และ [ตัวควบคุมคิว](../scripts/run_helper_training_batch.py) เก็บ source snapshot, weights/config/source/input hashes, package inventory, launch commit และ attempt history ก่อนเปิด worker ใช้ fresh directories และ global batch lock แต่ละระบบมี log/status/weights ของตนเอง เมื่อ error จะหยุด batch และเก็บหลักฐาน automatic retry=0
+
+งบที่กำหนดสำหรับ batch นี้คือไม่เกิน6ชั่วโมงต่อโมเดลและ output80GiBต่อโมเดล คง free-space guard50GiB ตรวจทุก30วินาที Admission ต้องมี free VRAMอย่างน้อย14GiBก่อนเริ่มแต่ละระบบ ค่านี้เป็น guard ที่เลือกสำหรับการรันทีละตัว ไม่ใช่ผลวัด memory requirement ของทุกโมเดล Runtime OOM ยังคงเป็นเหตุให้หยุดและตรวจหลักฐาน
+
+เก็บ raw data, native annotations, source image IDs, cache และ validation masks ไว้ private ส่วน weights ใหม่อยู่ shared models ภายใต้ workspace เก็บ original dataset และผลเดิมครบ การฝึก helper ชุดนี้แยกจาก frozen parser benchmark และยังไม่เปลี่ยน GT definitions ของโครงการ
+
+### หลักฐานก่อนเปิดงาน
+
+CPU expected fixtures ตรวจ absent-target gradients, positive/negative query scores, VOID invariance, all-VOID finite loss, exhaustive native projection, BGR channel order, global confusion, joint-score handling และ controller sequencing/stop-on-failure แยกจาก GPU forward/backward ที่ต้องตรวจเมื่อเปิด worker โหลด B4 ห้าคลาสและ SOLIDER pretrained20 ด้วย CPU ผ่าน การตรวจข้อมูลก่อนเปิดงานผ่านครบสาม recipe และ CPU expected fixtures ผ่าน10 tests
+
+Run และคำสั่งติดตามจริงจะระบุในสถานะล่าสุดหลังยืนยัน worker เริ่มแล้ว
+
+---
+
+ส่วนถัดไปเป็นประวัติ review ก่อนเริ่ม batch ฉบับปรับปรุง
+
 <a id="helper-purpose-correction"></a>
 ## ปรับเป้าหมายเลือก helper ตามคำชี้แจงผู้ใช้ — 12 พฤศจิกายน2026
 
