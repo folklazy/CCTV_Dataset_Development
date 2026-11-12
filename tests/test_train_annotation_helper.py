@@ -81,7 +81,7 @@ class TrainingRequirements(unittest.TestCase):
         probability = trainer.project_lip(logits).softmax(1).flatten()
         torch.testing.assert_close(probability, torch.tensor([14, 1, 1, 2, 2])/20)
 
-    def test_solider_receives_official_bgr_normalization(self):
+    def test_solider_swin_receives_native_rgb_normalization(self):
         class Capture(torch.nn.Module):
             def forward(self, image):
                 self.received = image
@@ -89,10 +89,11 @@ class TrainingRequirements(unittest.TestCase):
         helper = trainer.DenseHelper.__new__(trainer.DenseHelper)
         helper.kind, helper.device = 'solider', torch.device('cpu')
         helper.model = Capture()
-        helper.mean, helper.std = [.406, .456, .485], [.225, .224, .229]
+        helper.input_space = 'RGB'
+        helper.mean, helper.std = [.485, .456, .406], [.229, .224, .225]
         image = torch.tensor([.9, .5, .1]).reshape(1, 3, 1, 1)
         output = helper.logits(image)
-        expected = (torch.tensor([.1, .5, .9])-torch.tensor(helper.mean))/torch.tensor(helper.std)
+        expected = (torch.tensor([.9, .5, .1])-torch.tensor(helper.mean))/torch.tensor(helper.std)
         torch.testing.assert_close(helper.model.received[0, :, 100, 100], expected)
         self.assertEqual(output.shape, (1, 5, 576, 384))
 

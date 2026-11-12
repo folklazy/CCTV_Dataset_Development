@@ -1,3 +1,20 @@
+<a id="solider-rgb-correction"></a>
+## แก้ข้อผิดพลาด preprocessing ของ SOLIDER Swin — 12 พฤศจิกายน 2026
+
+Codex อ้างBGRจากsimple_extractor.pyที่สร้างResNet101 แล้วนำมาใช้กับSwin-Smallผิดตัว หลักฐานตรงarchitectureคือ `networks/AugmentCE2P.py` กำหนด `pretrained_settings['swin']['imagenet']` เป็นRGB, mean[0.485,0.456,0.406], std[0.229,0.224,0.225] ส่วนSwin-Small constructorนำsettingsนี้ไปตั้งmodel.input_space/mean/std และtrain.py/evaluate.pyเลือกtransformตามmodel attributes ตรวจจากSOLIDER-HumanParsing revision `7bdd9eb0c38c4ca2c2f09ce4db4e7664be8d3357`
+
+ดังนั้นinitial mIoU4=42.760368244993713% และผลfine-tuneSOLIDER65.55413240436256%ที่บันทึกแล้วมาจากrecipeBGRที่Codexกำหนด ต้องเก็บพร้อมป้ายNON_NATIVE_PREPROCESSING_RECIPE ผล42.76%ถูกถอดจากตารางnative-preprocessingzero-shotปัจจุบัน ส่วนweights/logs/masksเดิมเก็บครบ การฝึกบนBGRและประเมินบนBGRยังอธิบายconfigurationนั้นได้ แต่ใช้รับรองbaselineRGBของpretrainedSwinไม่ได้
+
+แก้trainerสำหรับattemptถัดไปให้อ่านinput_space/mean/stdจากmodelจริง และแก้CPUfixtureให้ตรวจRGBตามsourcearchitecture TestsเดิมตรวจBGRตามสมมติฐานที่ผิด จึงไม่ได้รับรองpreprocessingที่ตรงต้นทาง รักษาactiveSAM3.1source snapshotและprocessเดิม ไม่เปิดGPUretestหรือretrainเพิ่มในworkunitนี้
+
+สำหรับpurepretrainedzero-shotให้ใช้weightsก่อนCCTVfine-tune เตรียมภาพตามcheckpoint/architecture ใช้native20logits→resize/map-backตามgeometryต้นทาง→nativeargmax→fixedtargetmapping การรวมlogitsก่อนargmaxเป็นอีกconfigurationที่ต้องระบุแยก ให้Hair={2}, Face={13}, Upper={5,7}, Lower={9,12}และnativeอื่นเป็นbackground/OTHERตามGTcontractที่ประกาศ ห้ามเลือกmappingเพราะคะแนนสูงกว่า
+
+รายงานชื่อSOLIDER_HUMAN_PARSING_BENCHMARK_TH.mdที่ผู้ใช้อ้างยังค้นไม่พบในworkspace ต้องรับpath/ไฟล์และหัวตารางก่อนผูกค่ากับrun จากตัวเลขที่ส่งมา ค่าเฉลี่ย(53.13+47.17+69.37+55.68)/4=56.3375% สอดคล้องกับ56.34%ที่เป็นคอลัมน์แรก จึงยังไม่ถือว่า55.68%เป็นmIoUโดยไม่มีหัวตาราง เวลา154msยังต้องตรวจtimingboundary/denominatorจากต้นฉบับ
+
+ข้ออ้างBGRเป็นวิธีที่ถูกต้องสำหรับSwinในreviewก่อนหน้าด้านล่างถูกแก้โดยส่วนนี้ ประวัติเหล่านั้นเก็บตามเวลาที่บันทึก
+
+---
+
 <a id="helper-zero-shot-only"></a>
 ## ผล pretrained zero-shot ที่มีอยู่ — 12 พฤศจิกายน 2026
 
@@ -7,7 +24,7 @@
 | --- | --- | --- | --- | --- | --- |
 | b4 | 46.54 | 29.83 | 49.47 | 38.81 | 41.16 |
 | b5 | — | — | — | — | — |
-| solider | 50.97 | 21.50 | 55.91 | 42.66 | 42.76 |
+| solider | — | — | — | — | รอผลRGBที่ตรงarchitecture |
 | sam31 | — | — | — | — | — |
 
 B4อ้างEVAL_REPORTเดิมที่มีค่าปัดเศษและรวมDressในUpper SOLIDERอ้างINITIAL_METRICSของpretrainednative20ที่ใช้BGR/groupedlogits ภาพSOLIDERzero-shotเดิมใช้RGB/normalization/mappingต่างกัน จึงติดป้ายlegacyและแยกprovenanceของภาพกับคะแนน ยังต้องจัดผลzero-shot77cropsของB5/SAM3.1ให้ครบก่อนสรุปสี่ตัว

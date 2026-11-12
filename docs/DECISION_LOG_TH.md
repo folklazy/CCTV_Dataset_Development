@@ -329,3 +329,12 @@ Next/blockers:เปิดผ่านSSH tunnelแล้วกดบันท�
 - Outputs privateHTML/CSV4rowsและ3zero-shotpanels มองภาพตัวอย่างจริง ตรวจdimensions/palette/correspondingcropต้นฉบับและoutputhashes คะแนนB5/SAMครบ77cropsยังขาด จึงแสดงmissingและไม่จัดอันดับสี่ตัว ป้ายSOLIDERlegacyRGBแยกจากคะแนนBGRปัจจุบัน
 - Verification modelcalls0 ไม่เปิดtraining/inferenceเพิ่มและไม่เปลี่ยนworker/source/GT/nativeartifactsเดิม ภาพ/IDsอยู่private publicGitเก็บเฉพาะaggregateและข้อจำกัด
 - Next ใช้ผลzero-shotครบและmapping/preprocessingbindingsที่ยืนยันได้ ก่อนอภิปรายผลรวมและเปรียบเทียบfine-tuneตามคำสั่งล่าสุด
+
+
+## Work log — 2026-11-12T16:05:56.296188+07:00 (Asia/Bangkok)
+
+- Work ID SOLIDER-RGB-CORRECTION-20261112-01. ผู้ใช้ถามวิธีที่ถูก ตรวจarchitecture-specificsettings/train/evaluateที่SOLIDERrevision7bdd9eb พบSwinใช้RGB ขณะที่Codexอ้างBGRจากResNet101simple_extractorผิดตัว
+- Correction trainerอ่านmodel.input_space/mean/std แก้independent asymmetricfixtureเป็นRGBตามsource เก็บsourceผิดและrunเดิมเป็นhistory ไม่แก้activeSAMsnapshotหรือเปิดworkerเพิ่ม
+- Verification CPU10testsผ่านและactualSwinmodelmetadata+strictcheckpointloadผ่าน RGB/[.485,.456,.406]/[.229,.224,.225] modelcalls0 EvidenceprivateSOLIDER_RGB_CORRECTION_CPU.json
+- Outputs existingreview/status/AGENTS/master และgallerycorrectionrecord ถอน42.76%จากcurrentnativezero-shottable ผลFTBGR65.55%เก็บพร้อมrecipe ไม่อ้างเป็นnativeRGBbaseline Userquotedreportยังต้องรับpath/ไฟล์เพื่อผูกคะแนน56.34/154ms
+- Next รอsourceรายงานที่ผู้ใช้ระบุและกำหนดnativeRGB→nativeargmax→fixedmappingสำหรับpurezero-shotครบสี่ตัว ไม่มีการเลือกmappingจากคะแนน

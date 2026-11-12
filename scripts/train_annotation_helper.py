@@ -208,12 +208,16 @@ class DenseHelper:
             state = state.get('state_dict', state)
             state = {k.removeprefix('module.'): v for k, v in state.items()}
             self.model.load_state_dict(state, strict=True)
-            self.mean, self.std = [.406, .456, .485], [.225, .224, .229]
+            self.input_space = self.model.input_space
+            if self.input_space not in ['RGB', 'BGR']:
+                raise ValueError('Unsupported native model input space')
+            self.mean, self.std = self.model.mean, self.model.std
         self.model.to(device)
 
     def logits(self, image):
         if self.kind == 'solider':
-            image = image[:, [2, 1, 0]]
+            if self.input_space == 'BGR':
+                image = image[:, [2, 1, 0]]
             image = F.interpolate(image, size=(572, 384), mode='bilinear', align_corners=False)
         mean = image.new_tensor(self.mean)[None, :, None, None]
         std = image.new_tensor(self.std)[None, :, None, None]

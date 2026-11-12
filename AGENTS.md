@@ -1,3 +1,7 @@
+## SOLIDER Swin preprocessing correction — 2026-11-12
+
+Native Swin metadata and its train/evaluate paths specify RGB with mean[0.485,0.456,0.406] and std[0.229,0.224,0.225]. The ResNet101 simple_extractor BGR recipe was mistakenly applied to Swin by Codex. Read the architecture-specific attributes. Preserve historical BGR training and initial42.76% as a non-native preprocessing recipe, excluded from the current pure native-preprocessing zero-shot table. Do not alter the active frozen SAM3.1 worker. See reports/PSEUDO_LABELING_MASTER_PLAN_REVIEW_TH.md#solider-rgb-correction.
+
 ## User-authorized helper retraining order — 2026-11-12
 
 The user authorized stopping the old SAM3.1 training to start revised B4, then SOLIDER, then SAM3.1 sequentially. The old process exited after SIGINT and its best epoch9 checkpoint/history remain retained. Use the fresh hash-bound batch, preserve old B4 as a candidate, and stop on first failure without automatic retries. This supersedes the earlier instruction to wait for the old SAM3.1 process. Optimize practical draft quality and correction effort; heldout data remain excluded. See reports/PSEUDO_LABELING_MASTER_PLAN_REVIEW_TH.md#helper-training-revision2.

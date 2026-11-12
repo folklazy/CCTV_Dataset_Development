@@ -1,3 +1,5 @@
+> **12 พฤศจิกายน 2026 — แก้ preprocessing SOLIDER Swin** ต้นทางกำหนดRGB Codexเคยอ้างBGRจากResNetผิดตัว ถอน42.76%จากpurezero-shottable เก็บผลเดิมพร้อมป้ายrecipe และแก้trainer/testsสำหรับครั้งถัดไป งานSAMเดิมทำต่อ อ่าน [หลักฐานและผลกระทบ](PSEUDO_LABELING_MASTER_PLAN_REVIEW_TH.md#solider-rgb-correction)
+
 > **12 พฤศจิกายน 2026 เวลา15:23ไทย — B4_COMPLETE / SOLIDER_COMPLETE / SAM31_IN_PROGRESS** สองตัวแรกจบพร้อมvalidation masks77ไฟล์ต่อระบบ SAM3.1กำลังทำbaseline/cache/first training steps ตัวดูสถานะใหม่แสดงphaseจากartifactsจริง แก้ความกำกวมของLOADING อ่าน [สถานะและคำสั่งดูสด](PSEUDO_LABELING_MASTER_PLAN_REVIEW_TH.md#helper-training-revision2)
 
 > **เป้าหมายhelperล่าสุด12พฤศจิกายน2026** เลือกตัวช่วยที่ทำให้แก้GTน้อยลงจากร่างจริง ใช้วิธีที่เหมาะกับแต่ละโมเดลและเลือกตามส่วนได้ Metricsเป็นข้อมูลประกอบ Fine-tuningทำเมื่อช่วยลดข้อผิดพลาดที่เสียเวลา อ่าน [คำชี้แจงและกติกาที่ปรับ](PSEUDO_LABELING_MASTER_PLAN_REVIEW_TH.md#helper-purpose-correction) คำแนะนำbenchmark-styleก่อนหน้าด้านล่างเป็นประวัติ
