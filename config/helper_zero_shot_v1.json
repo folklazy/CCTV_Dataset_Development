@@ -1,0 +1,43 @@
+{
+  "protocol_id": "CCTV_HELPER_PRETRAINED_ZERO_SHOT_V1",
+  "status": "FROZEN_FOR_AUTHORIZED_RUN",
+  "population": "77 existing fixed validation person crops from 56 images",
+  "classes": ["background", "hair", "face", "upper", "lower"],
+  "gt_void": 255,
+  "gt_valid_ids": [0, 1, 2, 3, 4],
+  "projection": "native original-grid argmax then exhaustive lookup; SAM query composition before scoring",
+  "other_policy": "Known non-target predictions map to0; GT0 remains valid; no model-specific ignore",
+  "unknown_prediction_policy": "FAIL_CONTRACT",
+  "metrics": "global valid-pixel confusion; per-class IoU/P/R/F1; foreground mean over nonzero unions; null for zero denominator",
+  "models": {
+    "b4": {
+      "native_labels": ["background", "face", "hair", "top", "dress", "skirt", "pants", "belt", "bag", "hat", "scarf", "glasses", "arms", "hands", "legs", "feet", "torso", "jewelry"],
+      "target_map": [0, 2, 1, 3, 0, 4, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      "input": "RGB576x384, cv2.INTER_AREA, ImageNet normalization; source FASHN official parser",
+      "source": "https://github.com/fashn-AI/fashn-human-parser/blob/main/src/fashn_human_parser/parser.py"
+    },
+    "b5": {
+      "native_labels": ["Background", "Hat", "Hair", "Sunglasses", "Upper-clothes", "Skirt", "Pants", "Dress", "Belt", "Left-shoe", "Right-shoe", "Face", "Left-leg", "Right-leg", "Left-arm", "Right-arm", "Bag", "Scarf"],
+      "target_map": [0, 0, 1, 0, 3, 4, 4, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0],
+      "input": "Bound AutoImageProcessor512x512, RGB/ImageNet, no label reduction",
+      "source": "matei-dorian/segformer-b5-finetuned-human-parsing@fb3404cf7ab68cb62f78885cdf9b992864d080db"
+    },
+    "solider": {
+      "native_labels": ["Background", "Hat", "Hair", "Glove", "Sunglasses", "Upper-clothes", "Dress", "Coat", "Socks", "Pants", "Jumpsuits", "Scarf", "Skirt", "Face", "Left-arm", "Right-arm", "Left-leg", "Right-leg", "Left-shoe", "Right-shoe"],
+      "target_map": [0, 0, 1, 0, 0, 3, 0, 3, 0, 4, 0, 0, 4, 2, 0, 0, 0, 0, 0, 0],
+      "input": "Native SimpleFolderDataset affine572x384; BGR2RGB; model RGB normalization; inverse affine logits; align_cornersTrue; scale1/no flip",
+      "source": "tinyvision/SOLIDER-HumanParsing@7bdd9eb0c38c4ca2c2f09ce4db4e7664be8d3357"
+    },
+    "sam31": {
+      "native_output": "Text-prompt instance masks, scores and boxes; categorical composition0..4 is a derived output",
+      "prompts": ["hair", "face", "shirt, top, upper clothes", "pants, trousers, shorts, lower clothes"],
+      "input": "Native Sam3Processor resolution1008 RGB uint8 resize then float normalization0.5; pretrained detector only",
+      "confidence_threshold": 0.2,
+      "mask_threshold": 0.5,
+      "query_policy": "Keep all native processor queries passing threshold; use its returned score including extra presence factor",
+      "overlap": "Highest original-grid mask probability times native query score among positive masks; ties smaller classID then earlier query",
+      "source": "SAM3.1 source tree bound by hash in run; no CCTV decoder warmstart"
+    }
+  },
+  "limitations": ["GT-person-crop helper validation", "Names do not establish annotation-boundary equivalence", "SAM masks may contain other persons inside the crop; GT VOID is shared", "Training candidate adapters may differ from native zero-shot routes; report configurations explicitly"]
+}
