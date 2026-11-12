@@ -320,3 +320,12 @@ Next/blockers:เปิดผ่านSSH tunnelแล้วกดบันท�
 - Cause statusLOADINGเขียนก่อนloadและbaseline แล้วคงอยู่จนfirst20trainingcrops ตัวแสดงสถานะจึงคลุมหลายphase เพิ่มread-only viewerแยกbaseline/cache/training counters ไม่เปลี่ยนactive frozen source ไม่เปิดworkerซ้ำ ไม่ลบ/แก้prediction
 - Verification CPUviewerfixtures3/3ผ่าน รวมcachecountsที่ไม่นับSHARED_POSITION, baseline transitionและCOMPLETE พร้อมตรวจactualrun คืนค่าตรงmetadata
 - Outputs scripts/helper_training_progress.py, existingreview/status/README/log. Next controllerเดิมรันSAMต่อ ตรวจcompletionและร่างเมื่อจบตามขอบเขตเดิม
+
+
+## Work log — 2026-11-12T15:51:41.575187+07:00 (Asia/Bangkok)
+
+- Work ID HELPER-ZERO-SHOT-GALLERY-20261112-01. ผู้ใช้ขอดูตาราง/ภาพและชี้แจงให้แสดงเฉพาะpretrainedzero-shotก่อน เปลี่ยนpresentationให้ตรงscope เก็บmixed draftเป็นhistoryprivate
+- Inputs existingB4report, SOLIDERpretrainedINITIAL_METRICS, savedhistoricalJPEGของB4/SOLIDER/SAM3.1และcurrentdatasetmanifest Sourcebindings/hash/geometry checksอยู่privategalleryMANIFEST SHA256 ff54e757ba3d7133bb274105e7dce2b6daff0e949c11537f1bc5c72433953a72
+- Outputs privateHTML/CSV4rowsและ3zero-shotpanels มองภาพตัวอย่างจริง ตรวจdimensions/palette/correspondingcropต้นฉบับและoutputhashes คะแนนB5/SAMครบ77cropsยังขาด จึงแสดงmissingและไม่จัดอันดับสี่ตัว ป้ายSOLIDERlegacyRGBแยกจากคะแนนBGRปัจจุบัน
+- Verification modelcalls0 ไม่เปิดtraining/inferenceเพิ่มและไม่เปลี่ยนworker/source/GT/nativeartifactsเดิม ภาพ/IDsอยู่private publicGitเก็บเฉพาะaggregateและข้อจำกัด
+- Next ใช้ผลzero-shotครบและmapping/preprocessingbindingsที่ยืนยันได้ ก่อนอภิปรายผลรวมและเปรียบเทียบfine-tuneตามคำสั่งล่าสุด

@@ -1,3 +1,21 @@
+<a id="helper-zero-shot-only"></a>
+## ผล pretrained zero-shot ที่มีอยู่ — 12 พฤศจิกายน 2026
+
+ผู้ใช้จำกัดงานนำเสนอรอบนี้เฉพาะweightsก่อนfine-tuneด้วยCCTVของเรา รวมB4/B5/SOLIDER/SAM3.1 เก็บการเปรียบเทียบก่อน–หลังไว้ทำภายหลังเมื่อผลพร้อม ตารางด้านล่างเป็นหลักฐานที่มีอยู่ คะแนนบน77validationcrops ส่วนgalleryเลือกสามcropsแรกตามSAMzero-shotเดิม ไม่มีmodelcallsเพิ่ม
+
+| Model | Hair IoU % | Face IoU % | Upper IoU % | Lower IoU % | mIoU4 % |
+| --- | --- | --- | --- | --- | --- |
+| b4 | 46.54 | 29.83 | 49.47 | 38.81 | 41.16 |
+| b5 | — | — | — | — | — |
+| solider | 50.97 | 21.50 | 55.91 | 42.66 | 42.76 |
+| sam31 | — | — | — | — | — |
+
+B4อ้างEVAL_REPORTเดิมที่มีค่าปัดเศษและรวมDressในUpper SOLIDERอ้างINITIAL_METRICSของpretrainednative20ที่ใช้BGR/groupedlogits ภาพSOLIDERzero-shotเดิมใช้RGB/normalization/mappingต่างกัน จึงติดป้ายlegacyและแยกprovenanceของภาพกับคะแนน ยังต้องจัดผลzero-shot77cropsของB5/SAM3.1ให้ครบก่อนสรุปสี่ตัว
+
+Galleryส่วนตัวอยู่ในprivate run `helper-refinement-20261112T073106Z/comparison_20261112/index.html` มีตาราง4แถวและภาพzero-shot3ตัวอย่างพร้อมMANIFESTที่ผูกhashes/readbackgeometry รูปhistoricalมีrender/JPEG/resizeต่างกัน ใช้ดูเชิงคุณภาพ หน้าgalleryแสดงเฉพาะzero-shot ส่วนdraftที่เคยรวมผลfine-tuneเก็บแยกตามประวัติ ไม่เผยแพร่ภาพdatasetบนpublicGit และคงงานฝึกเดิมให้ทำต่อ
+
+---
+
 <a id="helper-training-revision2"></a>
 ## ฝึกตัวช่วยฉบับปรับปรุง — 12 พฤศจิกายน 2026
 
