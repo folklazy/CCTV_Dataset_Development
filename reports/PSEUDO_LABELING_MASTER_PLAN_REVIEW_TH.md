@@ -1,7 +1,11 @@
 <a id="helper-training-revision2"></a>
 ## ฝึกตัวช่วยฉบับปรับปรุง — 12 พฤศจิกายน 2026
 
-สถานะ **B4_TRAINING / SOLIDER_PENDING / SAM31_PENDING** ผู้ใช้อนุญาตหยุด SAM3.1 รอบเดิมและให้เริ่มตัวที่เร็วกว่า จัดลำดับ SegFormer-B4 → SOLIDER → SAM3.1 ทีละตัวบน Tesla T4 เป้าหมายคือร่าง annotation ที่ผู้ใช้แก้น้อยลง
+สถานะล่าสุดเมื่อ12พฤศจิกายน2026 เวลา15:23ไทย **B4_COMPLETE / SOLIDER_COMPLETE / SAM31_IN_PROGRESS** ผู้ใช้อนุญาตหยุด SAM3.1 รอบเดิมและให้เริ่มตัวที่เร็วกว่า จัดลำดับ SegFormer-B4 → SOLIDER → SAM3.1 ทีละตัวบน Tesla T4 เป้าหมายคือร่าง annotation ที่ผู้ใช้แก้น้อยลง
+
+B4ครบ15epochsและSOLIDERครบ25epochs ทั้งสองมีvalidation predictions77ไฟล์ตามcompletionของตนเอง SAM3.1 PID123721ยังทำงาน ประเมินbaselineครบ77cropsและเริ่มฝึก โดยตรวจfeature cacheของtrainเพิ่มจาก2เป็น10/313ระหว่างการตรวจ สถานะของworkerยังเขียนLOADINGเพราะอัปเดตครั้งถัดไปหลัง20trainingcrops จึงต้องอ่านartifact progressประกอบ คงsource snapshotของrunเดิม
+
+เพิ่ม [ตัวดูสถานะแบบอ่านอย่างเดียว](../scripts/helper_training_progress.py) แสดงphaseจากbaseline/cache/statusที่มีจริง พร้อมแยกจำนวนcacheออกจากtraining counter ผ่านCPUfixtures3กรณีและตรวจกับrunจริง ดูสดได้จากในโฟลเดอร์runด้วย `python3 /home/skyaidev/folk/CCTV_Dataset_Development/scripts/helper_training_progress.py --watch` รายละเอียดการเปิดbatchด้านล่างเป็นsnapshot ณ เวลาเริ่มงาน
 
 ### สิ่งที่เก็บจากรอบเดิม
 

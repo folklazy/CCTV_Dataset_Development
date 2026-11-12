@@ -312,3 +312,11 @@ Next/blockers:เปิดผ่านSSH tunnelแล้วกดบันท�
 - Baseline B4 FP32 evaluator mIoU4=0.6454844051808025 ส่วนold trainingvalidationใช้AMP เก็บผลทั้งสองตามแหล่งข้อมูล ไม่มีการปรับrecipeตามคะแนนนี้
 - Outputs existingreview/status/README พร้อมrun/log/status locations คิว15/25/15epochs ลำดับB4→SOLIDER→SAM3.1 stop-on-failure/zero retries ตามmanifest ไม่ติดตั้ง/ดาวน์โหลด ไม่ใช้heldout/Boost และไม่เปลี่ยนGT
 - Next detachedcontrollerทำงานต่อโดยไม่ต้องมีCodexค้าง ตรวจMETRICS/savedvalidationdraftsและภาระการแก้หลังจบ ก่อนเลือกhelperหรือขยายpseudo-labeling
+
+
+## Work log — 2026-11-12T15:24:27.735316+07:00 (Asia/Bangkok)
+
+- Work ID HELPER-PROGRESS-20261112-01. ผู้ใช้พบLOADINGค้าง ตรวจcontroller/process/GPU/log/atomicartifactsจริง พบB4และSOLIDER COMPLETE SAM3.1 PID123721กำลังทำงาน INITIAL_METRICSครบแล้ว train feature cacheเพิ่ม2→10 ระหว่างตรวจ ไม่มีtracebackในlogที่อ่าน
+- Cause statusLOADINGเขียนก่อนloadและbaseline แล้วคงอยู่จนfirst20trainingcrops ตัวแสดงสถานะจึงคลุมหลายphase เพิ่มread-only viewerแยกbaseline/cache/training counters ไม่เปลี่ยนactive frozen source ไม่เปิดworkerซ้ำ ไม่ลบ/แก้prediction
+- Verification CPUviewerfixtures3/3ผ่าน รวมcachecountsที่ไม่นับSHARED_POSITION, baseline transitionและCOMPLETE พร้อมตรวจactualrun คืนค่าตรงmetadata
+- Outputs scripts/helper_training_progress.py, existingreview/status/README/log. Next controllerเดิมรันSAMต่อ ตรวจcompletionและร่างเมื่อจบตามขอบเขตเดิม
