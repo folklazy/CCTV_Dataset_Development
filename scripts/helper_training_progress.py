@@ -54,7 +54,16 @@ def render(root):
             description += f' | {status.get("error_type")}: {status.get("message")}'
         pid = status.get('pid')
         if pid and state not in ['COMPLETE', 'FAILED']:
-            description += f' | PID {pid} '+('alive' if Path(f'/proc/{pid}').exists() else 'exited; inspect controller/log')
+            proc = Path(f'/proc/{pid}')
+            live = proc.exists()
+            if live:
+                try:
+                    process_state = (proc/'stat').read_text().rsplit(') ', 1)[1].split()[0]
+                    if process_state in ['T', 't']:
+                        description = 'PAUSED_IN_MEMORY | '+description
+                except FileNotFoundError:
+                    live = False
+            description += f' | PID {pid} '+('alive' if live else 'exited; inspect controller/log')
         lines.append(f'{job["model"]}: {description}')
     if batch.get('state') == 'STOPPED':
         lines.append(f'Stop reason: {batch.get("reason")}')

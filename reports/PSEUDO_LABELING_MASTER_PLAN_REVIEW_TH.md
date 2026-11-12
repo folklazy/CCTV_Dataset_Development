@@ -1,3 +1,20 @@
+<a id="solider-rgb-interleave"></a>
+## พัก SAM3.1 เพื่อดู SOLIDER RGB ก่อน — 12 พฤศจิกายน 2026
+
+สถานะ **PAUSE_CONTROLLER_READY / RGB_PREPARING** ผู้ใช้ขอพักSAM3.1และกลับมาฝึกต่อเพื่อดูSOLIDER BGR/RGBก่อน ใช้วิธีSIGSTOP/SIGCONTค้างprocessและCUDAcontextเดิมไว้ในหน่วยความจำ จึงเก็บoptimizer/RNG/ตำแหน่งฝึกปัจจุบันไว้ได้ การrestartserverหรือสูญเสียprocessทำให้สถานะในหน่วยความจำนี้หาย เพราะtrainerเดิมยังไม่มีfulloptimizerresumecheckpointบนดิสก์
+
+เตรียม [ตัวควบคุมพัก/กลับมาทำต่อ](../scripts/interleave_helper_training.py) ตรวจPID/startticks/commandก่อนส่งsignal พักเฉพาะSAMworkerและcontrollerที่เป็นของbatchนี้ หลังRGBสำเร็จหรือerrorให้resumeทั้งสอง มีwatchdogแยกเฝ้าsupervisorและเพดานพัก1ชั่วโมง พร้อมmanualresumecommandที่ใช้identitychecksเดียวกัน ไม่เพิ่มautomaticmodel/OOMretry
+
+Resource amendmentของRGBรอบนี้คือ**PAUSED_SAM_SHARED_RESIDENCY** SAMยังจองVRAMประมาณ7.6GB ส่วนfreeที่ตรวจ7,279MiB รอบSOLIDERเดิมมีpeakallocated2,618,966,016bytes เลือกguardfreeVRAM5GiBก่อนเริ่มRGBเพื่อรวมheadroom ส่วน50GiBfreediskและ80GiBoutputcapคงตามเดิม หากguardไม่ผ่านให้resumeSAMและเก็บเหตุผล การมีVRAMตามguardยังไม่รับประกันว่าจะรันทุกstepได้
+
+RGBใช้pretrainedSwin-Smallต้นฉบับ GT/seed/313train+77val/groupedlogits/loss/LR/batch/AMP/25epochsตามBGRrecipe เปลี่ยนinputเป็นRGB/normalizationตามmodelพร้อมguardsที่แก้แล้ว Source/output/weights/logsแยกfreshlinkedrun เมื่อจบตรวจ77savedmasksเทียบGTและcanonicalconfusionแล้วสร้างREPORT_TH.mdเปรียบเทียบBGR/RGBในprivate run คะแนนใช้ดูcandidatehelperตามเป้าหมายการแก้ร่าง
+
+เวลาพักถูกบันทึกแยก แต่controllerเดิมมี6hwallcapซึ่งนับเวลาพักด้วย ไม่มีการขยายcapเดิมเงียบๆ EpochsecondsของSAMที่คร่อมช่วงพักมีเวลารอรวมอยู่ ต้องติดป้ายในการนำไปวิเคราะห์เวลา ตัวดูprogressเดิมเพิ่มPAUSED_IN_MEMORYจากstateจริงของprocess
+
+CPUsubprocessfixturesผ่าน3testsครอบคลุมidentitymismatch, success/failurecleanup และwatchdogresumeเมื่อsupervisorหาย ตรวจการสร้างcomparisonreportกับsaved-maskconfusionในtinyfixturesด้วย ส่วนGPUexecutionจะยืนยันจากfreshRGBworkerหลังlaunch
+
+---
+
 <a id="helper-practical-selection-reaffirmed"></a>
 ## ยืนยันเป้าหมายเลือกตัวช่วย annotation — 12 พฤศจิกายน 2026
 

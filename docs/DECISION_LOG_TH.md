@@ -358,3 +358,12 @@ Next/blockers:เปิดผ่านSSH tunnelแล้วกดบันท�
 - Outputs existingreview/status/AGENTS/log เผยเกณฑ์missing/excess/boundary/ownership/redraw/correctioneffortและmetricsประกอบ การเลือกต่างhelperต่อpartทำได้เมื่อมีผลจริง ข้ออ้างnativeBGRที่ผิดยังเก็บcorrectionตามหลักฐาน
 - Verification documentation-only scoped changes ไม่มีtraining/inference/workerหรือcheckpoint/config changes CurrentSAMjobทำต่อ กิจกรรมzero-shotยังแยกตามคำขอ ไม่เพิ่มselectiongate
 - Next เก็บผลที่กำลังรันและทำzero-shotpresentationที่ขอ จากนั้นดูactualdrafts/checkpointsเพื่อปรับและเลือกตามภาระแก้จริงเมื่อผลพร้อม
+
+
+## Work log — 2026-11-12T16:49:50.008071+07:00 (Asia/Bangkok)
+
+- Work ID HELPER-PAUSE-RGB-20261112-01. ผู้ใช้ขอพักSAMและดูSOLIDERBGR/RGBก่อน ตรวจlivePID/GPU พบSAM7.6GBและfree7279MiB เลือกSIGSTOP/SIGCONTresidentpauseเพื่อเก็บfulloptimizer/RNG/processstate พร้อมsupervisor/watchdogตรวจPIDstartticks/commandและresumeทั้งworker/controller
+- Implementation interleavecontroller/failurecleanup/one-hourwatchdog/read-onlypausedviewer ใหม่ จำกัดRGBหนึ่งattempt25epochs settingsตามBGRและnativeRGBguard มีindependentsavedmaskconfusionก่อนreport ไม่มีOOM/modelretry ไม่ขยายparent6hwallcap
+- Verification CPU3testsผ่าน (success+failure cases, staleidentity, watchdogdead-supervisor) รวมfixture77-maskreport NoGPUcallsในขั้นเตรียม Inputpreflight/privatefreshmanifestกำลังจัดเตรียม Model/source/dataเดิมเก็บครบ
+- Resourceamendment pausedSAMretainsVRAM guardfree5GiBอิงSOLpeakallocated2.44GiBพร้อมheadroom disk50GiB/output80GiB maxpause1h ระบุepochwalltimeparentรวมpause ระบบยังไม่มีdiskfulloptimizerresumeเมื่อserverrestart
+- Outputs scripts/tests/currentreview/progressviewer และprivatefreshlinkedrun Next freeze/launchdetachedcontroller ยืนยันSAMหยุดstateTและRGBเริ่มtrainingจริง แล้วปล่อยautomaticresumeตามpolicy
