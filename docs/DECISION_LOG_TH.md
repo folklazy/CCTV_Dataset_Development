@@ -350,3 +350,11 @@ Next/blockers:เปิดผ่านSSH tunnelแล้วกดบันท�
 - Gap exportdraftยังdefaultB4v1/HFformat และpolygonRETR_EXTERNAL/minarea12/simplify1px ต้องตรวจweightbinding/holes/smallparts/mapbackก่อนbulk การแก้ส่วนนี้ไม่ต้องtrainเพื่อเปลี่ยนcode
 - Outputs existingreview/status/AGENTS/master/log; privateimpact_review_20261112 evidence/decision/proposal ไม่มีper-imageIDsหรือdatasetimagesขึ้นGit CPU10testsผ่าน model-forward/newtraininglaunchในreview0 เก็บSAMprocessและfrozenartifactsเดิม
 - Next ทำpurezero-shot4helpers77cropsตามcontract ตรวจผลเมื่อครบ แล้วทำSOLIDERRGBfreshattemptและdraftintegrationตามscopeที่รับรอง ไม่เริ่มข้อมูล/ฝึกทุกตัวใหม่เพราะข้อผิดเฉพาะSOLIDER
+
+
+## Work log — 2026-11-12T16:36:32.714658+07:00 (Asia/Bangkok)
+
+- Work ID HELPER-PRACTICAL-REAFFIRM-20261112-01. ผู้ใช้ยืนยันเป้าหมายbestdraft/leastcorrection อนุญาตปรับวิธีให้เหมาะกับแต่ละตัว Codexปรับข้อสรุปmandatorySOLIDERRGBretrain/nativefairnessให้เป็นoptionalimprovement ไม่ทิ้งBGRtrainedcandidate
+- Outputs existingreview/status/AGENTS/log เผยเกณฑ์missing/excess/boundary/ownership/redraw/correctioneffortและmetricsประกอบ การเลือกต่างhelperต่อpartทำได้เมื่อมีผลจริง ข้ออ้างnativeBGRที่ผิดยังเก็บcorrectionตามหลักฐาน
+- Verification documentation-only scoped changes ไม่มีtraining/inference/workerหรือcheckpoint/config changes CurrentSAMjobทำต่อ กิจกรรมzero-shotยังแยกตามคำขอ ไม่เพิ่มselectiongate
+- Next เก็บผลที่กำลังรันและทำzero-shotpresentationที่ขอ จากนั้นดูactualdrafts/checkpointsเพื่อปรับและเลือกตามภาระแก้จริงเมื่อผลพร้อม
