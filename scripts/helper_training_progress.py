@@ -26,7 +26,11 @@ def render(root):
         state = status.get('state', 'PENDING')
         description = state
         if state == 'COMPLETE':
-            description += f' | epochs {status["epochs"]} | saved predictions {status["predictions"]}'
+            if 'epochs' in status:
+                description += f' | epochs {status["epochs"]}'
+            description += f' | saved predictions {status["predictions"]}'
+        elif state == 'EVALUATING':
+            description += f' | crops {status["completed"]}/{status["expected"]}'
         elif state == 'LOADING':
             initial = (output/'INITIAL_METRICS.json').exists()
             if initial:

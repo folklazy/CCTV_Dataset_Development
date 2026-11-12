@@ -392,3 +392,12 @@ Next/blockers:เปิดผ่านSSH tunnelแล้วกดบันท�
 - Continuation reconciliation currentresume_sam31_training.pyhash0dcb26f925b1df6b01761d15b042c47e285ba3866fa909ba8467358a69f3d89f Logโหลดbestepoch3/67.82%, freshAdamW/scheduleadvance/reseed ห้ามอ้างoptimizerต่อเนื่อง ไม่มีcontinuationlaunchhash/startingBESTbytesแยก ต้องรายงานprovenanceจำกัด SourceASTlossเทียบตรงหลังตัดdocstring ผลfinalsavedmasksยังประเมินได้ครบ
 - แก้derivedparentSTATUS COMPLETEพร้อมSTATUS_BEFOREและappendCOMPLETION_RECONCILED เก็บsourceBINDINGเดิม ยังไม่ได้launchcap8hguard เก็บdraftunusedที่สร้างไว้privateและไม่ส่งขึ้นGit ไม่มีinference/trainingเพิ่มในclosure
 - Outputs existingreview/status/README/AGENTS/logพร้อม4configurationtables FinalSAMmIoU68.2916955552%เป็นhelpervalidationของwarmrestartedconfiguration ไม่ใช่purezero-shot Native/zero-shot/B5/currentdraftintegrationสถานะแยก Nextดูrasterdraftและeditingburdenก่อนเลือกhelper
+
+
+## Work log — 2026-11-12T22:56:43.535390+07:00 (Asia/Bangkok)
+
+- Work ID HELPER-B5-ZERO4-20261112-01. ผู้ใช้สั่งFTตัว5bและzeroshotที่ขาด ตีความเป็นSegFormerB5ตามบริบท ทำsource/CPUacceptanceและfreshfrozenmanifestสำหรับzeroB4/B5/SOLIDER/SAM77cropsแล้วFTB525epochs313train/77val
+- Implementation nativezero worker/completeIDprotocol/atomicpackets+savedmaskaudit/reporttable+fixedsamplegallery เพิ่มB5native18→helper5และnativePIL512input/HFexportในtrainer โดยpreserveB4/SOL/SAMcallers ปรับcontrollerรองรับjob-specificVRAMguardพร้อมfallbackconfigเดิม
+- Verification CPU18testsผ่าน actualB4/B5nativeCPUloading/labels/depths, B5classifieradaptationและprocessorparitymax0, SOLIDERnativeaffineRGBparitymax0 CPUpreflight5/5ผ่าน source/config/model/input hashesตรึง ไม่มีmodelGPUforwardในreadiness
+- Resource jobadmission4/6/4/10/10GiBตามmodelrolesพร้อมheadroom singleworker/6h/job/diskfree50GiB/output80GiB/noautoretry ไม่มีexternalPIDexclusivegate ไม่ติดตั้ง/downloadเพิ่ม ใช้existingmodelenvs/weights
+- Outputs newcode/config/testsและexistingreview มีprivatehelper-zero4-b5ft freshlinkedrun เก็บข้อมูล/ภาพจริงและpredictsprivate Next commitfreeze/launchdetachedbatch ตรวจpacketแรกแล้วให้controllerทำต่อและreportเมื่อจบ

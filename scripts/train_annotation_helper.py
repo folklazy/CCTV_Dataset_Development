@@ -116,9 +116,10 @@ def bind_data(dataset, membership):
 
 
 class Crops(Dataset):
-    def __init__(self, root, items, hashes, training=False):
+    def __init__(self, root, items, hashes, training=False, image_size=None):
         self.root, self.items, self.hashes = root, items, hashes
         self.training = training
+        self.image_size = image_size
         self.jitter = T.ColorJitter(brightness=.2, contrast=.2, saturation=.2)
 
     def __len__(self):
@@ -138,6 +139,8 @@ class Crops(Dataset):
                 image = image.transpose(Image.Transpose.FLIP_LEFT_RIGHT)
                 target = target[:, ::-1].copy()
             image = self.jitter(image)
+        if self.image_size:
+            image = image.resize(self.image_size, Image.Resampling.BILINEAR)
         return T.functional.to_tensor(image), torch.from_numpy(target), index
 
 
@@ -189,16 +192,38 @@ def project_lip(logits):
     return torch.stack([torch.logsumexp(logits[:, ids], 1) for ids in LIP_GROUPS], 1)
 
 
+def initialize_b5_classifier(model):
+    """Initialize a five-target head without altering the cached pretrained model."""
+    expected = {0: 'background', 2: 'hair', 4: 'upper-clothes', 5: 'skirt', 6: 'pants', 11: 'face'}
+    if model.config.num_labels != 18 or model.config.depths != [3, 6, 40, 3]:
+        raise ValueError('Selected B5 checkpoint has an unexpected architecture/head')
+    if any(model.config.id2label[i].lower()!=name for i, name in expected.items()):
+        raise ValueError('B5 native labels differ from the reviewed checkpoint')
+    native = model.decode_head.classifier
+    head = nn.Conv2d(native.in_channels, 5, kernel_size=1)
+    with torch.no_grad():
+        for target, source in enumerate([[0], [2], [11], [4], [5, 6]]):
+            head.weight[target].copy_(native.weight[source].mean(0))
+            head.bias[target].copy_(native.bias[source].mean(0))
+    model.decode_head.classifier = head
+    model.config.num_labels = 5
+    model.config.id2label = dict(enumerate(CLASSES))
+    model.config.label2id = {label: i for i, label in enumerate(CLASSES)}
+    model.config.semantic_loss_ignore_index = 255
+
+
 class DenseHelper:
     def __init__(self, args, device):
         self.kind, self.device = args.model, device
-        if args.model == 'b4':
+        if args.model in ['b4', 'b5']:
             from transformers import SegformerForSemanticSegmentation
             self.model = SegformerForSemanticSegmentation.from_pretrained(args.checkpoint, local_files_only=True)
+            if args.model=='b5':
+                initialize_b5_classifier(self.model)
             if self.model.config.num_labels != 5:
-                raise ValueError('B4 refinement requires the accepted five-class helper checkpoint')
+                raise ValueError('SegFormer helper requires a five-class checkpoint/head')
             if [self.model.config.id2label[i].lower() for i in range(5)] != CLASSES:
-                raise ValueError('B4 class ordering differs from annotation targets')
+                raise ValueError('SegFormer class ordering differs from annotation targets')
             self.mean, self.std = [0.485, .456, .406], [.229, .224, .225]
         else:
             sys.path.insert(0, str(Path(args.source).resolve()))
@@ -217,12 +242,14 @@ class DenseHelper:
         self.model.to(device)
 
     def logits(self, image):
+        if self.kind == 'b5' and image.shape[-2:] != (512, 512):
+            raise ValueError('B5 images must pass the reviewed PIL512 preprocessing')
         if self.kind == 'solider':
             image = F.interpolate(image, size=(572, 384), mode='bilinear', align_corners=False)
         mean = image.new_tensor(self.mean)[None, :, None, None]
         std = image.new_tensor(self.std)[None, :, None, None]
         output = self.model((image-mean)/std)
-        if self.kind == 'b4':
+        if self.kind in ['b4', 'b5']:
             logits = output.logits
         else:
             logits = project_lip(output[0][-1])
@@ -231,7 +258,7 @@ class DenseHelper:
     def optimizer(self, args):
         backbone, head = [], []
         for name, parameter in self.model.named_parameters():
-            is_backbone = name.startswith('segformer.') if self.kind == 'b4' else name.startswith(
+            is_backbone = name.startswith('segformer.') if self.kind in ['b4', 'b5'] else name.startswith(
                 ('patch_embed.', 'stages.', 'norm', 'semantic_embed', 'absolute_pos_embed'))
             (backbone if is_backbone else head).append(parameter)
         return torch.optim.AdamW([{'params': backbone, 'lr': args.lr_backbone},
@@ -350,6 +377,10 @@ def evaluate(helper, dataset, output=None):
         cm += np.bincount(truth[valid]*5+pred[valid], minlength=25).reshape(5, 5)
         if output:
             Image.fromarray(pred).save(output/(dataset.items[index]['sample_id']+'.png'))
+    return metrics_from_confusion(cm, len(dataset))
+
+
+def metrics_from_confusion(cm, crop_count):
     iou, statistics = [], {}
     for label in range(5):
         tp = int(cm[label, label])
@@ -366,12 +397,12 @@ def evaluate(helper, dataset, output=None):
             'miou4': sum(foreground)/len(foreground) if foreground else None,
             'per_class_statistics': statistics,
             'confusion_axes': 'rows=GT; columns=prediction; background,hair,face,upper,lower',
-            'confusion': cm.tolist(), 'crop_count': len(dataset)}
+            'confusion': cm.tolist(), 'crop_count': crop_count}
 
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--model', choices=['b4', 'solider', 'sam31'], required=True)
+    parser.add_argument('--model', choices=['b4', 'b5', 'solider', 'sam31'], required=True)
     parser.add_argument('--dataset', required=True)
     parser.add_argument('--membership', required=True)
     parser.add_argument('--checkpoint', required=True)
@@ -409,15 +440,17 @@ def main():
         raise ValueError('Choose a fresh weights directory')
     binding = {'arguments': vars(args), 'dataset': bindings,
                'script_sha256': file_hash(__file__),
-               'checkpoint_sha256': file_hash(Path(args.checkpoint)/'model.safetensors') if args.model=='b4' else file_hash(args.checkpoint),
+               'checkpoint_sha256': file_hash(Path(args.checkpoint)/'model.safetensors') if args.model in ['b4', 'b5'] else file_hash(args.checkpoint),
                'warmstart_sha256': file_hash(args.warmstart) if args.warmstart else None,
                'model_source_sha256': tree_hash(args.source) if args.source else None,
                'torch_version': torch.__version__, 'python': sys.version,
                'packages': {name: importlib.metadata.version(name) for name in
-                            ['torch', 'torchvision', 'numpy', 'Pillow']},
-               'checkpoint_config_sha256': file_hash(Path(args.checkpoint)/'config.json') if args.model=='b4' else None,
+                            (['torch', 'torchvision', 'numpy', 'Pillow']+
+                             (['transformers'] if args.model in ['b4','b5'] else []))},
+               'checkpoint_config_sha256': file_hash(Path(args.checkpoint)/'config.json') if args.model in ['b4', 'b5'] else None,
                'train_crops': len(manifest['train']), 'val_crops': len(manifest['val']),
                'selection_metric_role': 'helper_diagnostic; inspect_saved_drafts_for_correction_effort',
+               'initial_metrics_role': 'B5 head-initialized diagnostic, separate from native zero-shot' if args.model=='b5' else 'recipe-specific starting checkpoint diagnostic',
                'created_at_utc': __import__('datetime').datetime.now(__import__('datetime').timezone.utc).isoformat()}
     atomic_json(output/'BINDING.json', binding)
     if args.preflight:
@@ -445,12 +478,13 @@ def main():
                              'native_differences': 'uint8 resize quantization; extra presence factor; query retention'})
         else:
             contract.update({'mean': helper.mean, 'std': helper.std,
-                             'input_hw': [572, 384] if args.model=='solider' else [576, 384],
+                             'input_hw': [572, 384] if args.model=='solider' else ([512, 512] if args.model=='b5' else [576, 384]),
                              'output': 'grouped native logits' if args.model=='solider' else 'five-class logits'})
         atomic_json(output/'EFFECTIVE_INPUT_OUTPUT_CONTRACT.json', contract)
         root = Path(args.dataset).resolve()
-        train = Crops(root, manifest['train'], bindings['files'], training=args.model!='sam31')
-        validation = Crops(root, manifest['val'], bindings['files'])
+        image_size = (512, 512) if args.model=='b5' else None
+        train = Crops(root, manifest['train'], bindings['files'], training=args.model!='sam31', image_size=image_size)
+        validation = Crops(root, manifest['val'], bindings['files'], image_size=image_size)
         optimizer = helper.optimizer(args)
         schedule = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, args.epochs)
         scaler = torch.amp.GradScaler('cuda', enabled=args.amp, init_scale=1024.)
@@ -545,6 +579,8 @@ def main():
         loaded = helper.model.load_state_dict(best_state['state_dict'], strict=args.model!='sam31')
         if args.model=='sam31' and (loaded.unexpected_keys or any(not k.startswith('backbone.') for k in loaded.missing_keys)):
             raise ValueError('Saved decoder readback failed')
+        if args.model in ['b4', 'b5']:
+            helper.model.save_pretrained(weights_directory/'huggingface')
         predictions = output/'validation_predictions'
         predictions.mkdir()
         final = evaluate(helper, validation, predictions)

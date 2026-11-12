@@ -1,3 +1,32 @@
+<a id="b5-and-zero-shot-completion"></a>
+## เพิ่ม B5 fine-tune และเติม zero-shot สี่ตัว — 12 พฤศจิกายน 2026
+
+สถานะ **CPU_ACCEPTANCE_PASS / FIVE_JOB_BATCH_READY** ตีความคำว่า5bตามบริบทเป็นSegFormer-B5ที่ผู้ใช้เสนอไว้ก่อนหน้า native84,607,186parameters ใช้checkpoint18คลาสที่มีอยู่แล้ว ผู้ใช้อนุญาตให้ทำFTและzero-shotส่วนที่ยังขาดให้ครบ
+
+| คิว | งาน | Population / recipe |
+| --- | --- | --- |
+| 1 | B4 pretrained zero-shot | 77validationcrops native18, RGB576×384/INTER_AREA/ImageNet |
+| 2 | B5 pretrained zero-shot | 77validationcrops native18, boundprocessor512×512/RGB/ImageNet |
+| 3 | SOLIDER pretrained zero-shot | 77validationcrops native20, sourceaffine572×384/RGB/inverse-logit-map-back |
+| 4 | SAM3.1 pretrained zero-shot | 77validationcrops, originaldetector/native1008processor/fixed4prompts/allacceptedqueries |
+| 5 | B5 fine-tune | train313crops/val77cropsจากseed300เดิม 25epochs AMPbatch2 LRbackbone1e-5/head1e-4 cosine/seed20261112 |
+
+B5FTเริ่มจากnative18headแล้วinitializehelper5เป็นBG0/Hair2/Face11/Upper4/Lowerเฉลี่ยSkirt5+Pants6 ก่อนเรียนรู้GTโดยตรง INITIAL_METRICSของheadใหม่นี้ติดป้ายhead-initializeddiagnostic แยกจากzero-shotnative18 เก็บepoch0เป็นcandidate เลือกbestด้วยvalidationmIoU4และเก็บHFexportที่loadต่อได้เพื่อใช้draftsภายหลัง
+
+ใช้ [protocolที่freezeก่อนรัน](../config/helper_zero_shot_v1.json), [zero-shot worker](../scripts/evaluate_helper_zero_shot.py), [trainerที่เพิ่มB5](../scripts/train_annotation_helper.py) และ [reporter](../scripts/report_helper_comparison.py) NativeทุกIDมีfixedprojectionครบ Dress/Hat/Glassesและnativeอื่นนอกสี่targetsเป็นbackground/OTHERตามprotocol GT255เป็นvoidร่วม ไม่มีการตั้งignoreรายโมเดล Nativeargmax/map-backมาก่อนtargetlookup คะแนนคำนวณจากmappedpixelsและglobalconfusion
+
+SAMเก็บnativepromptcandidatesที่ผ่านthresholdพร้อมhardmasks/scores/boxes และderivedcategoricalmaskกับcomposedstrength Nativeperquerylogits/rejectedqueriesไม่ได้เก็บเต็ม Denseโมเดลเก็บnativeintegerPNGทุกclassและcommonmaskแยกกัน Atomicmetadata/ledgercommitผูกsource/config/input/checkpoint/output hashesเมื่อแต่ละcropเขียนครบ ถ้าerrorหยุดและเก็บprimarynull ไม่retry/fallbackอัตโนมัติ
+
+CPUfixtures18testsผ่าน ครอบคลุมnativeIDmapping/OTHER FP-FN/union/empty/nativeprobabilitycomposition/B5classifierinit/targetgeometry/JSONnull/reportstage separationและtrainer/controllerเดิม โหลดnativeB4/B5/SOLIDERด้วยCPUได้ตรงhead/architecture ตรวจB5traininginputกับnativeprocessorบนcropจริงได้maxabsdiff0.0 และSOLIDERofficialaffineRGBreaderกับreferenceได้ตรงทุกค่า CPUinputpreflightผ่าน5/5 ไม่มีGPUforwardในreadinessนี้
+
+คิวใช้GPUworkerเดียวต่อครั้ง พิจารณาfreeVRAMจริง ไม่ใช้externalPIDเป็นเหตุblockลำพัง Admissionแต่ละjobเป็น4/6/4/10/10GiBตามคิว อิงขนาดmodel/inputและheadroom พร้อมวัดpeakallocated/reservedในzero jobs คงdiskfree50GiB/output80GiBต่อjob/6hต่อjob การมีmemoryตามguardยังไม่รับประกันว่าจะไม่มีOOM
+
+หลังจบสร้างREPORT_TH.md/COMPARISON.csv/RESULT_INDEXและgalleryจากสามvalidationcropsแรกชุดเดิมในprivate fresh run รวมผลFTเดิมที่ตรวจผ่านแล้วของB4/SOLIDERBGR/SOLIDERRGB/SAMwarmrestartโดยอ่านsavedresults NativezeroและFTบางตัวมีadapterต่างกัน รายงานแยกstageและไม่อ้างว่าผลต่างเกิดจากtrainingอย่างเดียว ตารางhighest-per-targetใช้fullprecisionเฉพาะเมื่อครบทุกentry ยังต้องดูภาระการแก้จริงเพื่อเลือกhelperสุดท้าย
+
+ผลและภาพเก็บprivate ช่วงlaunchจะบันทึกrun/process/sessionและคำสั่งดูสถานะจริง ไม่ติดตั้งdependenciesหรือดาวน์โหลดweightsใหม่ในงานนี้
+
+---
+
 <a id="helper-training-complete"></a>
 ## ปิดรอบฝึก helper และตรวจผล — 12 พฤศจิกายน 2026
 

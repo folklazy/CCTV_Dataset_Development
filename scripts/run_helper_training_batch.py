@@ -68,7 +68,8 @@ def main():
                 query = subprocess.check_output([
                     'nvidia-smi', '-i', config['physical_gpu'],
                     '--query-gpu=memory.free', '--format=csv,noheader,nounits'], text=True)
-                if int(query.strip()) < config['min_free_vram_mib']:
+                required_vram = job.get('min_free_vram_mib', config['min_free_vram_mib'])
+                if int(query.strip()) < required_vram:
                     raise RuntimeError('GPU free-memory admission failed before launch')
                 output = Path(job['output'])
                 if output.exists():
