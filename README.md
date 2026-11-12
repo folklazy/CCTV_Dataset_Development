@@ -1,3 +1,5 @@
+> **12 พฤศจิกายน 2026 — พัก SAM3.1 เพื่อทดลอง SOLIDER RGB ก่อน** เปิดRGBtrainingพร้อมระบบresumeSAMอัตโนมัติ เก็บสถานะฝึกเดิมไว้ในหน่วยความจำ อ่าน [สถานะและวิธีดูสด](reports/PSEUDO_LABELING_MASTER_PLAN_REVIEW_TH.md#solider-rgb-interleave)
+
 > **12 พฤศจิกายน 2026 — B4 และ SOLIDER ฝึกครบแล้ว** SAM3.1อยู่ระหว่างทำงาน เพิ่มตัวดูสถานะแบบสดที่อ่านbaseline/cache/training progress แยกกัน อ่าน [สถานะและวิธีติดตาม](reports/PSEUDO_LABELING_MASTER_PLAN_REVIEW_TH.md#helper-training-revision2)
 
 > **เลือกhelperเพื่อช่วยannotation — 12พฤศจิกายน2026** ใช้คุณภาพร่างและเวลาคนแก้เป็นหลัก โมเดลใช้เทคนิคที่เหมาะกับตัวเองและเลือกตามส่วนได้ IoUเป็นข้อมูลประกอบ ใช้outputs/checkpointsที่มีเริ่มตรวจ แล้วฝึกเพิ่มเมื่อคุ้มภาระงาน อ่าน [เป้าหมายที่แก้ให้ตรงงาน](reports/PSEUDO_LABELING_MASTER_PLAN_REVIEW_TH.md#helper-purpose-correction) ข้อความreviewก่อนหน้าด้านล่างเป็นประวัติ

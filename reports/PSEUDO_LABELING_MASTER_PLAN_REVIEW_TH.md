@@ -1,7 +1,7 @@
 <a id="solider-rgb-interleave"></a>
 ## พัก SAM3.1 เพื่อดู SOLIDER RGB ก่อน — 12 พฤศจิกายน 2026
 
-สถานะ **PAUSE_CONTROLLER_READY / RGB_PREPARING** ผู้ใช้ขอพักSAM3.1และกลับมาฝึกต่อเพื่อดูSOLIDER BGR/RGBก่อน ใช้วิธีSIGSTOP/SIGCONTค้างprocessและCUDAcontextเดิมไว้ในหน่วยความจำ จึงเก็บoptimizer/RNG/ตำแหน่งฝึกปัจจุบันไว้ได้ การrestartserverหรือสูญเสียprocessทำให้สถานะในหน่วยความจำนี้หาย เพราะtrainerเดิมยังไม่มีfulloptimizerresumecheckpointบนดิสก์
+สถานะ **SAM_PAUSED_IN_MEMORY / SOLIDER_RGB_TRAINING** ผู้ใช้ขอพักSAM3.1และกลับมาฝึกต่อเพื่อดูSOLIDER BGR/RGBก่อน ใช้วิธีSIGSTOP/SIGCONTค้างprocessและCUDAcontextเดิมไว้ในหน่วยความจำ จึงเก็บoptimizer/RNG/ตำแหน่งฝึกปัจจุบันไว้ได้ การrestartserverหรือสูญเสียprocessทำให้สถานะในหน่วยความจำนี้หาย เพราะtrainerเดิมยังไม่มีfulloptimizerresumecheckpointบนดิสก์
 
 เตรียม [ตัวควบคุมพัก/กลับมาทำต่อ](../scripts/interleave_helper_training.py) ตรวจPID/startticks/commandก่อนส่งsignal พักเฉพาะSAMworkerและcontrollerที่เป็นของbatchนี้ หลังRGBสำเร็จหรือerrorให้resumeทั้งสอง มีwatchdogแยกเฝ้าsupervisorและเพดานพัก1ชั่วโมง พร้อมmanualresumecommandที่ใช้identitychecksเดียวกัน ไม่เพิ่มautomaticmodel/OOMretry
 
@@ -11,7 +11,26 @@ RGBใช้pretrainedSwin-Smallต้นฉบับ GT/seed/313train+77val/gro
 
 เวลาพักถูกบันทึกแยก แต่controllerเดิมมี6hwallcapซึ่งนับเวลาพักด้วย ไม่มีการขยายcapเดิมเงียบๆ EpochsecondsของSAMที่คร่อมช่วงพักมีเวลารอรวมอยู่ ต้องติดป้ายในการนำไปวิเคราะห์เวลา ตัวดูprogressเดิมเพิ่มPAUSED_IN_MEMORYจากstateจริงของprocess
 
-CPUsubprocessfixturesผ่าน3testsครอบคลุมidentitymismatch, success/failurecleanup และwatchdogresumeเมื่อsupervisorหาย ตรวจการสร้างcomparisonreportกับsaved-maskconfusionในtinyfixturesด้วย ส่วนGPUexecutionจะยืนยันจากfreshRGBworkerหลังlaunch
+CPUsubprocessfixturesผ่าน3testsครอบคลุมidentitymismatch, success/failurecleanup และwatchdogresumeเมื่อsupervisorหาย ตรวจการสร้างcomparisonreportกับsaved-maskconfusionในtinyfixturesด้วย
+
+ยืนยันlaunchเมื่อ `2026-11-12T16:52:53.838276+07:00` Run `helper-solider-rgb-interleave-20261112T094846Z` ใช้launchcommit `852a61f3d509a9555d319bd3e20dd1ce1007fc4e` tmux `helper_solider_rgb` supervisorPID271857/watchdogPID271890/RGBworkerPID271958 Source/input/config/weightsbindingsและCPUinputpreflightผ่าน RGBมีEFFECTIVE_INPUT_OUTPUT_CONTRACTที่ยืนยันRGB/mean/stdและผ่านtraining100/157batchesของepoch1แล้ว GPUobservationSAM7630MiBค้างและSOLIDER2702MiBกำลังฝึก
+
+SAMworkerPID123721 และcontrollerPID71234เป็นstateTจริง สถานะที่บันทึกก่อนพักอยู่epoch4/15 โดยworkerมีRNG/optimizerเดิมในmemory ตัวดูprogressจะแสดงPAUSED_IN_MEMORY
+
+ดูงานRGBบนserverได้ดังนี้
+
+```bash
+cd /home/skyaidev/folk/CCTV_Dataset_Development.local/runs/helper-solider-rgb-interleave-20261112T094846Z
+python3 /home/skyaidev/folk/CCTV_Dataset_Development/scripts/helper_training_progress.py --watch
+```
+
+เมื่อRGBจบจะสร้างREPORT_TH.mdและRGB_SAVED_MASK_AUDIT.jsonในrunนี้ แล้วมีRESUMED.jsonบันทึกการกลับมาทำต่อของparent ProgressSAMใช้คำสั่งเดิมกับparentrunได้ หากต้องยกเลิกRGBและresumeSAMก่อน ให้ใช้controlledresumeที่ตรวจidentityด้วยคำสั่งนี้
+
+```bash
+/home/skyaidev/folk/Human-Body-Extraction/.venv/bin/python /home/skyaidev/folk/CCTV_Dataset_Development.local/runs/helper-solider-rgb-interleave-20261112T094846Z/source_frozen/interleave_helper_training.py /home/skyaidev/folk/CCTV_Dataset_Development.local/runs/helper-solider-rgb-interleave-20261112T094846Z/BATCH_MANIFEST.json --resume
+```
+
+คำสั่งresumeจะหยุดเฉพาะRGBworkerของattemptนี้ก่อนปล่อยSAMกลับ ไม่ส่งsignalให้processงานอื่น
 
 ---
 

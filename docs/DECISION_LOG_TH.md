@@ -367,3 +367,12 @@ Next/blockers:เปิดผ่านSSH tunnelแล้วกดบันท�
 - Verification CPU3testsผ่าน (success+failure cases, staleidentity, watchdogdead-supervisor) รวมfixture77-maskreport NoGPUcallsในขั้นเตรียม Inputpreflight/privatefreshmanifestกำลังจัดเตรียม Model/source/dataเดิมเก็บครบ
 - Resourceamendment pausedSAMretainsVRAM guardfree5GiBอิงSOLpeakallocated2.44GiBพร้อมheadroom disk50GiB/output80GiB maxpause1h ระบุepochwalltimeparentรวมpause ระบบยังไม่มีdiskfulloptimizerresumeเมื่อserverrestart
 - Outputs scripts/tests/currentreview/progressviewer และprivatefreshlinkedrun Next freeze/launchdetachedcontroller ยืนยันSAMหยุดstateTและRGBเริ่มtrainingจริง แล้วปล่อยautomaticresumeตามpolicy
+
+
+## Work log — 2026-11-12T16:52:53.838276+07:00 (Asia/Bangkok)
+
+- Work ID HELPER-PAUSE-RGB-20261112-02. เปิดfreshRGBlinkedrun helper-solider-rgb-interleave-20261112T094846Z จากlaunchcommit852a61f3d509a9555d319bd3e20dd1ce1007fc4e ในtmuxhelper_solider_rgb ยืนยันsupervisor/independentwatchdog/SAMparentidentityตรง
+- Paused worker123721/controller71234 stateTจริง GPUcontexts7630MiBอยู่ครบ RGBworker271958ฝึกจริงผ่าน100/157batchesepoch1 ใช้2702MiB มีRGB/mean/stdreceiptตรงnativeSwin แยกoutputs/weights/logsจากparent
+- Input CPUpreflightผ่าน source/config/checkpoint/datafingerprintsตรึง มีmaxpause3600s/guard5GiB/free-disk50GiB/output80GiB/noautoretry parent6hwallcapนับpauseต่อ Resource/timingamendmentแยกจากscientificrecipe
+- Outputs LAUNCH_VERIFIED/privateBATCHmanifest/PAUSED/WATCHDOG/STATUS; existingreview/status/README/AGENTS/manualresumecommand CPUfixtures3testsผ่าน จบRGBให้auditsaved77masksและreportBGR/RGBอัตโนมัติก่อนresumeSAM
+- Next detachedsupervisorรันRGBหนึ่งattemptแล้วปล่อยSAMprocessเดิมทำต่อ ไม่ต้องCodexpollจนจบ หากerrorwatchdog/finallyresumeparentและเก็บfailurehistory
