@@ -282,3 +282,13 @@ Next/blockers:เปิดผ่านSSH tunnelแล้วกดบันท�
 - Decision: B4checkpointคงใช้ประเมินต่อโดยอิงbindings/metricเดิมเมื่อใช้ได้ SAMsourceปัจจุบันควรแก้trainingobjectiveและvalidationแล้วทำfreshattemptหากใช้เส้นทางนี้ต่อ ไม่เหมารวมว่าmetricchangeทำให้weightsทั้งสองตัวต้องฝึกใหม่ RuntimeSAMsourceidentityยังunknownตามหลักฐานmtimeก่อนหน้า
 - Outputs: อัปเดตexistingreview/status/log พร้อมsourcehashesและCPUevidenceprivate ไม่มีtraining/inferenceprocessใหม่หรือactive-sourcechanges
 - Next: เตรียมcommonhelpervalidationและrevisionที่แก้SAMloss/score/cache/launcher พร้อมfreshattemptและงบงานตามขอบเขตที่จะดำเนินการ
+
+## HELPER-GOAL-AMENDMENT-20261112 / PRACTICAL_DRAFT_QUALITY_PRIMARY
+
+เวลา 2026-11-12T14:13:35.057269+07:00 (Asia/Bangkok). ผู้ใช้ชี้แจงว่าhelperใช้วิธีใดก็ได้เพื่อร่างให้แก้น้อย เลือกตัวเก่งสำหรับpseudo-labeling ไม่ได้ต้องการbenchmarkfairnessระหว่างhelpers
+
+- Inputs: HEAD1b733d1, masterล่าสุด, previousreview, privatecomparison/testsourceและcheckpointsที่มี Userclarificationแก้เป้าหมายhelperโดยตรง
+- Correction: Codexวางcommonvalidation/retrainเป็นgateมากเกินไป จึงปรับmasterและactiveAGENTSinstructionให้practicaldraftquality/correctioneffortเป็นหลัก Metricsเป็นdiagnostics และfine-tuneเมื่อช่วยลดข้อผิดพลาดจริงตามbudget โมเดลใช้settingsต่างกันและhelperต่างส่วนได้โดยผูกrecipe/GTตามกฎ
+- Outputs: masterไฟล์เดิมSHAdea61f81a8b32528643975e2f9d9228fe8fc117789dd145b52fca815011db4b1พร้อมbackup, existingreview/status/README/AGENTS/log ไม่สร้างmasterplanใหม่ ข้อมูลผลฝึกและsourcehistoryเก็บไว้
+- Verification: sourceชี้ว่าsam31_testsเป็นzero-shot จึงไม่ตีความเป็นผลfine-tunedSAM; currentlyไม่มีhumaneditingtimemeasurement ไม่อ้างผู้ชนะทั่วไป ตรวจmasterhash/links/stageddiffและรักษาunrelatedworkingchanges
+- Next: ดูร่างที่ใช้จริงจากsavedoutputs/checkpointsบนdevelopment ระบุผ่าน/แก้เล็ก/วาดใหม่รายpartและbboxmiss/ownererrors ใช้ข้อมูลคนแก้เลือกhelper/recipeแล้วค่อยฝึกเพิ่มตามประโยชน์ ไม่บังคับvalidationใหญ่ก่อนขั้นนี้
