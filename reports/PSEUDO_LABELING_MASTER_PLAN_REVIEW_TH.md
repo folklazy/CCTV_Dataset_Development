@@ -5,14 +5,14 @@
 
 ### ผลหลัง fine-tune ล่าสุด
 
-| Configuration | Hair IoU % | Face IoU % | Upper IoU % | Lower IoU % | mIoU4 % | Best epoch | ครบ |
-| --- | --- | --- | --- | --- | --- | --- | --- |
-| B4_refined | 74.24 | 46.65 | 77.36 | 62.89 | 65.29 | 12 | 77/77 |
-| B5_finetuned | 75.04 | 51.73 | 77.28 | 64.59 | 67.16 | 13 | 77/77 |
-| SOLIDER_BGR | 73.41 | 46.92 | 75.46 | 66.42 | 65.55 | 18 | 77/77 |
-| SOLIDER_RGB | 71.98 | 51.94 | 77.93 | 68.97 | 67.70 | 11 | 77/77 |
-| SAM31_warm_restarted | 74.29 | 54.79 | 80.11 | 63.98 | 68.29 | 6 | 77/77 |
-| SAM31_fresh15 | 76.88 | 52.75 | 79.22 | 66.29 | 68.78 | 1 | 77/77 |
+| Configuration | Hair IoU % | Face IoU % | Upper IoU % | Lower IoU % | mIoU4 % | Best epoch | ครบ | Mean ms/ROI |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| B4_refined | 74.24 | 46.65 | 77.36 | 62.89 | 65.29 | 12 | 77/77 | 88.15 |
+| B5_finetuned | 75.04 | 51.73 | 77.28 | 64.59 | 67.16 | 13 | 77/77 | 114.08 |
+| SOLIDER_BGR | 73.41 | 46.92 | 75.46 | 66.42 | 65.55 | 18 | 77/77 | 68.31 |
+| SOLIDER_RGB | 71.98 | 51.94 | 77.93 | 68.97 | 67.70 | 11 | 77/77 | 70.82 |
+| SAM31_warm_restarted | 74.29 | 54.79 | 80.11 | 63.98 | 68.29 | 6 | 77/77 | 2,758.56 |
+| SAM31_fresh15 | 76.88 | 52.75 | 79.22 | 66.29 | 68.78 | 1 | 77/77 | 2,875.31 |
 
 SAM3.1 รอบใหม่มี mIoU4 **68.78%** สูงกว่าผล warm restart เดิม **0.49 จุดเปอร์เซ็นต์** ค่า mean สูงสุดในกลุ่ม configuration หลังฝึกที่มีผลครบอยู่ที่รอบใหม่นี้ ส่วนคะแนนสูงสุดรายส่วนยังต่างกัน
 
@@ -41,6 +41,40 @@ SAM3.1 รอบใหม่มี mIoU4 **68.78%** สูงกว่าผล 
 ### ข้อเสนอการใช้ helper จากผลนี้
 
 ใช้ **SAM31_fresh15 / BEST epoch1** เป็นตัวเลือกหลักสำหรับตรวจร่างตามคะแนนเฉลี่ยสี่ส่วนและหลักฐานการฝึกต่อเนื่องที่ตรวจได้ครบ ผลเก่าSAMwarmrestartยังมีFace/Upperสูงกว่า และSOLIDER RGBมีLowerสูงกว่า จึงเก็บเป็นcandidateรายส่วนตามเป้าหมายลดภาระการแก้ การผสมoutputsหลายตัวและเวลาประหยัดที่ได้จริงยังต้องวัดกับdraftsที่นำไปแก้ การตรวจscoreนี้ไม่รับรองว่าภาพนอกvalidationทั้ง2,200ภาพจะได้คุณภาพเท่ากัน
+
+### ความเร็ว inference ที่เพิ่มหลังปิดผลคุณภาพ
+
+**Mean ms/ROI** ในตารางหลัง fine-tune เป็นเวลาเฉลี่ยในการสร้างmaskครบสี่ส่วนสำหรับ **person cropหนึ่งรายการ** เริ่มจากRGBcropที่decodeอยู่ในRAMแล้ว จบเมื่อได้hardmaskบนCPU หน่วยเป็นมิลลิวินาที ค่าน้อยหมายถึงใช้เวลาต่อcropน้อยภายใต้การวัดครั้งนี้ SAM31_fresh15ได้ **2,875.31ms ≈ 2.88วินาที/crop**
+
+จับเวลาเป็นสามช่วงและรวมกันเป็นค่าในตาราง
+
+1. เตรียมinputจากRGBในRAM รวมการแปลงtensor, resize512ของB5 และH2D transfer
+2. Parser route รวมpreprocessingภายในโมเดล, forward, projection/union, resizeกลับ576×384และcomposeผลตามrecipeของแต่ละตัว
+3. อ่านhardmaskกลับCPUและแปลงเป็นuint8
+
+เวลาYOLO, การสร้างcropจากภาพใหญ่, การdecodeไฟล์, model loading, warmup, GT/scoring, การเขียนไฟล์ และการสกัดสีอยู่นอกช่วงนี้ ภาพต้นทางที่มีหลายคนจะมีหลายROI จำนวนROIและส่วนอื่นของระบบต้องวัดร่วมกันเมื่อต้องการเวลาpipelineต่อภาพ
+
+### เงื่อนไขของการวัดใหม่
+
+- ใช้ **Tesla T4, FP32, batch1, eval/no_grad** และselectedBESTweightsที่ผูกกับผลคุณภาพ มีGPUworkerทีละตัวตามลำดับ ใช้environmentและsourceของแต่ละconfigurationตามbindingเดิม
+- เลือกสามvalidationcropsแรกตามชุดgalleryเดิม มีwarmupหนึ่งรอบสามcalls แล้ววัดสามรอบรวม **9 measured calls ต่อconfiguration** คำนวณmean/medianจากcallsทั้งเก้าด้วยfullprecisionก่อนปัดเศษ ใช้ `torch.cuda.synchronize` ที่ขอบช่วงและ `time.perf_counter`
+- B4/B5หลังฝึกมีhelperheadห้าค่า SOLIDERสร้างnative20logitsแล้วgroupตามrecipe BGR/RGBของรอบนั้น SAM3.1คำนวณbackboneใหม่ทุกcropและทำdecoderครบสี่prompts เก็บfeaturesในGPUระหว่างcallsของcropเดียวกัน การวัดSAMรอบนี้มีencoderอยู่ในเวลาและไม่อ่านfeaturecacheจากรอบฝึก
+- ตรวจpixel parityกับsavedselectedmasksทุกcallรวมwarmup ผ่านตรงทุกpixelบนสามcropsของทุกconfiguration ใช้ความเท่ากันของoutputsเพื่อตรวจroute โดยไม่มีGTช่วยสร้างหรือเลือกprediction คะแนนคุณภาพทั้ง77cropsยังมาจากcanonicalresultsเดิม
+- ชุดtimingใช้สามcropsที่เตรียมไว้เดิม รวม72model-framecallsทั้งหกconfigurations การวัดนี้จัดทำหลังเห็นผลคุณภาพและfreezeprotocolก่อนวัดเวลา จึงเป็นsmall fixed-sample timing diagnostic ภายใต้resourcepolicy SHARED_GPU_QUALITY_ONLY
+- `HISTORY.jsonl` เก็บเวลาtrainรวมvalidationต่อepochตามขอบเขตเดิม ส่วนคอลัมน์ใหม่นี้มาจากtimerinferenceเฉพาะที่เพิ่มขึ้น Median,จำนวนcallsและค่าเฉลี่ยสามช่วงอยู่ใน [CSV เดิม](HELPER_COMPARISON.csv)
+
+Source [ตัววัด inference](../scripts/benchmark_helper_inference.py) ใช้frozenhelpers/checkpointbindingsที่ตรวจแล้ว CPU27testsผ่านรวมtimer units/phase boundaries, aggregationและSAMliveencoder/four-prompt composition Private run `helper-inference-timing-20261113T024908Z` เก็บ `TIMING_PROTOCOL.json`, `TIMING_INDEX.json`, LEDGERและMETRICSของแต่ละconfigurationพร้อมhashes Sourcecommit `ec0a95b5983e608216e9e0b6dc4ed3550843d355`
+
+### Timing เดิมของ pretrained zero-shot
+
+| Pretrained configuration | Mean native-route ms/ROI | N |
+| --- | --- | --- |
+| B4_native_zero | 80.71 | 77 |
+| B5_native_zero | 110.94 | 77 |
+| SOLIDER_native_zero | 159.23 | 77 |
+| SAM31_native_zero | 2,872.97 | 77 |
+
+ตารางzero-shotนี้สรุป `timing_seconds.native_route` จากmetadataครบ77cropsต่อโมเดล เป็นlegacyadapterdiagnosticsที่รวมfirstcallและมีsource-specificI/OภายในrouteของSOLIDER ใช้รหัส `LEGACY_NATIVE_ROUTE_77` ในCSV ส่วนผลFTใหม่ใช้ `FIXED3_WARM_FP32_FRESH_ROI` เพื่อระบุขอบเขตคนละชุดอย่างชัดเจน
 
 ### ประวัติยืนยันการเปิดงาน
 
