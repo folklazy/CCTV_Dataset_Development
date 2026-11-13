@@ -443,3 +443,11 @@ Next/blockers:เปิดผ่านSSH tunnelแล้วกดบันท�
 - Verification workerTRAININGepoch1/15ผ่าน20/313crops actualCUDA/T4 มีinitial77cropconfusionตรงoriginalwarmstartbaselineทุกcell Runtimeinput/model/source/environment/cachebindingsตรงfinalCPUpreflight LASTinitialepoch0readback397keysพร้อมAdamWinitialized/scheduler0/RNGครบและSHAตรง ยังไม่มีcompletedepochใหม่ในเวลาตรวจ fullupdatedoptimizerstateจะcommitเมื่อจบepoch1
 - Outputs LAUNCH/LAUNCH_VERIFIED/binding/contract/recovery/attemptrecordsในprivate run ต่อด้วยautomaticnewmask-audit/reportเมื่อครบ คงGPUworkerตัวเดียว ไม่มีintermediate-rankingหรือปรับsettingsจากคะแนน Modelsอื่นใช้savedresultsเท่านั้น
 - Next detachedworkerฝึกจนครบ15epochsแล้วหยุด REPORT_STATUSบอกผลpost-trainingaudit/report หากเกิดerrorให้เก็บLAST/partial/failuresและใช้controlledreconciliationก่อนเปิดงานต่อ
+
+
+## Work log — 2026-11-13T09:28:06.039578+07:00 (Asia/Bangkok)
+
+- Work ID SAM31-FRESH15-CLOSE-20261113-01. ตรวจprocess/GPU/canonicalพบworker/controllerจบและREPORT_STATUSCOMPLETEเมื่อ05:35ไทย ฝึกครบepoch1–15ในattemptเดียว/PIDเดิม ไม่มีresume optimizer4695updates AMPskips0
+- Verification LASTepoch15/scheduler15, Adamstates385ทุกตัวstep4695และfinite moments/params, RNGครบ BESTepoch1/68.7843263310%ตรงhistory/embeddedBESTและcheckpointSHA Sourcefrozenตรงlaunch471b577 ใช้automaticsavedmasknp.add.at audit exact77/missing0invalid0ต่อ ตรวจarithmetic/source hashesทั้ง10row, GTdomainidentity, galleryhash6PNGและvisual2panels ไม่มีmodelcallsเพิ่ม
+- Results freshSAM Hair76.8793435382/Face52.7465279050/Upper79.2176774183/Lower66.2937564624%, mean68.7843263310% สูงกว่าwarmrestart0.4926307758percentagepoints Bestepoch1เป็นselectedweights ส่วนฝึกต่อจบ15จริง epoch15mean61.800427% และvalidationแกว่ง ยังระบุสาเหตุไม่ได้จากrecordsนี้ ใช้ผลhelpervalidationและยังไม่มีediting-timeหรือheldoutestimate
+- Outputs updatedexistingreview/CSV10configwithhashes+source_run_id, README/reportsstatus/AGENTS/private master Private FINAL_COMPLETION_AUDIT PASS, automaticREPORT/COMPARISON/RESULT_INDEX/galleryครบ นำSAMfreshBESTเป็นcandidateหลักตามmean เก็บoldSAM Face/UpperและSOLRGBLowerเป็นcandidateรายส่วน ไม่มีensembletestedหรือautotuningเพิ่ม

@@ -1,11 +1,50 @@
 <a id="sam31-fresh15"></a>
 ## SAM3.1 รอบใหม่จาก warmstart เดิม — 13 พฤศจิกายน 2026
 
-สถานะ **TRAINING / LAUNCH_VERIFIED** ผู้ใช้อนุญาตให้เริ่มรอบใหม่หลังตรวจพบว่าผลเดิมมี warm restart รอบนี้คงสูตรฝึก 15 epochs เพื่อดูผลของการฝึกต่อเนื่องจากจุดตั้งต้นเดียวกัน เก็บผลเดิม 68.29% และผลของ helpers ตัวอื่นเป็น configuration อ้างอิงแยกกัน
+สถานะ **COMPLETE / FULL15_VERIFIED / SAVED_MASK_AUDIT_PASS** ฝึกจบและสร้างรายงานเมื่อ **13 พฤศจิกายน 2026 เวลา 05:35 น. ไทย** ตรวจปิดจาก artifacts เมื่อ **09:28 น. ไทย** มีประวัติ epoch1–15 ครบ, optimizer updatesรวม4,695ครั้ง และ validation predictionsครบ77crops
 
-ตรวจเมื่อ `2026-11-13T00:30:06.201571+07:00` งานอยู่ epoch1/15 ผ่าน20/313 training crops แล้ว ใช้ tmux `helper_sam31_fresh15` controllerPID619585/workerPID619846 แยก session จาก Codex ผ่าน tmux serverที่มีparentPID1 จึงทำงานต่อได้หลังจบturn Launchcommit `471b577c1406596de49ad653f18e30f31a81b908`
+### ผลหลัง fine-tune ล่าสุด
 
-ตรวจ `LAST.pt` ตั้งต้นอ่านกลับได้397decoderkeys พร้อมoptimizerเริ่มต้น, schedulerตำแหน่ง0 และRNG Python/NumPy/Torch/CUDAครบ RuntimebindingsตรงCPUpreflight และinitial confusionบน77validationcropsตรงbaselineจากwarmstartเดิมทุกcell การตรวจนี้ยืนยันสูตรและการเริ่มงาน ส่วนfullstateของoptimizerที่อัปเดตแล้วจะถูกบันทึกเมื่อจบepochแรกตามนโยบาย
+| Configuration | Hair IoU % | Face IoU % | Upper IoU % | Lower IoU % | mIoU4 % | Best epoch | ครบ |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| B4_refined | 74.24 | 46.65 | 77.36 | 62.89 | 65.29 | 12 | 77/77 |
+| B5_finetuned | 75.04 | 51.73 | 77.28 | 64.59 | 67.16 | 13 | 77/77 |
+| SOLIDER_BGR | 73.41 | 46.92 | 75.46 | 66.42 | 65.55 | 18 | 77/77 |
+| SOLIDER_RGB | 71.98 | 51.94 | 77.93 | 68.97 | 67.70 | 11 | 77/77 |
+| SAM31_warm_restarted | 74.29 | 54.79 | 80.11 | 63.98 | 68.29 | 6 | 77/77 |
+| SAM31_fresh15 | 76.88 | 52.75 | 79.22 | 66.29 | 68.78 | 1 | 77/77 |
+
+SAM3.1 รอบใหม่มี mIoU4 **68.78%** สูงกว่าผล warm restart เดิม **0.49 จุดเปอร์เซ็นต์** ค่า mean สูงสุดในกลุ่ม configuration หลังฝึกที่มีผลครบอยู่ที่รอบใหม่นี้ ส่วนคะแนนสูงสุดรายส่วนยังต่างกัน
+
+| ส่วน | Configuration ที่ IoU สูงสุด | IoU % |
+| --- | --- | --- |
+| Hair | SAM31_fresh15 | 76.88 |
+| Face | SAM31_warm_restarted | 54.79 |
+| Upper | SAM31_warm_restarted | 80.11 |
+| Lower | SOLIDER_RGB | 68.97 |
+
+ตัวเลขใน [CSV รายคลาส](HELPER_COMPARISON.csv) มาจาก canonical metrics เต็ม พร้อม Precision/Recall/F1, GT/prediction support, union, source_run_id และ metrics/binding hashes ทั้ง10 configurations แยก ZERO_SHOT4 กับ FINE_TUNED6 ตาม stage ค่าเหล่านี้เป็น helper validation บน77 GT-person crops จาก56ภาพ การเลือก checkpoint ใช้ validation mIoU4 ส่วน held-out performance และเวลาคนแก้ annotation ยังรอการประเมิน
+
+**Best epoch1 หมายถึงเลือกน้ำหนักจากรอบที่ validation สูงสุด** รอบนี้ยังฝึกจนถึงepoch15จริง โดย epoch15มีmIoU4 **61.80%** และคะแนนตลอด15epochsอยู่ระหว่าง **49.00–68.78%** จึงควรใช้ BEST.pt ที่เลือกไว้เมื่อจะตรวจร่าง หลักฐานแสดงว่าคะแนนแกว่งและการฝึกต่อไม่ได้เพิ่ม validation สูงสุดในรอบนี้ สาเหตุของการแกว่งยังยืนยันจาก records ชุดนี้ไม่ได้
+
+### หลักฐานว่าฝึกครบและรักษาสถานะ optimizer
+
+- `ATTEMPTS.jsonl` มีหนึ่ง attempt, resume=false, first_epoch1 และใช้workerPID619846เดียวกับตอนlaunch ประวัติepochเรียง1–15ครบ แต่ละepochมี313updatesและAMPskipped0
+- `LAST.pt` อยู่epoch15, scheduler last_epoch15 และAdamWparameter statesทั้ง385รายการมีstep4,695 พารามิเตอร์และmoment tensorsที่ตรวจมีค่าจำกัดครบ ไม่มีnonfiniteในfullstateที่บันทึก
+- `BEST.pt` ระบุepoch1และconfusionตรงกับhistoryepoch1 ส่วนbeststateที่ฝังในLASTตรงกับBESTทุกtensor SHA256ของBEST/LASTตรงstatusและrecoveryrecords มีRNG Python/NumPy/Torch/CUDAครบ
+- Frozen trainer/controller/reporter/progress sourceตรงlaunchcommit `471b577c1406596de49ad653f18e30f31a81b908` ตรวจdataset manifest/membership identityและcanonical source hashesของทั้ง10configurationแล้ว
+- ใช้automatic `SAVED_MASK_AUDIT.json` ที่ตรวจnewmasksด้วยindependent `np.add.at` ได้confusionตรงทุกcell, exact77IDs, missing0/invalid0 และcheckpointSHAตรง นำauditนี้กลับมาใช้โดยไม่รันscoring77ภาพซ้ำเพื่อเขียนรายงาน ตรวจarithmeticจากconfusionและmembershipเพิ่มเติมแล้ว
+- Galleryยังเป็นสามvalidationcropsแรกตามกฎเดิม มีหกPNGแยกZERO_SHOT/FINE_TUNED ตรวจinput/output hashesครบ และเปิดดูFTแผงแรกกับแผงที่สามเพื่อดูชื่อโมเดล ตำแหน่งoverlayและlegend ผลนี้ใช้ภาพต้นฉบับกับGTชุดเดิม
+
+หลักฐานอยู่ในprivate `FINAL_COMPLETION_AUDIT.json` และ `sam31/SAVED_MASK_AUDIT.json` ของrun `helper-sam31-fresh15-20261112T171624Z` ขณะตรวจไม่มีtrainingworkerหรือGPUcomputeprocessเหลือ การปิดรอบใช้CPUกับsavedartifactsทั้งหมดและมีmodel callsเพิ่ม0ครั้ง
+
+### ข้อเสนอการใช้ helper จากผลนี้
+
+ใช้ **SAM31_fresh15 / BEST epoch1** เป็นตัวเลือกหลักสำหรับตรวจร่างตามคะแนนเฉลี่ยสี่ส่วนและหลักฐานการฝึกต่อเนื่องที่ตรวจได้ครบ ผลเก่าSAMwarmrestartยังมีFace/Upperสูงกว่า และSOLIDER RGBมีLowerสูงกว่า จึงเก็บเป็นcandidateรายส่วนตามเป้าหมายลดภาระการแก้ การผสมoutputsหลายตัวและเวลาประหยัดที่ได้จริงยังต้องวัดกับdraftsที่นำไปแก้ การตรวจscoreนี้ไม่รับรองว่าภาพนอกvalidationทั้ง2,200ภาพจะได้คุณภาพเท่ากัน
+
+### ประวัติยืนยันการเปิดงาน
+
+ตรวจเมื่อ `2026-11-13T00:30:06.201571+07:00` งานอยู่epoch1/15ผ่าน20/313crops ใช้tmux `helper_sam31_fresh15` controllerPID619585/workerPID619846 แยกจากCodex ในช่วงนั้นLASTตั้งต้นอ่านกลับได้397decoderkeys, freshoptimizer/scheduler0 และRNGครบ RuntimebindingsตรงCPUpreflightและinitialconfusionบน77cropsตรงbaselineเดิมทุกcell บันทึกนี้เป็นsnapshotตอนเริ่มงาน
 
 ### สูตรที่เลือกก่อนเปิดงาน
 
@@ -35,7 +74,7 @@ CPU acceptance ผ่าน **24 tests** รวม tiny fixture ที่ผล 
 
 อ่าน frozen-backbone features จาก parent แบบ read-only เพื่อประหยัดการคำนวณซ้ำ ตรวจ producer source, checkpoint/warmstart, model source และ data bindings แล้ว ตรวจ metadata ของ cache390ไฟล์ว่าตรง SHA ของภาพต้นทางและชนิด/รูปทรง tensors ตาม contract การตรวจครั้งนี้ไม่ได้ full rehash เนื้อหา cache41GiB ทั้งชุด Parent cache และผลเดิมยังอยู่ที่เดิม
 
-เมื่อจบ worker จะประเมิน selected checkpoint และบันทึก masks ครบ77 crops จากนั้น [reporter](../scripts/report_helper_comparison.py) คำนวณ confusion จาก saved masks ด้วย `np.add.at` ตรวจ exact IDs/labels/shape/GT hashes และ selected checkpoint SHA ก่อนออกรายงานรวม โดยอ่าน canonical metrics ของ configuration เดิมต่อ ผลใหม่ใช้ชื่อ `SAM31_fresh15` แยกจาก `SAM31_warm_restarted`
+เมื่อจบ worker ได้ประเมิน selected checkpoint และบันทึก masks ครบ77 crops แล้ว จากนั้น [reporter](../scripts/report_helper_comparison.py) คำนวณ confusion จาก saved masks ด้วย `np.add.at` ตรวจ exact IDs/labels/shape/GT hashes และ selected checkpoint SHA ก่อนออกรายงานรวม โดยอ่าน canonical metrics ของ configuration เดิมต่อ ผลใหม่ใช้ชื่อ `SAM31_fresh15` แยกจาก `SAM31_warm_restarted`
 
 คิวมีหนึ่ง job และหยุดเมื่อจบ มีการเก็บ failures และ checkpoint ล่าสุด ไม่มี automatic model/OOM restart การกลับมาทำต่อหลัง interruption ต้องตรวจเหตุผล, full-state checkpoint และงบเวลาคงเหลือก่อนเปิด continuation
 
@@ -61,6 +100,8 @@ python3 source_frozen/helper_training_progress.py --watch
 Weights อยู่ใน workspace หลักใต้ `models/human_parsing/cctv_helpers/helper-sam31-fresh15-20261112T171624Z/sam31/` ภาพ, masks, cache และ weights เก็บ private ส่วน source/configuration summary นี้อยู่ใน Git
 
 ---
+
+> **ประวัติรอบก่อนเพิ่ม SAM31_fresh15** ตารางและข้อความด้านล่างบันทึกผลของกลุ่มที่ปิดก่อนหน้านี้ ผลปัจจุบันอยู่ในส่วน SAM3.1 รอบใหม่ข้างต้น
 
 <a id="b5-and-zero-shot-completion"></a>
 ## ผลครบทั้ง zero-shot สี่โมเดลและ B5 fine-tune — 12 พฤศจิกายน 2026
