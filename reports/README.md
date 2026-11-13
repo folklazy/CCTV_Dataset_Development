@@ -1,3 +1,5 @@
+> **13 พฤศจิกายน 2026 เวลา14.40ไทย — แก้ร่าง Boost ตามแผนเสร็จแล้ว** เก็บbatch1–2ที่ผู้ใช้ตรวจแล้ว100ภาพ ปรับอีก450ภาพด้วยscore0.50/ignore<50px/triage0.85และกติกาคัดซ้ำจากsavedmasks อ่าน [รายละเอียด](PSEUDO_LABELING_MASTER_PLAN_REVIEW_TH.md#boost550-plan-correction) สถานะRUNNINGด้านล่างเป็นประวัติของรอบสร้างร่างที่จบครบ550แล้ว
+
 > **13 พฤศจิกายน 2026 เวลา12.12ไทย — Boost550 RUNNING** ตรวจบันทึกแล้ว13/550ภาพ First3export/geometryผ่าน SAM3.1+SOLIDER_RGB_B FP32/T4 Worker1096199 ในtmux boost550_drafts อ่าน [pipeline/ผลส่งออก/วิธีดูสถานะ](PSEUDO_LABELING_MASTER_PLAN_REVIEW_TH.md#boost550-drafts) รอบจูนทั้งหกจบครบแล้ว
 
 > **13 พฤศจิกายน 2026 — จัดชุดงานครบ2,200ภาพแล้ว** สำเนาภาพและSeed300พร้อม ตรวจไฟล์/รายชื่อผ่าน แบ่ง46ชุดย่อย Boost550มี11ชุด ใช้balanced splitเดิม อ่าน [รายละเอียดและตำแหน่ง private](PSEUDO_LABELING_MASTER_PLAN_REVIEW_TH.md#annotation-workset-2200) ขั้นต่อไปเชื่อมbboxกับhelperที่เลือกและตรวจร่างก่อนขยายงาน คิวจูนเดิมยังทำต่อ

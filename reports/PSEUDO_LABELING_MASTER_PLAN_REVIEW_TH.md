@@ -1,3 +1,42 @@
+<a id="boost550-plan-correction"></a>
+## แก้ร่าง Boost550 ให้ตรงแผน และเก็บ batch1–2 ที่ผู้ใช้ตรวจแล้ว — 13 พฤศจิกายน 2026
+
+สถานะ **CPU_EXPORT_COMPLETE / PROTECTED_REVIEWED100** ผู้ใช้แจ้งว่าตรวจแก้batch01และbatch02เสร็จแล้ว จึงบันทึกคำยืนยันพร้อมhash JSONครบ100ภาพ ทั้งภาพที่แก้และภาพที่ตรวจแล้วคงเดิม ส่วนอีก450ภาพใช้revision3ของตัวกรองร่างจากsavedoutputs
+
+งานสร้างร่างเดิมจบครบ550uniqueIDsเมื่อ12.42น.ไทย มี1372personproposalsและ29ภาพไม่มีproposal ตามcanonicalCOMPLETION การตรวจduplicate=0ในrecordนั้นหมายถึงimageIDsซ้ำจำนวนศูนย์ ยังมีproposalรายคนซ้ำได้ รอบเดิมใช้SAMpersonthreshold0.25และร่างpartsให้คนเล็กด้วย พร้อมส่งownedmaskเป็นeditableview ทำให้ขาดขั้นsize/score/triageตามแผนข้อ4.1 รอบแก้นี้ใช้CPUกับsavedrawmasksและไฟล์editorปัจจุบัน
+
+### กติกาที่ใช้ในรุ่นแก้
+
+| เรื่อง | กติกาและผลส่งออก |
+| --- | --- |
+| คะแนนต่ำ | ซ่อนpersonproposalที่SAMscore<0.50พร้อมbboxและpartsจากร่างหลัก เก็บparentrefsให้เรียกคืน ค่า0.50เป็นค่าตั้งต้นที่ผู้ออกแบบเลือกหลังผู้ใช้มอบหมาย และตรงdefaultของofficialSam3Processor ยังไม่ได้calibrateกับGTชุดนี้ |
+| คิวตรวจเร็ว | คะแนนperson≥0.85 พร้อมเงื่อนไขไม่มีflagsตามข้อ4.1 ค่า0.85ใช้จัดคิว ส่วนthreshold0.50ใช้กรองร่าง |
+| คนเล็ก | วัดmax(width,height)บนoriginal-grid ถ้าmodelboxและmaskenvelope<50ทั้งคู่ สร้างignore rectangle/group_id=null พร้อมสถานะรอยืนยันขนาด และเว้น4parts/สี |
+| คาบเส้น/กรอบไม่ตรง | ช่วง45–55pxหรือmodelbox/maskenvelopeคนละฝั่ง50ติดCHECK_50PX ขนาดGTสุดท้ายอ้างbboxที่คนตรวจแล้ว คนนอน70×25ยังเข้าscope≥50 |
+| ignoreทับคนหลัก | เก็บexclusioncandidateในauditและขึ้นป้ายตรวจพื้นที่ แทนการวางcoarseignoreทับbboxของคนที่ต้องทำparts |
+| คนเดียวมีproposalเกือบซ้ำ | ใช้personmaskIoU≥0.85ร่วมกับbboxIoU≥0.50 เลือกSAMscoreสูงกว่าเป็นร่างหลัก เก็บalternativeและprovenanceไว้ กติกานี้เป็นheuristicสำหรับdraft |
+| คนซ้อน/ถูกบัง | กรอบใกล้หรือmaskเล็กอยู่ในmaskใหญ่ขึ้นคิวตรวจowner เก็บทุกcomponentของpartsที่เห็นพร้อมPersonIDเดียวกันตามข้อ6 |
+| ฐานแก้4parts | ส่งraw4partsตามข้อ4.1 เก็บSAM-ownedmaskเป็นhelperเปรียบเทียบและoutside warning คะแนนของSAMpersonแยกจากparts ซึ่งไม่มีconfidenceที่รับรองจากhardmasksชุดนี้ |
+| งานผู้ใช้ | ฉบับที่userรายงานreviewครบ100ภาพคงfields/shapes/groupIDsตามไฟล์ปัจจุบัน ส่วนไฟล์อื่นที่ต่างจากautomaticJSONก็เก็บฉบับที่แก้ไว้ |
+
+ข้อกำหนด0.50/near-duplicateเป็นannotation-helper revisionหลังผู้ใช้เห็นร่าง ไม่มีการเปลี่ยนnative/commonbenchmarkconfigsหรือคะแนนจากheldout การซ่อนproposalคะแนนต่ำอาจซ่อนคนจริงได้ ทุกภาพจึงยังต้องตรวจภาพเต็ม และเรียกคืนproposalหรือเพิ่มคนที่ตกหล่นตามข้อ4.1 Scoreต่ำเองไม่ให้สิทธิ์ตั้งGTignore
+
+ค่าทางเทคนิคอ้างจาก [SAM3Processor official source](https://github.com/facebookresearch/sam3/blob/f1647e8d0c1d280991f4d1b7d974c2704537fe66/sam3/model/sam3_image_processor.py) ซึ่งมีdefaultconfidence0.5 ส่วน [Torchvision NMS](https://docs.pytorch.org/vision/main/generated/torchvision.ops.nms.html) อธิบายการคัดboxตามคะแนนและIoU งานนี้ใช้maskร่วมกับboxเพื่อให้ตรวจความซ้ำของextentได้ละเอียดขึ้น โดยยังเก็บambiguityสำหรับคนตรวจ
+
+### การตรวจและการส่งมอบ
+
+CPU11requirementtestsผ่าน ครอบคลุม49/50px, คนนอน, size-source straddle, score0.4999/0.50/0.85, no-person, ignoreทับeligibleคน, boxเหมือนแต่maskคนละพื้นที่, smallcontainedmask, nontransitive duplicatechain และactual550-entryexportที่ปกป้องbatch1–2ครบ100แม้checked=false Testsเก็บdisconnectedUpperสองชิ้นกับPersonIDเดียวกันได้
+
+ผลส่งออกหลักอยู่private `runs/boost550-duplicate-review-20261113T061531Z/annotation_ready/README_TH.md` มีภาพ/JSONเพียงชุดแก้หลักเดียวใน `xanylabeling/batch_01..11/images/` แต่ละbatch50ภาพ เปิดbatch03ต่อได้ คิว `00_reviewed/`, `01_clean_ready/`, `02_needs_edit/` เป็นCSVที่อ้างannotationชุดเดียวกัน `MANIFEST.json` ผูกsource/parent/rulehashes ส่วนauditรายpersonอยู่staging `plan_aligned_v3/PERSON_AUDIT.json` รุ่นทดลองก่อนหน้าคงเป็นประวัติ
+
+ตรวจปิดรอบ14.40น.ไทย exact550IDs/11batch×50ผ่าน Batch1–2ครบ100JSONตรงไฟล์ผู้ใช้ทุกbyte โดย64ไฟล์ต่างจากautomaticต้นร่างและ36ไฟล์คงเดิมตามคำยืนยันผู้ใช้ ผลคิวเป็นreviewed100/ตรวจเร็ว59/needs-edit391 สำหรับ450ภาพที่ปรับ มีparts drafts633personproposals, low-scorehidden508, small-ignorecandidates39 และnear-duplicatehidden2 รวมeditorทั้งชุดมีbbox735และignore41รูปทรง จำนวนcandidatesเป็นผลร่างที่ยังรอตรวจ
+
+พบwarningจากไฟล์ผู้ใช้ในbatch2หนึ่งภาพ มีจุดignoreเกินขอบซ้าย0.1568pxสองจุด เก็บไฟล์ตามเดิมและบันทึกไว้ในprivateEXISTING_COORDINATE_WARNINGS.json การส่งออกGTต้องจัดพิกัดกับขอบภาพตามdomainที่ประกาศ ส่วน450ภาพที่สร้างใหม่ผ่านcoordinateboundsทุกshape ไม่มีการอ้างว่าuserreceiptแทนindependentGTqualityaudit
+
+ผลเป็นsnapshot14.37น.ไทย ก่อนให้ใช้ทำbatch3ต่อ ตรวจsourceJSONfreshnessขณะจัดชุดและcopy/readbackผ่าน การแก้ในโฟลเดอร์เดิมภายหลังsnapshotต้องreconcileก่อนรวมrevision รุ่นนี้มีCPUmodelcalls0
+
+[สคริปต์ส่งออก](../scripts/prepare_boost_duplicate_review.py) ใช้masterplanและuserpreservationreceiptที่ผูกhash มีfreshprivateoutputและreadback โดยเก็บsourcefilesเดิม CPUรอบนี้มีmodelcalls0 การเปิดWindowsGUIและเวลาแก้จริงยังต้องตรวจที่เครื่องผู้ใช้ ภาพ/annotations/IDsและrawauditอยู่private
+
 <a id="boost550-drafts"></a>
 ## สร้างร่าง Boost550 ด้วย SAM3.1 + SOLIDER_RGB_B — 13 พฤศจิกายน 2026
 

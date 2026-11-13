@@ -500,3 +500,21 @@ Next/blockers:เปิดผ่านSSH tunnelแล้วกดบันท�
 - Actualreadiness SAMstrictdetector1166keys/0missing/0unexpected SelectedSOLIDERwarmup1fixedvalidationcropให้hardmaskexactเทียบsavedselectedprediction ไม่มีtraining/retrainหรือmodeldownload
 - First3canonicaldraftpacketsรวม5personproposalsตรวจhash/dimensions/IDs/raw-ownedintersection/editorJSON+image linkageผ่าน เปิดoriginal-overlaypreviewครบ3 ตำแหน่งคนหลักและRGBถูกต้อง ภาพหนึ่งมีสองsmallcandidatesที่ต้องhumanpresence/scope ไม่ลบหรือแก้thresholdจากภาพนี้ WindowsGUIยังไม่ได้เปิดจากserver
 - EXPORT_CHECKPASSก่อนปล่อยคิวต่อ Snapshotcommit13/550เมื่อ12.12ไทยพร้อมLAUNCH_VERIFIED/source/protocol/sourcepixelbindings ทุกdraftcheckedfalse รอhumanreviewและcolorassessment Workerตรวจexact550/hash/membershipเมื่อจบ และหยุดเก็บpartial/failureเมื่อerror ไม่มีautomaticretry
+
+
+## Work log — 2026-11-13, Boost550 plan correction and protected batches
+
+- ผู้ใช้พบร่างซ้ำและทักให้ตรวจmasterplan4.1/ignore<50/scorefilter อ่านข้อ1/4.1/6และsourceจริงพบ0.85เป็นcleanqueue ส่วนhardcutoffยังไม่ระบุ ผู้ใช้มอบหมายเลือก จึงใช้SAMdefault0.50เป็นprovisionaldraftfilterและบันทึกข้อจำกัดcalibration/คนจริงอาจคะแนนต่ำ
+- ตรวจparentCOMPLETE550/personproposals1372/no-proposal29 จากcanonical record คู่boxcandidate260คู่ จากboxIoU≥.3หรือboxIoMin≥.8 มี6คู่maskIoU≥.85 และ206คู่maskIoMin≥.9 เปิดdiagnostic8กรณีจริงพบnear-duplicates/partialextent/บริเวณรอยืนยันว่าเป็นคน จึงเก็บcontainmentambiguityและทุกvisiblecomponentแทนlargestcomponentfilter
+- IntermediateCPUexportseditor_viewและplan_aligned_v2เก็บเป็นประวัติ ส่วนv3ปกป้องbatch01–02ครบ100ตามdirectuserconfirmation พร้อมJSONhashes แม้checkedfalse ก่อนแก้ส่วน450ที่เหลือ Existingeditorchangesนอกprotectedbatchก็เก็บฉบับปัจจุบัน
+- Implementation score<.50ซ่อนdraft+refs, ≥.85cleancandidate, model/maskoriginalsize<50ทั้งคู่เป็นignorecandidate/no4parts/groupnull, borderline45–55/straddlecheck, ignoredraftทับeligiblebboxเก็บauditรอตรวจ ใช้raw4partsเป็นฐานพร้อมSAM-ownedwarning ไม่เพิ่มGTmaskคนเต็มตัว
+- CPU11testsผ่าน รวมnormalentry550→preserve100/check450 และthreshold/occlusion/multipart/identity/history Source/masterplanbeforeamendและscriptv1/v2เก็บprivate มีfreshv3exportCPUเท่านั้น Next exactmembership/readback/protectedhash/sourcefreshnessและอัปเดตผลส่งมอบก่อนcommit/push
+
+
+## Work log — 2026-11-13T14:40+07:00 (Asia/Bangkok), corrected annotation batches ready
+
+- Canonicalparent550จบ12:42ไทย ตรวจชุดส่งออกใหม่550IDs/11×50 images+JSONพร้อมprotectedbatch1–2exact100 ใช้directuserreceiptผูกhash checkedfalseไม่ทำให้ต้องreviewซ้ำ Protected100copyแบบbyte-identical 64filesต่างจากautomaticต้นร่าง/36unchanged
+- Corrected450มีpartsproposals633/low-scorehidden508/small-ignorecandidates39/near-duplicatehidden2 Queuesreviewed100/clean59/edit391 รวมeditorbbox735/ignore41 CountsของcandidateและshapesแยกจากจำนวนGTที่ตรวจรับ
+- AcceptanceCPU11testsรวมactual550normalentry→preserve100→assemblecanonicalone-edit-tree/queue-manifestsผ่าน Finalhash/membership/linkage/labelsผ่าน New450coordinateboundsผ่าน พบexistingprotectedignoreจุดx=-0.1568px2จุดใน1ภาพ เก็บuserfileเดิมและwarning ไม่อ้างsourceGTทั้งหมดผ่านindependentaudit
+- Finalprivateannotation_readyมีREADME_TH/FINAL_READBACK/SUMMARY/MANIFESTและxanylabeling/batch01..11/images จุดเริ่มต่อbatch03 คิวCSVอ้างไฟล์ชุดเดียว Snapshot14:37ไทย sourcefreshnessก่อนcopyผ่าน หากแก้parentภายหลังต้องreconcile Privateintermediatev1/v2/v3/source/masterbackupsอยู่ครบ ไม่publishimages/IDs/rawreceipts
+- Mainprivateplanเพิ่มamendmentscore.50/clean.85/ignore50/occlusion/protected100ก่อนCPUexport มีoldplanbackupและhash Results/publicstatus/docsเชื่อมทางเข้าหลักและข้อจำกัด calibration/WindowsGUI Editing-time/heldoutbenchmarkยังต้องทำตามworkflowหลังhumanreviewครบ ไม่มีnewGPUmodelcallในรอบแก้
