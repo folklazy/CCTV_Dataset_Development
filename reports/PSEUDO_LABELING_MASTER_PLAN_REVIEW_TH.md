@@ -1,3 +1,28 @@
+<a id="boost550-drafts"></a>
+## สร้างร่าง Boost550 ด้วย SAM3.1 + SOLIDER_RGB_B — 13 พฤศจิกายน 2026
+
+สถานะ **PREPARED / CPU_ACCEPTANCE_PASS** ผู้ใช้เลือก SOLIDER_RGB_B และอนุญาตสร้างร่าง Boost550 ครบ ใช้ SAM3.1 pretrained image detector สร้าง person bbox และ mask ช่วยจัดเจ้าของ จากนั้นใช้ RGB crop เข้า SOLIDER_RGB_B ที่เลือกจากรอบจูน คง train/validation/test membership เดิม
+
+คิวจูนหกรอบจบครบ10epochsต่อtrial พร้อม77validationcropsและรายงานอัตโนมัติครบ Selected configurations คือ SOLIDER_RGB_B 68.7059%, B5_B 67.5402%, B4_A 65.3096% ตาม validation mIoU4 สำหรับงานนี้ใช้ SOLIDER_RGB_B เพียง parsing helper เดียว เวลาคนแก้ยังต้องวัดจากงานจริง
+
+### การเตรียมภาพและข้อมูลส่งออก
+
+- SAM3.1 ใช้ original RGB image, official processor1008, FP32/batch1/eval/inference mode, text `person`, score threshold0.25 และ native original-grid boxes/masks โหลด pretrained multiplex checkpoint เฉพาะ detector แบบ strict
+- SOLIDER_RGB_B ใช้ bbox context15% ตามการ round ของ training producer แล้วทำ aspect-preserving letterbox384×576 พื้น padding ดำ ต่อด้วย Swin RGB/mean/std/input572×384 และ grouped logits BG/Hair/Face/Upper/Lower ตาม selected helper source คง raw RGB pixel values และบันทึก geometry กลับภาพเดิม
+- เก็บ original-grid raw parser labels กับ SAM-owned proposal แยกกัน JSON ที่ใช้แก้แสดง owned proposal และ bbox พร้อม image-local person IDs Maskคนทั้งตัวเป็นข้อมูลช่วยจากโมเดล การตรวจรับ GT ใช้ scope bbox/4parts/validity/สีตามคู่มือ
+- เก็บทุก component ของ polygon ใช้ simplification0.5px และบันทึก holes/added/missing pixels เทียบ lossless masks ต่อ target กรณีรูภายในต้องตรวจแก้ editable view จากภาพและ canonical masks คะแนน shape ของ parts เป็น null ส่วน bbox ใช้ SAM scoreจริง
+- คนที่ bbox ทำนายด้านยาว<50pxยังเก็บ proposal พร้อมป้ายให้คนตรวจ scope ขนาด GT ภาพไม่มี proposal ยังรอตรวจคนตกหล่น ทุกภาพเริ่ม checked=false/draft_not_gt สีเป็น NOT_ASSESSED
+
+### Acceptance และการเปิดงาน
+
+CPU6กรณีผ่าน ครอบคลุม round/context/RGB, asymmetric unpad+offset, disconnected components/holes พร้อม independently expected pixels, zero-person packet, actual packet→editor JSON→readback ที่เก็บraw/ownedแยก และinvalid IDs รวมregressionของworkset4และtimer3ผ่าน ก่อนเริ่มBoostตรวจ output ของselectedSOLIDERบนfixedvalidationcropหนึ่งภาพเทียบsavedmaskexact ใช้เป็นwarmup/adapter checkแยกจาก550
+
+รอบ private `boost550-sam31-solider-20261113T050841Z` มีconfig/source/checkpoint/environment/inputhash bindings สร้างใหม่แยกจากworksetและtraining Outputใน `xanylabeling/batch_01..11/images/` พร้อมภาพ/JSONชื่อคู่กัน Canonical masks และpacket provenanceอยู่ `packets/` คำสั่งดูสถานะใช้ [boost_draft_progress.py](../scripts/boost_draft_progress.py) กับ `--run-dir` และ `--watch`
+
+ใช้workerเดียวในtmux มีglobalBoostlock, atomic packet directory และimmutable attempt ledger ตรวจส่งออกสามภาพแรกก่อนปล่อยคิวต่อ AdmissionfreeVRAM10GiB/freedisk50GiB/outputcap20GiB งบ executionใหม่2ชั่วโมงสำหรับ550ภาพและทั้งสองโมเดล บันทึกแยกจากงบจูน30นาทีต่อtrial ไม่มีautomaticretry เก็บผลบางส่วนและtracebackเมื่อerror
+
+เมื่อครบตรวจexact550IDs/hash/geometry/nativehelperIDsและeditorfile consistency สถานะจบเป็น DRAFTS_COMPLETE_REQUIRES_HUMAN_REVIEW ผู้ใช้ยังต้องตรวจ bbox, คนตกหล่น, class boundary, ownership และสี ผลนี้เป็น annotation drafts สำหรับBoost550
+
 <a id="annotation-workset-2200"></a>
 ## จัดชุดงาน Annotation ครบ 2,200 ภาพ — 13 พฤศจิกายน 2026
 

@@ -484,3 +484,11 @@ Next/blockers:เปิดผ่านSSH tunnelแล้วกดบันท�
 - Verification exact2200uniqueIDs/rolecounts/timegroupisolation ผ่านsourceSHA256+MD5/strictdecode/dimensionsและdestinationSHAครบ2200 สำเนาSeed300ทุกfieldตรงhumanreceipt hash/readback imagePathadjustments0 Unannotated1900ไม่มีplaceholderJSON CPU4testsผ่าน Independentfinalindexตรวจ48manifesthashesและJSON300อีกรอบ ใช้producerimagehashauditต่อ
 - Outputs private annotation-workset-2200-20261113T042447Z พร้อมREADME_TH/SUMMARY/FINAL_WORKSET_CHECK สร้างและตรวจไฟล์44.79วินาที ภาพ902174349bytes Publicรายงานเดิมและstatusเชื่อมเครื่องมือ ไม่มีprivateimageIDs/metadataเผยแพร่
 - Next จบคิวจูน เลือกhelperและตรวจbbox→RGBcrop→parser→mapback→editorก่อนร่างBoost550 ความเร็วbbox/fullpipelineและeditingtimeยังไม่วัด ห้ามใช้ROIparserdiagnosticเป็นendtoendestimate ภาพ1900ยังรอannotation/QAก่อนGTacceptance
+
+
+## Work log — 2026-11-13 (Asia/Bangkok), Boost550 preparation
+
+- UserเลือกSOLIDER_RGB_Bและอนุญาตสร้างร่าง550ภาพ ตรวจGPUว่างT4/free14909MiB/disk154GiBและคิวจูนCOMPLETE6trialsแล้ว ใช้balancedBoost550exact/worksetsourcehashesเดิม
+- เพิ่มsingleworker SAM3.1pretrainednativeboxes/masks→RGBcrop15%round/letterbox384x576→selectedSOLIDERFP32→originalgrid→ownededitorproposal เก็บraw/owned/personmaskPNGแยก ไม่มีGTช่วยprediction ส่วนcolorsรอhumanassessment
+- CPU6requirementtestsผ่านพร้อมexistingworkset4/timer3 Independentquadrantgeometry/holes9pixels/owned12vsraw24และeditorfieldchecks ไม่เติมpartconfidenceหรือacceptedGT ห้ามทับeditorที่แก้แล้ว Workerมีlock/config/source/weights/envhashes/atomicpackets/ledger/oneattempt/noautoretry
+- Runboost550-sam31-solider-20261113T050841Z prepared ผูกselectedweights9e7f989d...กับSAMmultiplex0567debe... ใช้envเดิมไม่install/download Newbulkrunbudget2h/output20GiB/diskfree50GiB/initialVRAM10GiBสำหรับ550ภาพสองโมเดล First3packetexportcheckก่อนปล่อยคิว detachedtmux Next ตรวจactualmodelparity/load/firstpacketsและrecordlaunch
