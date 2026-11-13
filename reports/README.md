@@ -1,4 +1,4 @@
-> **13 พฤศจิกายน 2026 — Boost550 เตรียมเปิดร่างแล้ว** ใช้SAM3.1หาbboxและSOLIDER_RGB_Bทำ4parts CPUacceptanceผ่าน อ่าน [pipeline/ผลส่งออก/วิธีดูสถานะ](PSEUDO_LABELING_MASTER_PLAN_REVIEW_TH.md#boost550-drafts) รอบจูนทั้งหกจบครบแล้ว
+> **13 พฤศจิกายน 2026 เวลา12.12ไทย — Boost550 RUNNING** ตรวจบันทึกแล้ว13/550ภาพ First3export/geometryผ่าน SAM3.1+SOLIDER_RGB_B FP32/T4 Worker1096199 ในtmux boost550_drafts อ่าน [pipeline/ผลส่งออก/วิธีดูสถานะ](PSEUDO_LABELING_MASTER_PLAN_REVIEW_TH.md#boost550-drafts) รอบจูนทั้งหกจบครบแล้ว
 
 > **13 พฤศจิกายน 2026 — จัดชุดงานครบ2,200ภาพแล้ว** สำเนาภาพและSeed300พร้อม ตรวจไฟล์/รายชื่อผ่าน แบ่ง46ชุดย่อย Boost550มี11ชุด ใช้balanced splitเดิม อ่าน [รายละเอียดและตำแหน่ง private](PSEUDO_LABELING_MASTER_PLAN_REVIEW_TH.md#annotation-workset-2200) ขั้นต่อไปเชื่อมbboxกับhelperที่เลือกและตรวจร่างก่อนขยายงาน คิวจูนเดิมยังทำต่อ
 

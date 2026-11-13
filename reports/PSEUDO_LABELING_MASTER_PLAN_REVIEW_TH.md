@@ -1,9 +1,15 @@
 <a id="boost550-drafts"></a>
 ## สร้างร่าง Boost550 ด้วย SAM3.1 + SOLIDER_RGB_B — 13 พฤศจิกายน 2026
 
-สถานะ **PREPARED / CPU_ACCEPTANCE_PASS** ผู้ใช้เลือก SOLIDER_RGB_B และอนุญาตสร้างร่าง Boost550 ครบ ใช้ SAM3.1 pretrained image detector สร้าง person bbox และ mask ช่วยจัดเจ้าของ จากนั้นใช้ RGB crop เข้า SOLIDER_RGB_B ที่เลือกจากรอบจูน คง train/validation/test membership เดิม
+สถานะ **RUNNING / FIRST3_EXPORT_CHECK_PASS** ผู้ใช้เลือก SOLIDER_RGB_B และอนุญาตสร้างร่าง Boost550 ครบ ใช้ SAM3.1 pretrained image detector สร้าง person bbox และ mask ช่วยจัดเจ้าของ จากนั้นใช้ RGB crop เข้า SOLIDER_RGB_B ที่เลือกจากรอบจูน คง train/validation/test membership เดิม
 
 คิวจูนหกรอบจบครบ10epochsต่อtrial พร้อม77validationcropsและรายงานอัตโนมัติครบ Selected configurations คือ SOLIDER_RGB_B 68.7059%, B5_B 67.5402%, B4_A 65.3096% ตาม validation mIoU4 สำหรับงานนี้ใช้ SOLIDER_RGB_B เพียง parsing helper เดียว เวลาคนแก้ยังต้องวัดจากงานจริง
+
+เปิดงานจริง13พฤศจิกายน2026 เวลา12.11น.ไทย ตรวจยืนยัน12.12น.ไทย commitแล้ว13/550ภาพ WorkerPID1096199 อยู่tmux `boost550_drafts` และparentchainถึงtmuxserverที่parentPID1 งานอยู่ต่อหลังจบCodexturn โหลดSAMdetectorครบ1166keys ไม่มีmissing/unexpected และselectedSOLIDERให้saved-maskparityตรงfixedvalidationcropหนึ่งภาพทุกpixel FP32/T4 ใช้VRAMที่สังเกตหลังเริ่มประมาณ4810MiB
+
+เปิดดูpreviewสามภาพแรกจริงแล้ว bbox/labelsตรงตำแหน่งคนหลัก RGB/geometryถูกต้อง ตรวจraw/ownedarrayrelation, PersonIDs, JSON-image linkage และsourcecopyhashผ่าน รวม5personproposals หนึ่งภาพมีข้อเสนอขนาดเล็กสองรายการที่ต้องให้คนตรวจpresence/scope เก็บเป็นdraftตามเดิม WindowsGUIยังต้องยืนยันบนเครื่องผู้ใช้ การผ่านนี้เป็นexport/geometrycheck
+
+ดูความคืบหน้าบนserverด้วย `tmux attach -t boost550_drafts` จะเปิดหน้าต่างprogress ส่วนไฟล์สำหรับแก้อยู่private run `xanylabeling/batch_01/images/` ถึง `batch_11/images/` และคู่มืออยู่ `README_TH.md` ตรวจ `STATUS.json` หรือใช้progressCLIเมื่อกลับมาดูใหม่ ค่าจำนวนภาพข้างต้นเป็นsnapshotเวลาตรวจ
 
 ### การเตรียมภาพและข้อมูลส่งออก
 

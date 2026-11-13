@@ -492,3 +492,11 @@ Next/blockers:เปิดผ่านSSH tunnelแล้วกดบันท�
 - เพิ่มsingleworker SAM3.1pretrainednativeboxes/masks→RGBcrop15%round/letterbox384x576→selectedSOLIDERFP32→originalgrid→ownededitorproposal เก็บraw/owned/personmaskPNGแยก ไม่มีGTช่วยprediction ส่วนcolorsรอhumanassessment
 - CPU6requirementtestsผ่านพร้อมexistingworkset4/timer3 Independentquadrantgeometry/holes9pixels/owned12vsraw24และeditorfieldchecks ไม่เติมpartconfidenceหรือacceptedGT ห้ามทับeditorที่แก้แล้ว Workerมีlock/config/source/weights/envhashes/atomicpackets/ledger/oneattempt/noautoretry
 - Runboost550-sam31-solider-20261113T050841Z prepared ผูกselectedweights9e7f989d...กับSAMmultiplex0567debe... ใช้envเดิมไม่install/download Newbulkrunbudget2h/output20GiB/diskfree50GiB/initialVRAM10GiBสำหรับ550ภาพสองโมเดล First3packetexportcheckก่อนปล่อยคิว detachedtmux Next ตรวจactualmodelparity/load/firstpacketsและrecordlaunch
+
+
+## Work log — 2026-11-13T12:12+07:00 (Asia/Bangkok), Boost550 launch verified
+
+- Launchcommit a5a8eaf; configurationpreparationcommit41ac553แยกตามเวลาสร้าง Runboost550-sam31-solider-20261113T050841Z/tmuxboost550_drafts/worker1096199 parent556896→PID1 ยืนยันdetachedจริง มีliveprogresswindowแยกในtmux GPUใช้ที่สังเกต4810MiBบนT4
+- Actualreadiness SAMstrictdetector1166keys/0missing/0unexpected SelectedSOLIDERwarmup1fixedvalidationcropให้hardmaskexactเทียบsavedselectedprediction ไม่มีtraining/retrainหรือmodeldownload
+- First3canonicaldraftpacketsรวม5personproposalsตรวจhash/dimensions/IDs/raw-ownedintersection/editorJSON+image linkageผ่าน เปิดoriginal-overlaypreviewครบ3 ตำแหน่งคนหลักและRGBถูกต้อง ภาพหนึ่งมีสองsmallcandidatesที่ต้องhumanpresence/scope ไม่ลบหรือแก้thresholdจากภาพนี้ WindowsGUIยังไม่ได้เปิดจากserver
+- EXPORT_CHECKPASSก่อนปล่อยคิวต่อ Snapshotcommit13/550เมื่อ12.12ไทยพร้อมLAUNCH_VERIFIED/source/protocol/sourcepixelbindings ทุกdraftcheckedfalse รอhumanreviewและcolorassessment Workerตรวจexact550/hash/membershipเมื่อจบ และหยุดเก็บpartial/failureเมื่อerror ไม่มีautomaticretry

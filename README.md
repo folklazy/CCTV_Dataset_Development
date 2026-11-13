@@ -1,4 +1,4 @@
-> **13 พฤศจิกายน 2026 — Boost550 เตรียมสร้างร่าง** ใช้SAM3.1หาbboxและSOLIDER_RGB_Bทำ4parts อ่าน [pipelineและวิธีติดตาม](reports/PSEUDO_LABELING_MASTER_PLAN_REVIEW_TH.md#boost550-drafts)
+> **13 พฤศจิกายน 2026 เวลา12.12ไทย — Boost550 RUNNING** SAM3.1+SOLIDER_RGB_B ตรวจแล้ว13/550ภาพ First3exportผ่าน ดูสดด้วยtmux boost550_drafts อ่าน [pipelineและวิธีติดตาม](reports/PSEUDO_LABELING_MASTER_PLAN_REVIEW_TH.md#boost550-drafts)
 
 > **13 พฤศจิกายน 2026 — จัดชุดงาน Annotation ครบ2,200ภาพ** แบ่ง46ชุดย่อยตามsplitเดิม พร้อมBoost550จำนวน11ชุดและสำเนาSeed300 อ่าน [รายละเอียด](reports/PSEUDO_LABELING_MASTER_PLAN_REVIEW_TH.md#annotation-workset-2200) ภาพและmetadataอยู่ในพื้นที่private
 
