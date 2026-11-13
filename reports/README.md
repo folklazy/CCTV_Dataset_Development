@@ -1,3 +1,5 @@
+> **13 พฤศจิกายน 2026 — จัดชุดงานครบ2,200ภาพแล้ว** สำเนาภาพและSeed300พร้อม ตรวจไฟล์/รายชื่อผ่าน แบ่ง46ชุดย่อย Boost550มี11ชุด ใช้balanced splitเดิม อ่าน [รายละเอียดและตำแหน่ง private](PSEUDO_LABELING_MASTER_PLAN_REVIEW_TH.md#annotation-workset-2200) ขั้นต่อไปเชื่อมbboxกับhelperที่เลือกและตรวจร่างก่อนขยายงาน คิวจูนเดิมยังทำต่อ
+
 > **13 พฤศจิกายน 2026 เวลา10:44ไทย — DENSE_TUNING RUNNING** SOLIDER_RGB_Aอยู่epoch5/10 checkpointepoch4อ่านกลับรวมAMPstateได้ คิวSOLIDER_B→B5A/B→B4A/Bจะทำต่ออัตโนมัติ Controller994338/worker994409 อยู่tmux helper_dense_tuning อ่าน [สูตรและคำสั่งดูสด](PSEUDO_LABELING_MASTER_PLAN_REVIEW_TH.md#dense-helper-tuning)
 
 > **13 พฤศจิกายน 2026 — เพิ่ม inference timing แล้ว** ตารางFTหกconfigurationsมีMean ms/ROIจากการวัดT4/FP32/batch1บนfixed3crops มีwarmup3และmeasured9callsต่อconfig ตรวจmaskparityผ่าน อ่าน [คะแนนพร้อมเวลาและขอบเขตtimer](PSEUDO_LABELING_MASTER_PLAN_REVIEW_TH.md#sam31-fresh15) / [CSVเต็ม](HELPER_COMPARISON.csv)

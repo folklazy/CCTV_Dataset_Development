@@ -1,3 +1,27 @@
+<a id="annotation-workset-2200"></a>
+## จัดชุดงาน Annotation ครบ 2,200 ภาพ — 13 พฤศจิกายน 2026
+
+สถานะ **WORKSET_PREPARED_SOURCE_VERIFIED** ผู้ใช้ขอจัดข้อมูลให้เสร็จในรอบเดียว จึงเตรียมสำเนาภาพครบทั้ง pool โดยใช้ balanced membership เดิมทุก ID เลือกขนาดชุดงานย่อยสูงสุด50ภาพเพื่อเปิดตรวจแก้ได้สะดวก
+
+| บทบาท | ภาพ | ชุดงานย่อย | ขั้นที่ใช้ |
+| --- | ---: | ---: | --- |
+| Seed train | 240 | 5 | อ้างอิง annotation ที่ผู้ใช้รับรองแล้ว |
+| Fixed validation | 60 | 2 | เลือก helper ด้วยชุดเดิม |
+| Boost | 550 | 11 | ขั้นถัดไปหลังเลือก helper และตรวจเส้นทางสร้างร่าง |
+| Development หลัง freeze | 910 | 19 | หลังฝึกและตรึง helper รุ่นถัดไป |
+| Held-out test | 440 | 9 | หลังตรึง helper |
+| รวม | 2,200 | 46 | |
+
+การจัดชุดย่อยนี้เก็บ role และ time blocks ตาม split เดิม ตรวจ 2,200 unique IDs, time-block isolation, SHA256/MD5 ต้นทาง, strict decode, ขนาดภาพ และ SHA256 สำเนาหลังเขียนครบ ใช้เวลา44.79วินาที ภาพรวม902,174,349bytes หรือประมาณ860.4MiB
+
+Seed300 มีสำเนา JSON ที่ hash ต้นทางตรง receipt และ readback ตรงทุก field ทั้ง300ไฟล์ ไม่มีการเปลี่ยน imagePath ในชุดจริง อีก1,900ภาพอยู่สถานะ NOT_ANNOTATED และไม่มี JSON ว่างแทน GT ตรวจ manifest48ไฟล์และดัชนีหลังส่งออกผ่าน CPU tests4กรณีครอบคลุม unique IDs, leakage, seed-field preservation/hash และ geometry mismatch
+
+ตำแหน่ง private อยู่ที่ work-root `runs/annotation-workset-2200-20261113T042447Z/README_TH.md` ภายในมี `03_boost_550` พร้อม11ชุด และ `WORKSET.csv`/`BATCHES.csv`/`SUMMARY.json`/`FINAL_WORKSET_CHECK.json` สำหรับตรวจย้อนกลับ ข้อมูลภาพและ metadata คงอยู่ใน private storage
+
+ขั้นสร้างร่างยังต้องเชื่อมแหล่ง person bbox กับ selected parsing helper และตรวจ editor/export roundtrip ก่อนขยาย Boost550 เวลาขั้น bbox และเวลาคนแก้ยังไม่ได้วัดครบเส้นทาง เวลาวัด parser ต่อROIเดิมอ่านจาก [ขอบเขต timing](#sam31-fresh15) ได้ การเตรียมชุดงานรอบนี้มี model calls0 และคิวจูนเดิมทำงานต่อ
+
+ใช้ [สคริปต์เตรียมชุดงาน](../scripts/prepare_annotation_workset.py) กับ membership, human seed receipt และ fresh private output ผ่าน CLI โดยตรวจ source binding จาก frozen split summary สคริปต์บันทึกสถานะ COMPLETE หรือ STOPPED พร้อมเก็บผลบางส่วนเมื่อเกิดข้อผิดพลาด รายการใช้ค่า checked เดิมและหลักฐานรับรอง Seed300 ที่ผู้ใช้ยืนยันโดยตรง
+
 <a id="dense-helper-tuning"></a>
 ## จูน SOLIDER RGB → B5 → B4 — 13 พฤศจิกายน 2026
 
