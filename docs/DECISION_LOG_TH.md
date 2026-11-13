@@ -518,3 +518,12 @@ Next/blockers:เปิดผ่านSSH tunnelแล้วกดบันท�
 - AcceptanceCPU11testsรวมactual550normalentry→preserve100→assemblecanonicalone-edit-tree/queue-manifestsผ่าน Finalhash/membership/linkage/labelsผ่าน New450coordinateboundsผ่าน พบexistingprotectedignoreจุดx=-0.1568px2จุดใน1ภาพ เก็บuserfileเดิมและwarning ไม่อ้างsourceGTทั้งหมดผ่านindependentaudit
 - Finalprivateannotation_readyมีREADME_TH/FINAL_READBACK/SUMMARY/MANIFESTและxanylabeling/batch01..11/images จุดเริ่มต่อbatch03 คิวCSVอ้างไฟล์ชุดเดียว Snapshot14:37ไทย sourcefreshnessก่อนcopyผ่าน หากแก้parentภายหลังต้องreconcile Privateintermediatev1/v2/v3/source/masterbackupsอยู่ครบ ไม่publishimages/IDs/rawreceipts
 - Mainprivateplanเพิ่มamendmentscore.50/clean.85/ignore50/occlusion/protected100ก่อนCPUexport มีoldplanbackupและhash Results/publicstatus/docsเชื่อมทางเข้าหลักและข้อจำกัด calibration/WindowsGUI Editing-time/heldoutbenchmarkยังต้องทำตามworkflowหลังhumanreviewครบ ไม่มีnewGPUmodelcallในรอบแก้
+
+
+## Work log — 2026-11-13, compact editor display and bbox-first owner links
+
+- Userขอลดข้อความบนภาพและถามการเติมIDหลังตรวจbbox ตรวจlatest550files3247shapesพบgenerateddescriptionยาว1388shapes(max154chars) และauto-descriptionแบบเดิม จึงล้างเฉพาะrecognizedgeneratedprose3239shapes/510files inplaceพร้อมfullbytebackupsและoptimisticconcurrencycheck skipped0 Manualnotes/labels/geometry/IDs/scores/checked/flagsคงเดิม
+- Generator/editor_shapeและplan_viewครั้งต่อไปใช้emptydescription Reviewtagคงaudit CPU12postprocess+6packettestsผ่าน รวมmanualnote/NoneIDและidempotentcleanup ภาพที่เปิดค้างต้องreloadจากfile WindowsGUIไม่ได้ใช้จากserver
+- ActualIDauditmissing0/duplicatebboxID0 แต่partorphan3ใน1ภาพ batch01 หลังเปิดภาพยืนยันหนึ่งคน เชื่อมpartIDs2→bboxID1ทั้งHair/Face/Upper ไม่แก้pointsหรือclass มีOWNER_ID_BEFORE/OWNER_ID_RELINKrecordและJSONreadbackตรวจfielddiffเฉพาะ3groupIDs
+- Userจะทำbbox+IDsก่อน การจัดpartsต่อใช้geometry/sourceinstancesและhelpermaskตามหลักฐาน คนซ้อน/foreignclothingต้องตรวจowner/semanticแยกและคงambiguity ไม่เปลี่ยนทุกpartจากbboxcontainmentเพียงอย่างเดียว GTacceptanceยังต้องดูภาพ/partsตามscopeเดิม
+- Outputs currentannotation_ready workingtreeเดิมพร้อมEDITOR_REVISION; backupprivate label-text-cleanup run SourcehistoricalMANIFEST/receiptเก็บตามsnapshotเดิม การแก้metadata/ownerครั้งนี้บันทึกrevisionชัดเจน Models/inference/trainingไม่เพิ่ม

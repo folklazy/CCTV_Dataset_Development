@@ -1,3 +1,5 @@
+> **13 พฤศจิกายน 2026 — ลดข้อความที่บังภาพแล้ว** ล้างข้อความอัตโนมัติ3239shapesใน510ไฟล์และเชื่อมownerIDผิดหนึ่งภาพพร้อมbackup ใช้โฟลเดอร์batchเดิม อ่าน [รายละเอียดและแนวทางbbox-first](PSEUDO_LABELING_MASTER_PLAN_REVIEW_TH.md#boost550-display-and-owner-ids)
+
 > **13 พฤศจิกายน 2026 เวลา14.40ไทย — แก้ร่าง Boost ตามแผนเสร็จแล้ว** เก็บbatch1–2ที่ผู้ใช้ตรวจแล้ว100ภาพ ปรับอีก450ภาพด้วยscore0.50/ignore<50px/triage0.85และกติกาคัดซ้ำจากsavedmasks อ่าน [รายละเอียด](PSEUDO_LABELING_MASTER_PLAN_REVIEW_TH.md#boost550-plan-correction) สถานะRUNNINGด้านล่างเป็นประวัติของรอบสร้างร่างที่จบครบ550แล้ว
 
 > **13 พฤศจิกายน 2026 เวลา12.12ไทย — Boost550 RUNNING** ตรวจบันทึกแล้ว13/550ภาพ First3export/geometryผ่าน SAM3.1+SOLIDER_RGB_B FP32/T4 Worker1096199 ในtmux boost550_drafts อ่าน [pipeline/ผลส่งออก/วิธีดูสถานะ](PSEUDO_LABELING_MASTER_PLAN_REVIEW_TH.md#boost550-drafts) รอบจูนทั้งหกจบครบแล้ว

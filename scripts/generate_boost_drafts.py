@@ -71,7 +71,7 @@ def original_labels(prediction, geometry, size):
 def editor_shape(label, kind, points, person_id, score=None, difficult=False):
     return {'label': label, 'shape_type': kind, 'points': points, 'group_id': person_id,
             'score': score, 'difficult': difficult, 'flags': {'draft_not_gt': True},
-            'description': 'Automatic draft; review boundary, class and person ownership',
+            'description': '',
             'attributes': {}, 'kie_linking': []}
 
 

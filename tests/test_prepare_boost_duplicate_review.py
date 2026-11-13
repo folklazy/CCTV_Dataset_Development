@@ -1,5 +1,6 @@
 """Protect overlapping people and disconnected visible parts during duplicate review."""
 import importlib.util
+import json
 from pathlib import Path
 import sys
 import tempfile
@@ -16,6 +17,27 @@ SPEC.loader.exec_module(review)
 
 
 class DuplicateReviewRequirements(unittest.TestCase):
+    def test_display_cleanup_preserves_ids_geometry_scores_and_manual_notes(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            editor = root/'editor'
+            path = editor/'batch_01/images/example.json'
+            path.parent.mkdir(parents=True)
+            source = {'checked': True, 'shapes': [
+                {'label': 'bbox', 'group_id': 3, 'points': [[1,2],[4,6]], 'score': .9,
+                 'description': '[CHECK_50PX] Person #3; SAM person score=0.900; bbox_long_side=51.0px'},
+                {'label': 'upper', 'group_id': None, 'points': [[1,2],[4,2],[4,5]],
+                 'description': 'operator note about visible sleeve'}]}
+            path.write_text(json.dumps(source))
+            original_bytes = path.read_bytes()
+            result = review.shorten_editor_descriptions(editor, root/'backup')
+            expected = json.loads(json.dumps(source))
+            expected['shapes'][0]['description'] = ''
+            self.assertEqual(review.load(path), expected)
+            self.assertEqual(result['shape_descriptions_removed'], 1)
+            self.assertEqual((root/'backup/originals/batch_01/images/example.json').read_bytes(), original_bytes)
+            self.assertEqual(review.shorten_editor_descriptions(editor, root/'backup2')['files_updated'], 0)
+
     def fixture(self, box, score=.9, envelope=None):
         person = {'person_id': 1, 'bbox_xyxy': box, 'detector_score': score,
                   'raw_labels': 'raw.png', 'owned_labels': 'owned.png',

@@ -1,3 +1,5 @@
+> **13 พฤศจิกายน 2026 — ลดข้อความบนภาพ annotation แล้ว** ใช้โฟลเดอร์batchเดิม เปิดภาพใหม่เพื่ออ่านไฟล์ที่ปรับ ดู [รายละเอียดและการจัดID](reports/PSEUDO_LABELING_MASTER_PLAN_REVIEW_TH.md#boost550-display-and-owner-ids)
+
 > **13 พฤศจิกายน 2026 — Boost550 ปรับกติกาส่งออก** เก็บbatch1–2ที่ผู้ใช้ตรวจแล้ว100ภาพ และปรับร่างอีก450ภาพ อ่าน [เกณฑ์ขนาด/คะแนน/คัดซ้ำ](reports/PSEUDO_LABELING_MASTER_PLAN_REVIEW_TH.md#boost550-plan-correction)
 
 > **13 พฤศจิกายน 2026 เวลา12.12ไทย — Boost550 RUNNING** SAM3.1+SOLIDER_RGB_B ตรวจแล้ว13/550ภาพ First3exportผ่าน ดูสดด้วยtmux boost550_drafts อ่าน [pipelineและวิธีติดตาม](reports/PSEUDO_LABELING_MASTER_PLAN_REVIEW_TH.md#boost550-drafts)

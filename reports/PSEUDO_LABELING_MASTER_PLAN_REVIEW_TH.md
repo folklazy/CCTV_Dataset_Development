@@ -1,3 +1,22 @@
+<a id="boost550-display-and-owner-ids"></a>
+## ลดข้อความในeditorและตรวจPersonID — 13 พฤศจิกายน 2026
+
+ผู้ใช้ขอลดข้อความบนภาพและจะตรวจbbox/IDก่อน ใช้โฟลเดอร์batchเดิมในannotation_ready/xanylabeling ล้างเฉพาะdescriptionที่โปรแกรมสร้างอัตโนมัติ3239shapesใน510ไฟล์ เก็บคำอธิบายเดิมและbytebackupในprivateDISPLAY_CHANGE รายละเอียดtriageยังอยู่PERSON_AUDIT ข้อมูลlabel/points/bbox/groupID/score/flagsและบันทึกที่ผู้ใช้เขียนคงตามเดิม Sourceสำหรับการส่งออกครั้งต่อไปใช้descriptionว่างและเก็บreviewtagในaudit
+
+ตรวจIDในไฟล์ปัจจุบันพบmissinggroupID0/duplicatebboxID0 แต่มีparts3ชิ้นในภาพหนึ่งที่อ้างID2ขณะที่bboxใช้ID1 เปิดภาพต้นฉบับตรวจแล้วเป็นคนเดียวกัน จึงเชื่อมHair/Face/Upperทั้งสามไปID1 โดยเก็บขอบ/คลาส/bboxเดิมและbackupก่อนแก้ไว้ OWNER_ID_RELINKบันทึกก่อน/หลัง การแก้นี้เป็นtechnicalownerlinkแยกจากการตรวจความถูกต้องของขอบsemantic
+
+### เมื่อผู้ใช้แก้bboxและIDก่อน
+
+- bboxและIDเป็นฐานอ้างอิงรายคนในภาพ ใช้เลขlocalที่แยกคนได้ ส่วนชิ้นส่วนของคนเดียวกันแชร์IDได้ทุกcomponent
+- partที่IDว่างหรืออ้างbboxที่หายไปตรวจgeometryและsourceinstanceก่อนเชื่อม IDในกรอบซ้อนต้องคงสถานะรอตรวจเมื่อระบุเจ้าของไม่ได้จากหลักฐาน
+- ถ้าเปลี่ยนเลขbboxโดยคงpartIDเก่า ต้องใช้mappingเก่า→ใหม่กับpartsของเจ้าของเดียวกัน การเปลี่ยนกรอบอาจเปลี่ยนinput/geometryที่ต้องร่างเพิ่ม ให้บันทึกrevision/rescueก่อนเรียกโมเดลเพิ่ม
+- เสื้อคนข้างเคียงที่ติดในcropต้องตรวจownerร่วมกับกรอบคนอื่นและhelpermask ส่วนกระเป๋า/ผิว/ของถือที่ปนในUpper/Lowerต้องตรวจclassboundary กรอบเพียงอย่างเดียวไม่รับรองsemanticownership
+- เมื่อส่วนเดียวถูกบังแยกหลายชิ้น เก็บทุกชิ้นที่เห็นกับIDเดียวกัน การรับGTยังอ้างภาพจริงและตรวจขอบ/คลาส/ownerตามคู่มือ
+
+CPUtests12ของpostprocessor/cleanupและ6ของpacketexportผ่าน รวมการล้างข้อความที่เก็บmanualnote/NoneID/คะแนน/checked/geometryและbackupตรงbytes ตัวอย่างrelinkจริงตรวจJSONreadbackให้เปลี่ยนเฉพาะสามgroupIDs ส่วนWindowsGUIให้โหลดภาพใหม่เพื่ออ่านfileที่ปรับแล้ว รอบนี้มีmodelcalls0
+
+อ่านรายละเอียดในprivateannotation_ready/README_TH.md และEDITOR_REVISION.json HistoricalMANIFESTและreceiptแสดงsnapshotก่อนdisplay/ownerrevision จึงต้องใช้recordการแก้ครั้งนี้ประกอบเมื่อauditworkingfilesปัจจุบัน
+
 <a id="boost550-plan-correction"></a>
 ## แก้ร่าง Boost550 ให้ตรงแผน และเก็บ batch1–2 ที่ผู้ใช้ตรวจแล้ว — 13 พฤศจิกายน 2026
 

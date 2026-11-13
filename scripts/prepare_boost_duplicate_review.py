@@ -5,6 +5,7 @@ from collections import Counter
 from datetime import datetime, timezone
 import hashlib
 import json
+import re
 from pathlib import Path
 import shutil
 
@@ -113,7 +114,7 @@ def plan_view(annotation, people, pairs, envelopes, raw_labels):
             if any(d['holes'] for d in diagnostics.values()):
                 tags.append('CHECK_POLYGON_HOLES')
             for shape in [bbox, *regions]:
-                shape['description'] = '['+(','.join(tags) if tags else 'NO_AUTO_FLAGS')+'] '+tag
+                shape['description'] = ''
             shapes.extend([bbox, *regions])
         elif action == 'IGNORE_CANDIDATE':
             # A coarse exclusion must not be painted over an eligible-person candidate.
@@ -121,7 +122,7 @@ def plan_view(annotation, people, pairs, envelopes, raw_labels):
                 tags.append('CHECK_SMALL_IGNORE_OVERLAP_ELIGIBLE')
             else:
                 shape = editor_shape('ignore', 'rectangle', [[x1,y1],[x2,y1],[x2,y2],[x1,y2]], None)
-                shape['description'] = '[SMALL_IGNORE_DRAFT_REQUIRES_SIZE_CONFIRMATION] '+tag
+                shape['description'] = ''
                 shapes.append(shape)
             tags.append('SMALL_IGNORE_REVIEW')
         else:
@@ -129,6 +130,7 @@ def plan_view(annotation, people, pairs, envelopes, raw_labels):
         flags.extend(tags)
         audits.append({'person_id': identifier, 'action': action, 'sam_person_score': person['detector_score'],
                        'size': sizes[identifier], 'flags': tags, 'suppressed_to': suppressed.get(identifier),
+                       'review_tag': tag,
                        'raw_labels': person['raw_labels'], 'owned_labels': person['owned_labels'],
                        'outside_helper_person_pixels_warning': person['outside_person_target_pixels'],
                        'polygon_diagnostics': diagnostics if action == 'PARTS_DRAFT' else None})
@@ -330,16 +332,68 @@ def assemble_editor_batches(prepared, output):
     return result
 
 
+def shorten_editor_descriptions(editor_root, backup):
+    """Remove generated overlay prose while retaining all annotation content and notes."""
+    editor_root = Path(editor_root).resolve()
+    backup = fresh_external(backup, editor_root)
+    backup.mkdir(parents=True)
+    generated = re.compile(r'^\[[A-Z0-9_,:]+\] Person #\d+; SAM person score=[\d.]+; bbox_long_side=[\d.]+px$')
+    changes, skipped = [], []
+    for path in sorted(editor_root.glob('*/images/*.json')):
+        original_bytes = path.read_bytes()
+        before_sha = hashlib.sha256(original_bytes).hexdigest()
+        original = json.loads(original_bytes)
+        updated = json.loads(original_bytes)
+        indices = []
+        for index, shape in enumerate(updated.get('shapes', [])):
+            description = shape.get('description') or ''
+            if (description == 'Automatic draft; review boundary, class and person ownership' or
+                    generated.fullmatch(description)):
+                shape['description'] = ''
+                indices.append(index)
+        if not indices:
+            continue
+        relative = path.relative_to(editor_root)
+        preserved = backup/'originals'/relative
+        preserved.parent.mkdir(parents=True, exist_ok=True)
+        preserved.write_bytes(original_bytes)
+        if file_hash(path) != before_sha:
+            skipped.append(str(relative))
+            continue
+        write(path, updated)
+        readback = load(path)
+        for index in indices:
+            if 'description' in original['shapes'][index]:
+                readback['shapes'][index]['description'] = original['shapes'][index]['description']
+            else:
+                readback['shapes'][index].pop('description', None)
+        if readback != original:
+            raise ValueError('Display cleanup changed annotation fields beyond generated descriptions')
+        changes.append({'path': str(relative), 'description_shape_indices': indices,
+                        'before_sha256': before_sha, 'after_sha256': file_hash(path)})
+    result = {'state': 'COMPLETE' if not skipped else 'PARTIAL_CONCURRENT_EDITOR_CHANGES',
+              'at_utc': datetime.now(timezone.utc).isoformat(), 'editor_root': str(editor_root),
+              'files_updated': len(changes), 'shape_descriptions_removed': sum(len(c['description_shape_indices']) for c in changes),
+              'changed_fields': ['shapes[].description for recognized generated prose'],
+              'labels_geometry_ids_scores_flags_and_manual_notes': 'PRESERVED',
+              'changes': changes, 'skipped': skipped, 'source_sha256': file_hash(__file__)}
+    write(backup/'DISPLAY_CHANGE.json', result)
+    return result
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     mode = parser.add_mutually_exclusive_group(required=True)
     mode.add_argument('--parent', type=Path)
     mode.add_argument('--assemble-from', type=Path)
+    mode.add_argument('--shorten-labels-in', type=Path)
     parser.add_argument('--output', type=Path, required=True)
     parser.add_argument('--plan', type=Path)
     parser.add_argument('--preserve-receipt', type=Path)
     args = parser.parse_args()
-    if args.assemble_from:
+    if args.shorten_labels_in:
+        result = shorten_editor_descriptions(args.shorten_labels_in, args.output)
+    elif args.assemble_from:
         result = assemble_editor_batches(args.assemble_from, args.output)
     else:
         if not args.plan or not args.preserve_receipt:
