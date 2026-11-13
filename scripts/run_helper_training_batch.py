@@ -79,7 +79,7 @@ def main():
                 with (root/(job['model']+'.log')).open('xb') as log:
                     child = subprocess.Popen(job['command'], stdout=log, stderr=subprocess.STDOUT,
                                              cwd=config['repository'], env=env, start_new_session=True)
-                    event('TRAINING', model=job['model'], worker_pid=child.pid,
+                    event(config.get('execution_state', 'TRAINING'), model=job['model'], worker_pid=child.pid,
                           output=str(output), command=job['command'])
                     started = time.monotonic()
                     while child.poll() is None:
