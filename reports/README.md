@@ -1,4 +1,4 @@
-> **13 พฤศจิกายน 2026 — DENSE_TUNING PREPARING** เตรียมSOLIDER RGB A/B → B5 A/B → B4 A/B สูตรละ10epochsจากparentBEST CPU30testsและpreflight6/6ผ่าน มีfullDense/AMPstate checkpoint อ่าน [สูตร คิว และคำสั่งดูสด](PSEUDO_LABELING_MASTER_PLAN_REVIEW_TH.md#dense-helper-tuning)
+> **13 พฤศจิกายน 2026 เวลา10:44ไทย — DENSE_TUNING RUNNING** SOLIDER_RGB_Aอยู่epoch5/10 checkpointepoch4อ่านกลับรวมAMPstateได้ คิวSOLIDER_B→B5A/B→B4A/Bจะทำต่ออัตโนมัติ Controller994338/worker994409 อยู่tmux helper_dense_tuning อ่าน [สูตรและคำสั่งดูสด](PSEUDO_LABELING_MASTER_PLAN_REVIEW_TH.md#dense-helper-tuning)
 
 > **13 พฤศจิกายน 2026 — เพิ่ม inference timing แล้ว** ตารางFTหกconfigurationsมีMean ms/ROIจากการวัดT4/FP32/batch1บนfixed3crops มีwarmup3และmeasured9callsต่อconfig ตรวจmaskparityผ่าน อ่าน [คะแนนพร้อมเวลาและขอบเขตtimer](PSEUDO_LABELING_MASTER_PLAN_REVIEW_TH.md#sam31-fresh15) / [CSVเต็ม](HELPER_COMPARISON.csv)
 

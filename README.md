@@ -1,4 +1,4 @@
-> **13 พฤศจิกายน 2026 — เตรียมจูน SOLIDER RGB → B5 → B4** สองสูตรต่อโมเดล สูตรละ10epochsจากBESTเดิม มีfull-statecheckpointรวมAMP GradScaler อ่าน [สูตรและวิธีติดตาม](reports/PSEUDO_LABELING_MASTER_PLAN_REVIEW_TH.md#dense-helper-tuning)
+> **13 พฤศจิกายน 2026 — จูน SOLIDER RGB → B5 → B4 เริ่มแล้ว** ตรวจ10:44ไทย SOLIDERสูตรAอยู่epoch5/10 มีfullcheckpointรวมAMPstateที่จบepoch4แล้ว คิวหกรอบทำต่อในtmux helper_dense_tuning อ่าน [สูตรและวิธีติดตาม](reports/PSEUDO_LABELING_MASTER_PLAN_REVIEW_TH.md#dense-helper-tuning)
 
 > **13 พฤศจิกายน 2026 — เพิ่มความเร็วในตาราง helper แล้ว** มีMean ms/ROIของBEST checkpointsทั้งหกconfigurationsจากT4/FP32/batch1 พร้อมเงื่อนไขและsourcebindings อ่าน [คะแนนพร้อมเวลา](reports/PSEUDO_LABELING_MASTER_PLAN_REVIEW_TH.md#sam31-fresh15) และ [CSVเต็ม](reports/HELPER_COMPARISON.csv)
 

@@ -1,7 +1,7 @@
 <a id="dense-helper-tuning"></a>
 ## จูน SOLIDER RGB → B5 → B4 — 13 พฤศจิกายน 2026
 
-สถานะ **PREPARING / CPU_READY** ผู้ใช้อนุญาตให้เริ่มSOLIDERก่อนแล้วต่อB5/B4 ตามข้อเสนอสองสูตรต่อโมเดล รอบนี้เลือก **10epochsต่อสูตร รวม6trials** โดยทั้งAและBของแต่ละโมเดลเริ่มจากparentBESTเดียวกันอย่างอิสระ สูตรและรายชื่อคิวถูกตรึงก่อนGPUtraining
+สถานะ **TUNING / LAUNCH_VERIFIED** ผู้ใช้อนุญาตให้เริ่มSOLIDERก่อนแล้วต่อB5/B4 ตามข้อเสนอสองสูตรต่อโมเดล รอบนี้เลือก **10epochsต่อสูตร รวม6trials** โดยทั้งAและBของแต่ละโมเดลเริ่มจากparentBESTเดียวกันอย่างอิสระ สูตรและรายชื่อคิวถูกตรึงก่อนGPUtraining
 
 | ลำดับ | Trial | Parent BEST | LR backbone / head | Loss |
 | --- | --- | --- | --- | --- |
@@ -11,6 +11,10 @@
 | 4 | B5_B | B5_finetuned epoch13 | 2e-6 / 2e-5 | weighted CE + Dice เดิม |
 | 5 | B4_A | B4_refined epoch12 | 1e-6 / 1e-5 | CE + Dice เดิม |
 | 6 | B4_B | B4_refined epoch12 | 1e-6 / 1e-5 | weighted CE + Dice เดิม |
+
+ตรวจเมื่อ `2026-11-13T10:44:02.946396+07:00` SOLIDER_RGB_A อยู่epoch5/10 ผ่าน60/157batchesของepochปัจจุบัน คิวถัดไปยังPENDING ใช้tmux `helper_dense_tuning` controllerPID994338/workerPID994409 และlaunchcommit `8bfa6ad7d0754555934d5d48ecfd724437649d04` ยืนยันparentchainไปtmuxserverที่parentPID1
+
+Initialconfusionบน77validationcropsตรงparentทุกcellก่อนเริ่มtraining อ่านfullLASTที่จบepoch4ได้459modelstatekeys, optimizerupdates626, schedulerตรงepoch และGradScalerครบ ในสี่epochแรกบันทึก628batches/626actualupdates/AMPskips2 โดยGradScalerลดscaleเป็น256ตามการตรวจgradient เก็บเหตุการณ์ในHISTORYและstateครบ การฝึกใช้AMPตามสูตรที่ตรึงไว้ ผลvalidationยังใช้FP32ครบ77cropsตามเดิม
 
 ### สูตรและสิ่งที่วัด
 
