@@ -10,6 +10,7 @@ import sys
 import random
 import contextlib
 import io
+import math
 
 import numpy as np
 from PIL import Image
@@ -25,6 +26,83 @@ BATCH_SPEC.loader.exec_module(batch)
 
 
 class TrainingRequirements(unittest.TestCase):
+    def test_class_weights_change_only_ce_and_preserve_void(self):
+        logits = torch.zeros(1, 5, 1, 3)
+        logits[0, 0, 0, 0] = math.log(4)
+        target = torch.tensor([[[0, 1, 255]]])
+        weights = torch.tensor([1., 3., 1., 1., 1.])
+        expected_delta = (math.log(2)+3*math.log(5))/4-(math.log(2)+math.log(5))/2
+        actual_delta = trainer.semantic_loss(logits, target, weights)-trainer.semantic_loss(logits, target)
+        self.assertAlmostEqual(actual_delta.item(), expected_delta, places=6)
+        changed = logits.clone()
+        changed[:, :, :, 2] = 500
+        torch.testing.assert_close(trainer.semantic_loss(logits, target, weights),
+                                   trainer.semantic_loss(changed, target, weights))
+
+    def test_dense_warmstart_strictly_loads_the_selected_full_model(self):
+        def make_model():
+            model = torch.nn.Linear(2, 2)
+            model.config = SimpleNamespace(num_labels=5, id2label=dict(enumerate(trainer.CLASSES)))
+            return model
+        factory = SimpleNamespace(from_pretrained=lambda *args, **kwargs: make_model())
+        with tempfile.TemporaryDirectory() as folder:
+            path = Path(folder)/'BEST.pt'
+            selected = make_model()
+            with torch.no_grad():
+                selected.weight.fill_(.7)
+                selected.bias.fill_(.1)
+            torch.save({'model': 'b4', 'state_dict': selected.state_dict()}, path)
+            args = SimpleNamespace(model='b4', checkpoint='local_fixture', warmstart=str(path))
+            with mock.patch.dict(sys.modules, {'transformers': SimpleNamespace(SegformerForSemanticSegmentation=factory)}):
+                helper = trainer.DenseHelper(args, torch.device('cpu'))
+                for key, value in helper.model.state_dict().items():
+                    torch.testing.assert_close(value, selected.state_dict()[key], rtol=0, atol=0)
+                torch.save({'model': 'b5', 'state_dict': selected.state_dict()}, path)
+                with self.assertRaisesRegex(ValueError, 'model identity mismatch'):
+                    trainer.DenseHelper(args, torch.device('cpu'))
+
+    def test_dense_resume_preserves_backbone_and_amp_scaler(self):
+        class DenseModel(torch.nn.Module):
+            def __init__(self):
+                super().__init__()
+                self.backbone = torch.nn.Linear(2, 2)
+                self.head = torch.nn.Linear(2, 1)
+            def forward(self, image):
+                return self.head(self.backbone(image).tanh())
+        def make_helper(scale):
+            helper = SimpleNamespace(model=DenseModel(), kind='b5', device=torch.device('cpu'))
+            optimizer = torch.optim.AdamW(helper.model.parameters(), lr=.01)
+            schedule = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, 4)
+            scaler = torch.amp.GradScaler('cpu', init_scale=scale, growth_interval=2)
+            return helper, optimizer, schedule, scaler
+        def update(helper, optimizer, schedule, scaler):
+            optimizer.zero_grad(set_to_none=True)
+            loss = (helper.model(torch.rand(1, 2))-torch.rand(1, 1)).square().mean()
+            scaler.scale(loss).backward()
+            scaler.step(optimizer)
+            scaler.update()
+            schedule.step()
+        torch.manual_seed(42)
+        helper, optimizer, schedule, scaler = make_helper(32.)
+        for _ in range(2):
+            update(helper, optimizer, schedule, scaler)
+        best = {'epoch': 2, 'model': 'b5', 'state_dict': trainer.model_training_state(helper.model),
+                'metrics': {'miou4': .5}}
+        with tempfile.TemporaryDirectory() as folder:
+            path = Path(folder)/'LAST.pt'
+            trainer.save_training_state(path, helper, optimizer, schedule, 'dense', 2, {'epoch': 2}, best, scaler=scaler)
+            for _ in range(2):
+                update(helper, optimizer, schedule, scaler)
+            expected = trainer.model_training_state(helper.model)
+            resumed, new_optimizer, new_schedule, new_scaler = make_helper(1.)
+            trainer.restore_training_state(path, resumed, new_optimizer, new_schedule, 'dense', scaler=new_scaler)
+            self.assertEqual(new_scaler.get_scale(), 64.)
+            for _ in range(2):
+                update(resumed, new_optimizer, new_schedule, new_scaler)
+            self.assertEqual(new_scaler.state_dict(), scaler.state_dict())
+            for key, value in resumed.model.state_dict().items():
+                torch.testing.assert_close(value, expected[key], rtol=0, atol=0)
+
     def test_normal_entry_resume_releases_lock_and_preserves_history(self):
         class TinyModel(torch.nn.Module):
             def __init__(self):
@@ -111,18 +189,18 @@ class TrainingRequirements(unittest.TestCase):
         original, optimizer, schedule = make_helper()
         for _ in range(2):
             update(original, optimizer, schedule)
-        best = {'epoch': 1, 'model': 'sam31', 'state_dict': trainer.sam_decoder_state(original.model),
+        best = {'epoch': 1, 'model': 'sam31', 'state_dict': trainer.model_training_state(original.model),
                 'metrics': {'miou4': .5}}
         with tempfile.TemporaryDirectory() as folder:
             path = Path(folder)/'LAST.pt'
-            trainer.save_sam_training_state(path, original, optimizer, schedule, 'bound', 2,
+            trainer.save_training_state(path, original, optimizer, schedule, 'bound', 2,
                                              {'epoch': 2}, best)
             for _ in range(2):
                 update(original, optimizer, schedule)
-            expected = trainer.sam_decoder_state(original.model)
+            expected = trainer.model_training_state(original.model)
             expected_next = (random.random(), np.random.random(), torch.rand(1))
             resumed, new_optimizer, new_schedule = make_helper()
-            state = trainer.restore_sam_training_state(path, resumed, new_optimizer, new_schedule, 'bound')
+            state = trainer.restore_training_state(path, resumed, new_optimizer, new_schedule, 'bound')
             self.assertEqual(state['epoch_completed'], 2)
             self.assertEqual(new_schedule.last_epoch, 2)
             for _ in range(2):
@@ -133,11 +211,11 @@ class TrainingRequirements(unittest.TestCase):
             self.assertEqual(np.random.random(), expected_next[1])
             torch.testing.assert_close(torch.rand(1), expected_next[2], rtol=0, atol=0)
             with self.assertRaisesRegex(ValueError, 'binding mismatch'):
-                trainer.restore_sam_training_state(path, resumed, new_optimizer, new_schedule, 'changed')
+                trainer.restore_training_state(path, resumed, new_optimizer, new_schedule, 'changed')
             state['state_dict'] = {}
             torch.save(state, path)
             with self.assertRaisesRegex(ValueError, 'decoder keys mismatch'):
-                trainer.restore_sam_training_state(path, resumed, new_optimizer, new_schedule, 'bound')
+                trainer.restore_training_state(path, resumed, new_optimizer, new_schedule, 'bound')
 
     def test_epoch_commit_reconciles_once_and_rejects_conflict(self):
         with tempfile.TemporaryDirectory() as folder:

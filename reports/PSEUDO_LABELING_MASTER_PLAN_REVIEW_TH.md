@@ -1,3 +1,56 @@
+<a id="dense-helper-tuning"></a>
+## จูน SOLIDER RGB → B5 → B4 — 13 พฤศจิกายน 2026
+
+สถานะ **PREPARING / CPU_READY** ผู้ใช้อนุญาตให้เริ่มSOLIDERก่อนแล้วต่อB5/B4 ตามข้อเสนอสองสูตรต่อโมเดล รอบนี้เลือก **10epochsต่อสูตร รวม6trials** โดยทั้งAและBของแต่ละโมเดลเริ่มจากparentBESTเดียวกันอย่างอิสระ สูตรและรายชื่อคิวถูกตรึงก่อนGPUtraining
+
+| ลำดับ | Trial | Parent BEST | LR backbone / head | Loss |
+| --- | --- | --- | --- | --- |
+| 1 | SOLIDER_RGB_A | SOLIDER_RGB epoch11 | 2e-6 / 2e-5 | CE + Dice เดิม |
+| 2 | SOLIDER_RGB_B | SOLIDER_RGB epoch11 | 2e-6 / 2e-5 | weighted CE + Dice เดิม |
+| 3 | B5_A | B5_finetuned epoch13 | 2e-6 / 2e-5 | CE + Dice เดิม |
+| 4 | B5_B | B5_finetuned epoch13 | 2e-6 / 2e-5 | weighted CE + Dice เดิม |
+| 5 | B4_A | B4_refined epoch12 | 1e-6 / 1e-5 | CE + Dice เดิม |
+| 6 | B4_B | B4_refined epoch12 | 1e-6 / 1e-5 | weighted CE + Dice เดิม |
+
+### สูตรและสิ่งที่วัด
+
+- คงtrain313crops / validation77cropsจากseed300, batch2, AMPtrainingและFP32evaluation, AdamW/cosine10epochs, seed20261112, horizontalflip/ColorJitter0.2 ตามสูตรเดิม Inputของแต่ละarchitectureและmap-backคงตามparent
+- สูตรBใช้weightsตามลำดับBG/OTHER, Hair, Face, Upper, Lower เป็น **1.0000 / 1.8058 / 2.7805 / 1.0000 / 1.0000** คำนวณจากTRAINpixelcountsด้วย `clip(sqrt(mean foreground TRAIN count / class TRAIN count),1,3)` และBG=1 ค่าเต็มอยู่ในprivate `TUNING_PROTOCOL.json`
+- weightsเปลี่ยนCross-Entropyเฉพาะตอนฝึก Diceยังใช้สูตรเดิม ส่วนvalidationยังเป็นglobalconfusionและmeanIoUสี่คลาสแบบเดิม พร้อมP/R/F1/support/union GT255เป็นsharedVOID และGT0ยังvalidตามเดิม
+- ทั้งสองสูตรเริ่มoptimizer/schedulerใหม่สำหรับtrialใหม่จากselectedparentweights โดยไม่รับผลAมาเป็นจุดเริ่มB Initialevaluationต้องได้confusionตรงacceptedparentก่อนเริ่มtraining มีepoch0เป็นcandidate จึงคงparentได้เมื่อสูตรใหม่ไม่เพิ่มคะแนน
+- ใช้validationเลือกdevelopmentconfiguration หลังเห็นbaselineแล้ว ผลนี้ยังแยกจากheld-outtestและเวลาคนแก้ ไม่เปลี่ยนmapping/ignore/thresholdหรือinputresolutionตามpartialVAL
+
+### Readiness และการกู้สถานะ
+
+[Trainer](../scripts/train_annotation_helper.py) รองรับdensewarmstartแบบstrictfullstateแล้ว เพิ่มfull-state `LAST.pt` สำหรับdensemodelsรวมbackbone, optimizer, scheduler, **AMP GradScaler**, Python/NumPy/Torch/CUDA RNG และbeststate เมื่อจบแต่ละepoch มีsource/data/environment/configbindingchecksและworkerlock การกู้เริ่มจากepochที่จบล่าสุด งานค้างกลางepochอาจต้องทำซ้ำ
+
+CPU30testsผ่าน รวมweightedCEที่เปลี่ยนเฉพาะCEและคงVOID, strictdensewarmstart/modelidentity, fullbackbone+AMPscalerrestoreที่ผลตรงuninterruptedCPUfixture รวมtestsเดิม โหลดactualselectedweightsครบสามarchitectureบนCPUแล้วได้tensorsตรงparentทุกค่า และinputpreflightผ่าน6/6 ยังไม่มีGPUimageforwardในreadiness
+
+ใช้T4GPU0 / SHARED_GPU_QUALITY_ONLY / workerทีละตัว AdmissionfreeVRAM10GiB, freedisk50GiB, output80GiBต่อjob และตั้งงบtrialใหม่นี้ **30นาทีต่อjob** ไม่มีautomaticOOM/modelretry ผลเดิมและสภาพแวดล้อมเดิมยังอยู่ครบ
+
+### คิวและรายงานอัตโนมัติ
+
+Run `helper-dense-tuning-20261113T032600Z` อยู่privateใต้ `CCTV_Dataset_Development.local/runs/` คิวต่อA→BของSOLIDERก่อน แล้วB5A/BและB4A/B เมื่อครบหกtrialจึงสร้าง `REPORT_TH.md`, `COMPARISON.csv`, `RESULT_INDEX.json` และgalleryชุดเดิม [Reporter](../scripts/report_helper_comparison.py) ตรวจnewselectedmasks77IDsต่อtrialด้วยindependent `np.add.at` ก่อนรายงาน พร้อมเก็บsource/checkpoint hashes
+
+`SELECTED_HELPERS.json` เลือกparent/A/Bรายfamilyด้วยvalidationmIoU4เต็ม หากเท่ากันคงparentที่อยู่ลำดับแรก ใช้ชื่อconfigurationและcheckpointจริงโดยเก็บทุกtrialไว้ หากยังไม่ครบไฟล์selectionเป็นPENDING_INCOMPLETE ผลparentเดิมยังใช้เป็นcandidateได้ตามรายงานก่อนหน้า
+
+เปิดดูบนserverได้ด้วย
+
+```bash
+tmux attach -t helper_dense_tuning
+```
+
+หรือจากโฟลเดอร์repo
+
+```bash
+cd ../CCTV_Dataset_Development.local/runs/helper-dense-tuning-20261113T032600Z
+python3 source_frozen/helper_training_progress.py --watch
+```
+
+ดูlogตามชื่อtrial เช่น `tail -f SOLIDER_RGB_A.log` หลังคิวจบตรวจ `REPORT_STATUS.json` และ `SELECTED_HELPERS.json` งานtrainingและartifactทั้งหมดแยกจากผลเดิม ส่วนรายงานผลเดิมด้านล่างคงไว้เป็นbaseline
+
+---
+
 <a id="sam31-fresh15"></a>
 ## SAM3.1 รอบใหม่จาก warmstart เดิม — 13 พฤศจิกายน 2026
 

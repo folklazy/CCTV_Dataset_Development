@@ -1,3 +1,5 @@
+> **13 พฤศจิกายน 2026 — DENSE_TUNING PREPARING** เตรียมSOLIDER RGB A/B → B5 A/B → B4 A/B สูตรละ10epochsจากparentBEST CPU30testsและpreflight6/6ผ่าน มีfullDense/AMPstate checkpoint อ่าน [สูตร คิว และคำสั่งดูสด](PSEUDO_LABELING_MASTER_PLAN_REVIEW_TH.md#dense-helper-tuning)
+
 > **13 พฤศจิกายน 2026 — เพิ่ม inference timing แล้ว** ตารางFTหกconfigurationsมีMean ms/ROIจากการวัดT4/FP32/batch1บนfixed3crops มีwarmup3และmeasured9callsต่อconfig ตรวจmaskparityผ่าน อ่าน [คะแนนพร้อมเวลาและขอบเขตtimer](PSEUDO_LABELING_MASTER_PLAN_REVIEW_TH.md#sam31-fresh15) / [CSVเต็ม](HELPER_COMPARISON.csv)
 
 > **13 พฤศจิกายน 2026 — SAM31_FRESH15 COMPLETE** ฝึกครบ15epochsในprocessเดียว 4,695updates ผลvalidation77/77และsaved-mask auditผ่าน Bestepoch1 ได้mIoU4 **68.78%** สูงกว่ารอบwarmrestartเดิม0.49จุดเปอร์เซ็นต์ อ่าน [ผลปิดรอบและตารางล่าสุด](PSEUDO_LABELING_MASTER_PLAN_REVIEW_TH.md#sam31-fresh15) กับ [ตัวเลขเต็ม](HELPER_COMPARISON.csv)

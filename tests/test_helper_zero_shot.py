@@ -128,6 +128,7 @@ class ZeroShotRequirements(unittest.TestCase):
             config={'dataset':str(data),'zero_shot_protocol_sha256':'fixture','comparison_entries':[
                 {'key':'B4','stage':'ZERO_SHOT','output':str(out),'mask_folder':'validation_predictions','verify_saved_masks':True},
                 {'key':'B5','stage':'FINE_TUNED','output':str(root/'not_started'),'mask_folder':'validation_predictions'}]}
+            config['selection_groups']={'tiny':['B4','B5']}
             path=root/'manifest.json'
             path.write_text(json.dumps(config))
             with mock.patch.object(sys,'argv',['report',str(path)]):reporter.main()
@@ -135,6 +136,17 @@ class ZeroShotRequirements(unittest.TestCase):
             self.assertEqual(result['state'],'PARTIAL')
             self.assertIsNone(result['rows'][1]['miou4'])
             self.assertEqual(len(list((root/'gallery').glob('*.png'))),6)
+            self.assertEqual(json.loads((root/'SELECTED_HELPERS.json').read_text())['state'],'PENDING_INCOMPLETE')
+            full_root=root/'complete_report'
+            full_root.mkdir()
+            config['comparison_entries'][1]['output']=str(out)
+            full_manifest=full_root/'manifest.json'
+            full_manifest.write_text(json.dumps(config))
+            with mock.patch.object(sys,'argv',['report',str(full_manifest)]):reporter.main()
+            selection=json.loads((full_root/'SELECTED_HELPERS.json').read_text())
+            self.assertEqual(selection['state'],'COMPLETE')
+            self.assertEqual(selection['families']['tiny']['configuration'],'B4')
+            self.assertEqual(selection['families']['tiny']['checkpoint_sha256'],hashlib.sha256(checkpoint.read_bytes()).hexdigest())
             self.assertEqual(json.loads((out/'SAVED_MASK_AUDIT.json').read_text())['exact_ids'],3)
             Image.new('L',(2,2),0).save(predictions/'0.png')
             with mock.patch.object(sys,'argv',['report',str(path)]), self.assertRaisesRegex(ValueError,'confusion mismatch'):

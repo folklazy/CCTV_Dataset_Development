@@ -140,7 +140,35 @@ def main():
     text+='## Pretrained zero-shot ก่อนCCTVfine-tune\n\n'+table('ZERO_SHOT')+'\n\n'
     text+='ใช้nativeweights/head B4/B5/SOLIDERก่อนCCTVtraining เก็บnativeclassesก่อนfixedmapping Hair/Face/Upper/Lower Nativeอื่นเป็นbackground/OTHERโดยไม่เพิ่มmodelignore SAMใช้originaldetector+nativeprocessorและfixedprompts ไม่โหลดCCTVdecoder\n\n'
     text+='## หลังรอบ fine-tune\n\n'+table('FINE_TUNED')+'\n\n'
-    text+='B5ใช้native18→helper5classifierinitializationแล้วฝึกSeedtrain313crops25epochs batch2 AMP native512RGB มีepoch0เป็นcandidate การเปลี่ยนheadเป็นinitializationไม่ใช่zero-shotผลnative18 Nativezero-shotและFTบางตัวใช้input/outputadapterต่างกัน จึงเป็นผลของconfigurationและน้ำหนักร่วมกัน ตารางแยกตามstageและไม่ใช้ผลต่างอ้างผลของFTอย่างเดียว\n\n'
+    text+='B5_finetunedรอบเดิมใช้native18→helper5classifierinitializationแล้วฝึกSeedtrain313crops25epochs batch2 AMP native512RGB มีepoch0เป็นcandidate การเปลี่ยนheadเป็นinitializationไม่ใช่zero-shotผลnative18 Nativezero-shotและFTบางตัวใช้input/outputadapterต่างกัน จึงเป็นผลของconfigurationและน้ำหนักร่วมกัน ตารางแยกตามstageและไม่ใช้ผลต่างอ้างผลของFTอย่างเดียว\n\n'
+    if config.get('report_notes'):
+        text+=config['report_notes']+'\n\n'
+    if config.get('selection_groups'):
+        selections = {}
+        if complete:
+            by_key = {row['configuration']: row for row in rows}
+            output_paths = {entry['key']: Path(entry['output']) for entry in config['comparison_entries']}
+            for family, keys in config['selection_groups'].items():
+                eligible = [by_key[key] for key in keys if by_key[key]['miou4'] is not None]
+                if not eligible:
+                    raise ValueError(f'Selection group has no defined semantic mean: {family}')
+                winner = max(eligible, key=lambda row: row['miou4'])
+                status = json.loads((output_paths[winner['configuration']]/'STATUS.json').read_text())
+                selections[family] = {'configuration': winner['configuration'],
+                                      'miou4': winner['miou4'], 'best_epoch': status.get('best_epoch'),
+                                      'checkpoint': status['checkpoint'],
+                                      'checkpoint_sha256': status['checkpoint_sha256'],
+                                      'metrics': sources[winner['configuration']],
+                                      'baseline_configuration': keys[0], 'candidates': keys}
+            text+='## Selected helpers หลังครบทุก trial\n\n'
+            text+='เลือกparent/A/Bด้วยvalidationmIoU4เต็มก่อนปัดเศษ หากคะแนนเท่ากันคงparentซึ่งอยู่ลำดับแรก เก็บconfigurationและcheckpointแยกตามจริง\n\n'
+            for family, selection in selections.items():
+                text+=f'- {family}: {selection["configuration"]}, mIoU4 {selection["miou4"]*100:.2f}%\n'
+            text+='\n'
+        (root/'SELECTED_HELPERS.json').write_text(json.dumps({
+            'state': 'COMPLETE' if complete else 'PENDING_INCOMPLETE',
+            'selection_rule': 'Highest validation mIoU4; ties retain first candidate; no selection from partial trials',
+            'families': selections}, indent=2)+'\n')
     text+='SAMfine-tunedเดิมเป็นwarmrestartช่วงepochlabels6–15จากbestepoch3 ใช้optimizerใหม่ พร้อมcustomfloatresize/single-query/jointscore ส่วนzero-shotSAMใช้nativeprocessorพร้อมextra presence factorและหลายqueriesตามcontractเดิม Sourceoftruthของผลเก่ายังเป็นrunเดิม ไม่รวมsubsetที่failedเป็นชุดเต็ม\n\n'
     if complete:
         text+='## คะแนนสูงสุดรายtargetในแต่ละstage\n\n'

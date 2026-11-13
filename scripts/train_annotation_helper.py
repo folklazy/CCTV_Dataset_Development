@@ -58,19 +58,21 @@ def atomic_weights(path, value):
     os.replace(temp, path)
 
 
-def sam_decoder_state(model):
+def model_training_state(model, exclude_backbone=False):
     return {key: value.detach().cpu().clone() for key, value in model.state_dict().items()
-            if not key.startswith('backbone.')}
+            if not (exclude_backbone and key.startswith('backbone.'))}
 
 
-def save_sam_training_state(path, helper, optimizer, schedule, binding_sha256,
-                            epoch, record, best_state):
+def save_training_state(path, helper, optimizer, schedule, binding_sha256,
+                        epoch, record, best_state, scaler=None):
     numpy_state = np.random.get_state()
+    kind = getattr(helper, 'kind', 'sam31')
     atomic_weights(path, {
-        'format_version': 1, 'binding_sha256': binding_sha256,
+        'format_version': 2, 'binding_sha256': binding_sha256, 'model_kind': kind,
         'epoch_completed': epoch, 'epoch_record': record,
-        'state_dict': sam_decoder_state(helper.model),
+        'state_dict': model_training_state(helper.model, exclude_backbone=kind=='sam31'),
         'optimizer': optimizer.state_dict(), 'scheduler': schedule.state_dict(),
+        'grad_scaler': scaler.state_dict() if scaler is not None else None,
         'best_state': best_state,
         'python_rng': random.getstate(),
         'numpy_rng': (numpy_state[0], numpy_state[1].tolist(), *numpy_state[2:]),
@@ -82,11 +84,14 @@ def save_sam_training_state(path, helper, optimizer, schedule, binding_sha256,
             'resume_policy': 'Restore full state at the last completed epoch; repeat any uncommitted partial epoch'}
 
 
-def restore_sam_training_state(path, helper, optimizer, schedule, binding_sha256):
+def restore_training_state(path, helper, optimizer, schedule, binding_sha256, scaler=None):
     state = torch.load(path, map_location='cpu', weights_only=True)
-    if state['format_version'] != 1 or state['binding_sha256'] != binding_sha256:
+    if state['format_version'] not in [1, 2] or state['binding_sha256'] != binding_sha256:
         raise ValueError('Training checkpoint binding mismatch')
-    expected = set(sam_decoder_state(helper.model))
+    kind = getattr(helper, 'kind', 'sam31')
+    if state.get('model_kind', 'sam31') != kind:
+        raise ValueError('Training checkpoint model kind mismatch')
+    expected = set(model_training_state(helper.model, exclude_backbone=kind=='sam31'))
     if set(state['state_dict']) != expected or set(state['best_state']['state_dict']) != expected:
         raise ValueError('Training checkpoint decoder keys mismatch')
     loaded = helper.model.load_state_dict(state['state_dict'], strict=False)
@@ -94,6 +99,10 @@ def restore_sam_training_state(path, helper, optimizer, schedule, binding_sha256
         raise ValueError('Training checkpoint decoder readback failed')
     optimizer.load_state_dict(state['optimizer'])
     schedule.load_state_dict(state['scheduler'])
+    if scaler is not None:
+        if scaler.is_enabled() and not state.get('grad_scaler'):
+            raise ValueError('AMP resume requires the saved GradScaler state')
+        scaler.load_state_dict(state.get('grad_scaler') or {})
     random.setstate(state['python_rng'])
     numpy_state = state['numpy_rng']
     np.random.set_state((numpy_state[0], np.asarray(numpy_state[1], dtype=np.uint32),
@@ -222,11 +231,11 @@ class Crops(Dataset):
         return T.functional.to_tensor(image), torch.from_numpy(target), index
 
 
-def semantic_loss(logits, target):
+def semantic_loss(logits, target, class_weights=None):
     valid = target != 255
     if not valid.any():
         return logits.sum()*0
-    ce = F.cross_entropy(logits, target, ignore_index=255)
+    ce = F.cross_entropy(logits, target, weight=class_weights, ignore_index=255)
     probabilities = logits.softmax(1)*valid[:, None]
     dice = []
     for label in range(5):
@@ -317,6 +326,11 @@ class DenseHelper:
             self.mean, self.std = self.model.mean, self.model.std
             if self.mean != [.485, .456, .406] or self.std != [.229, .224, .225]:
                 raise ValueError('Selected Swin-Small normalization differs from the reviewed source')
+        if args.warmstart:
+            state = torch.load(args.warmstart, map_location='cpu', weights_only=True)
+            if state.get('model') != args.model:
+                raise ValueError('Dense warmstart model identity mismatch')
+            self.model.load_state_dict(state['state_dict'], strict=True)
         self.model.to(device)
 
     def logits(self, image):
@@ -345,6 +359,7 @@ class DenseHelper:
 
 class PromptHelper:
     def __init__(self, args, device, cache, bindings):
+        self.kind = 'sam31'
         source = Path(args.source).resolve()
         sys.path.insert(0, str(source/'src'))
         sys.path.insert(0, str(source/'third_party/sam3'))
@@ -509,6 +524,8 @@ def main():
     parser.add_argument('--save-training-state', action='store_true')
     parser.add_argument('--resume-training', action='store_true')
     parser.add_argument('--feature-cache-parent', type=Path)
+    parser.add_argument('--class-weights', nargs=5, type=float)
+    parser.add_argument('--expected-initial-metrics')
     args = parser.parse_args()
     if args.epochs < 1 or args.batch_size < 1 or min(args.lr_backbone, args.lr_head)<=0:
         parser.error('Invalid training budget')
@@ -516,8 +533,10 @@ def main():
         parser.error('The cached SAM3.1 recipe uses FP32')
     if args.model=='sam31' and args.batch_size != 1:
         parser.error('SAM3.1 cached decoder training uses batch size one')
-    if (args.save_training_state or args.resume_training or args.feature_cache_parent) and args.model!='sam31':
-        parser.error('Training-state resume and parent feature cache are supported for SAM3.1')
+    if args.feature_cache_parent and args.model!='sam31':
+        parser.error('Parent feature cache is supported for SAM3.1')
+    if args.class_weights and (args.model=='sam31' or not all(np.isfinite(v) and v>0 for v in args.class_weights)):
+        parser.error('Dense class weights must be five finite positive values')
     if args.resume_training and (not args.save_training_state or args.preflight):
         parser.error('Resume requires --save-training-state and a real training invocation')
     random.seed(args.seed)
@@ -543,9 +562,12 @@ def main():
                             (['torch', 'torchvision', 'numpy', 'Pillow']+
                              (['transformers'] if args.model in ['b4','b5'] else []))},
                'checkpoint_config_sha256': file_hash(Path(args.checkpoint)/'config.json') if args.model in ['b4', 'b5'] else None,
+               'expected_initial_metrics_sha256': file_hash(args.expected_initial_metrics) if args.expected_initial_metrics else None,
                'train_crops': len(manifest['train']), 'val_crops': len(manifest['val']),
                'selection_metric_role': 'helper_diagnostic; inspect_saved_drafts_for_correction_effort',
-               'initial_metrics_role': 'B5 head-initialized diagnostic, separate from native zero-shot' if args.model=='b5' else 'recipe-specific starting checkpoint diagnostic',
+               'initial_metrics_role': ('selected helper warmstart baseline' if args.warmstart else
+                                       'B5 head-initialized diagnostic, separate from native zero-shot' if args.model=='b5' else
+                                       'recipe-specific starting checkpoint diagnostic'),
                'created_at_utc': __import__('datetime').datetime.now(__import__('datetime').timezone.utc).isoformat()}
     if args.feature_cache_parent:
         binding['feature_cache_reuse'] = bind_parent_feature_cache(args.feature_cache_parent, binding)
@@ -601,10 +623,11 @@ def main():
         optimizer = helper.optimizer(args)
         schedule = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, args.epochs)
         scaler = torch.amp.GradScaler('cuda', enabled=args.amp, init_scale=1024.)
+        class_weights = torch.tensor(args.class_weights, device=device, dtype=torch.float32) if args.class_weights else None
         first_epoch = 1
         if args.resume_training:
-            resumed = restore_sam_training_state(weights_directory/'LAST.pt', helper,
-                                                   optimizer, schedule, binding_sha256)
+            resumed = restore_training_state(weights_directory/'LAST.pt', helper,
+                                             optimizer, schedule, binding_sha256, scaler=scaler)
             best_state = resumed['best_state']
             first_epoch = resumed['epoch_completed']+1
             if resumed['epoch_record']:
@@ -617,13 +640,16 @@ def main():
         else:
             initial = evaluate(helper, validation)
             atomic_json(output/'INITIAL_METRICS.json', initial)
-            state = {k: v.cpu() for k, v in helper.model.state_dict().items()
-                     if args.model!='sam31' or not k.startswith('backbone.')}
+            if args.expected_initial_metrics:
+                expected = json.loads(Path(args.expected_initial_metrics).read_text())
+                if initial['confusion'] != expected['confusion'] or initial['crop_count'] != expected['crop_count']:
+                    raise ValueError('Warmstart initial evaluation differs from its accepted parent')
+            state = model_training_state(helper.model, exclude_backbone=args.model=='sam31')
             best_state = {'epoch': 0, 'model': args.model, 'state_dict': state, 'metrics': initial}
             atomic_weights(weights_directory/'BEST.pt', best_state)
             if args.save_training_state:
-                recovery = save_sam_training_state(weights_directory/'LAST.pt', helper, optimizer,
-                                                   schedule, binding_sha256, 0, None, best_state)
+                recovery = save_training_state(weights_directory/'LAST.pt', helper, optimizer,
+                                               schedule, binding_sha256, 0, None, best_state, scaler=scaler)
                 atomic_json(output/'RECOVERY.json', recovery)
         best = best_state['metrics']['miou4'] if best_state['metrics']['miou4'] is not None else -1.
         with (output/'ATTEMPTS.jsonl').open('a') as stream:
@@ -674,7 +700,7 @@ def main():
                     optimizer.zero_grad(set_to_none=True)
                     with torch.autocast('cuda', dtype=torch.float16, enabled=args.amp):
                         logits = helper.logits(image.to(device))
-                        loss = semantic_loss(logits.float(), target.to(device))
+                        loss = semantic_loss(logits.float(), target.to(device), class_weights)
                     if not torch.isfinite(loss):
                         raise ValueError('Nonfinite loss')
                     scaler.scale(loss).backward()
@@ -701,13 +727,12 @@ def main():
                       'peak_allocated_bytes': torch.cuda.max_memory_allocated(device)}
             if score is not None and score>best:
                 best = score
-                state = {k: v.cpu() for k, v in helper.model.state_dict().items()
-                         if args.model!='sam31' or not k.startswith('backbone.')}
+                state = model_training_state(helper.model, exclude_backbone=args.model=='sam31')
                 best_state = {'epoch': epoch, 'model': args.model, 'state_dict': state, 'metrics': metrics}
                 atomic_weights(weights_directory/'BEST.pt', best_state)
             if args.save_training_state:
-                recovery = save_sam_training_state(weights_directory/'LAST.pt', helper, optimizer,
-                                                   schedule, binding_sha256, epoch, record, best_state)
+                recovery = save_training_state(weights_directory/'LAST.pt', helper, optimizer,
+                                               schedule, binding_sha256, epoch, record, best_state, scaler=scaler)
                 atomic_json(output/'RECOVERY.json', recovery)
             append_epoch_record(output/'HISTORY.jsonl', record)
             atomic_json(output/'STATUS.json', {'state': 'RUNNING', 'pid': os.getpid(),

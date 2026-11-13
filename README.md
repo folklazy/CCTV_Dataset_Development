@@ -1,3 +1,5 @@
+> **13 พฤศจิกายน 2026 — เตรียมจูน SOLIDER RGB → B5 → B4** สองสูตรต่อโมเดล สูตรละ10epochsจากBESTเดิม มีfull-statecheckpointรวมAMP GradScaler อ่าน [สูตรและวิธีติดตาม](reports/PSEUDO_LABELING_MASTER_PLAN_REVIEW_TH.md#dense-helper-tuning)
+
 > **13 พฤศจิกายน 2026 — เพิ่มความเร็วในตาราง helper แล้ว** มีMean ms/ROIของBEST checkpointsทั้งหกconfigurationsจากT4/FP32/batch1 พร้อมเงื่อนไขและsourcebindings อ่าน [คะแนนพร้อมเวลา](reports/PSEUDO_LABELING_MASTER_PLAN_REVIEW_TH.md#sam31-fresh15) และ [CSVเต็ม](reports/HELPER_COMPARISON.csv)
 
 > **13 พฤศจิกายน 2026 — SAM3.1 รอบใหม่จบแล้ว** ฝึกครบ15epochsและตรวจsavedmasks77/77ผ่าน Bestepoch1 มีmIoU4 **68.78%** เก็บผลwarmrestartเดิมและhelpersอื่นแยกครบ อ่าน [ผลและภาพเปรียบเทียบ](reports/PSEUDO_LABELING_MASTER_PLAN_REVIEW_TH.md#sam31-fresh15) กับ [IoU/P/R/F1รายคลาส](reports/HELPER_COMPARISON.csv)
